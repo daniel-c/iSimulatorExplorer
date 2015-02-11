@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6243"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="TestTrustedCertificate" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="liF-ED-Iw4">
+                                <rect key="frame" x="0.0" y="71" width="600" height="529"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </webView>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="http://" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="V2S-Qo-YXb">
+                                <rect key="frame" x="16" y="20" width="469" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="J0T-l6-sgK"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FX0-Oi-tTy">
+                                <rect key="frame" x="502" y="20" width="82" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="VFj-Id-IKU"/>
+                                    <constraint firstAttribute="width" constant="82" id="uPj-DM-Ort"/>
+                                </constraints>
+                                <state key="normal" title="Go">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="openUrlButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="GH7-V9-Ua4"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="liF-ED-Iw4" secondAttribute="bottom" id="2w4-XX-QjF"/>
+                            <constraint firstItem="V2S-Qo-YXb" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Ak0-QB-vaR"/>
+                            <constraint firstItem="V2S-Qo-YXb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="DHQ-S9-GJi"/>
+                            <constraint firstItem="liF-ED-Iw4" firstAttribute="top" secondItem="FX0-Oi-tTy" secondAttribute="bottom" constant="21" id="SSS-b0-pGe"/>
+                            <constraint firstItem="FX0-Oi-tTy" firstAttribute="leading" secondItem="V2S-Qo-YXb" secondAttribute="trailing" constant="17" id="ZAz-ZK-OkW"/>
+                            <constraint firstItem="FX0-Oi-tTy" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="laK-5T-yK9"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="liF-ED-Iw4" secondAttribute="trailing" id="p3x-2z-Y58"/>
+                            <constraint firstItem="liF-ED-Iw4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="y5H-uD-8a4"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="urlTextField" destination="V2S-Qo-YXb" id="wkN-cu-PDs"/>
+                        <outlet property="webView" destination="liF-ED-Iw4" id="BaW-Vx-G8a"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+</document>

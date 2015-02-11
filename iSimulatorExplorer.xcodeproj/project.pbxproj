@@ -1,0 +1,509 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		65027A0019E434E7001F9E62 /* DCAppInfoTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650279FF19E434E7001F9E62 /* DCAppInfoTableCellView.swift */; };
+		650F808019E2C73800BF6215 /* DCXCodeSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650F807F19E2C73800BF6215 /* DCXCodeSupport.swift */; };
+		6538454119E7B995002E5A98 /* DCSimulatorTrustStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6538453F19E7B995002E5A98 /* DCSimulatorTrustStoreViewController.swift */; };
+		6538454219E7B995002E5A98 /* DCSimulatorTrustStoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6538454019E7B995002E5A98 /* DCSimulatorTrustStoreViewController.xib */; };
+		6538454519E7C113002E5A98 /* DCSimulatorAppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6538454319E7C113002E5A98 /* DCSimulatorAppViewController.swift */; };
+		6538454619E7C113002E5A98 /* DCSimulatorAppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6538454419E7C113002E5A98 /* DCSimulatorAppViewController.xib */; };
+		6538454819E7E07E002E5A98 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6538454719E7E07E002E5A98 /* libsqlite3.dylib */; };
+		6538454C19E7EEC0002E5A98 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6538454B19E7EEC0002E5A98 /* SecurityInterface.framework */; };
+		6538454F19E7F1BB002E5A98 /* DCCertificateViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6538454E19E7F1BB002E5A98 /* DCCertificateViewer.m */; };
+		655E74A919EA937600AA8031 /* DCSimulatorInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */; };
+		655E74AA19EA937600AA8031 /* DCSimulatorInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */; };
+		65BB44BF199E6A3B00618978 /* DCSimulatorExplorerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BB44BE199E6A3B00618978 /* DCSimulatorExplorerController.swift */; };
+		65C30B7419AB1EAC00F710A5 /* DCSimulatorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C30B7319AB1EAC00F710A5 /* DCSimulatorManager.swift */; };
+		65D830B219E91FBC001D5B1D /* DCSimulatorTrustStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D830B119E91FBC001D5B1D /* DCSimulatorTrustStore.swift */; };
+		65D830B519E943DB001D5B1D /* DCImportCertificateWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D830B319E943DB001D5B1D /* DCImportCertificateWindowController.swift */; };
+		65D830B619E943DB001D5B1D /* DCImportCertificateWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65D830B419E943DB001D5B1D /* DCImportCertificateWindowController.xib */; };
+		65DBC6A91988C13F00F228AF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DBC6A81988C13F00F228AF /* main.swift */; };
+		65DBC6AB1988C13F00F228AF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DBC6AA1988C13F00F228AF /* AppDelegate.swift */; };
+		65DBC6AD1988C13F00F228AF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65DBC6AC1988C13F00F228AF /* Images.xcassets */; };
+		65DBC6B01988C13F00F228AF /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65DBC6AE1988C13F00F228AF /* MainMenu.xib */; };
+		65DBC6BC1988C13F00F228AF /* iSimulatorExplorerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DBC6BB1988C13F00F228AF /* iSimulatorExplorerTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		65DBC6B61988C13F00F228AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 65DBC69B1988C13F00F228AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 65DBC6A21988C13F00F228AF;
+			remoteInfo = iSimulatorExplorer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		650279FF19E434E7001F9E62 /* DCAppInfoTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCAppInfoTableCellView.swift; sourceTree = "<group>"; };
+		650F807B19E2C51200BF6215 /* iSimulatorExplorer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iSimulatorExplorer-Bridging-Header.h"; sourceTree = "<group>"; };
+		650F807F19E2C73800BF6215 /* DCXCodeSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCXCodeSupport.swift; sourceTree = "<group>"; };
+		6538453F19E7B995002E5A98 /* DCSimulatorTrustStoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorTrustStoreViewController.swift; sourceTree = "<group>"; };
+		6538454019E7B995002E5A98 /* DCSimulatorTrustStoreViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DCSimulatorTrustStoreViewController.xib; sourceTree = "<group>"; };
+		6538454319E7C113002E5A98 /* DCSimulatorAppViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorAppViewController.swift; sourceTree = "<group>"; };
+		6538454419E7C113002E5A98 /* DCSimulatorAppViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DCSimulatorAppViewController.xib; sourceTree = "<group>"; };
+		6538454719E7E07E002E5A98 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		6538454919E7ED7D002E5A98 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		6538454B19E7EEC0002E5A98 /* SecurityInterface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityInterface.framework; path = System/Library/Frameworks/SecurityInterface.framework; sourceTree = SDKROOT; };
+		6538454D19E7F1BB002E5A98 /* DCCertificateViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCCertificateViewer.h; sourceTree = "<group>"; };
+		6538454E19E7F1BB002E5A98 /* DCCertificateViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCCertificateViewer.m; sourceTree = "<group>"; };
+		6538455019E84F10002E5A98 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorInfoViewController.swift; sourceTree = "<group>"; };
+		655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DCSimulatorInfoViewController.xib; sourceTree = "<group>"; };
+		65B4BAD31A894A1A003A4221 /* CoreSimulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreSimulator.h; sourceTree = "<group>"; };
+		65BB44BE199E6A3B00618978 /* DCSimulatorExplorerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorExplorerController.swift; sourceTree = "<group>"; };
+		65C30B7319AB1EAC00F710A5 /* DCSimulatorManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorManager.swift; sourceTree = "<group>"; };
+		65D830B119E91FBC001D5B1D /* DCSimulatorTrustStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorTrustStore.swift; sourceTree = "<group>"; };
+		65D830B319E943DB001D5B1D /* DCImportCertificateWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCImportCertificateWindowController.swift; sourceTree = "<group>"; };
+		65D830B419E943DB001D5B1D /* DCImportCertificateWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DCImportCertificateWindowController.xib; sourceTree = "<group>"; };
+		65DBC6A31988C13F00F228AF /* iSimulatorExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSimulatorExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		65DBC6A71988C13F00F228AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		65DBC6A81988C13F00F228AF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		65DBC6AA1988C13F00F228AF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		65DBC6AC1988C13F00F228AF /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		65DBC6AF1988C13F00F228AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		65DBC6B51988C13F00F228AF /* iSimulatorExplorerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iSimulatorExplorerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		65DBC6BA1988C13F00F228AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		65DBC6BB1988C13F00F228AF /* iSimulatorExplorerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iSimulatorExplorerTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		65DBC6A01988C13F00F228AF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6538454C19E7EEC0002E5A98 /* SecurityInterface.framework in Frameworks */,
+				6538454819E7E07E002E5A98 /* libsqlite3.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65DBC6B21988C13F00F228AF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6590378019E9B55900C4C366 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6538455019E84F10002E5A98 /* Security.framework */,
+				6538454B19E7EEC0002E5A98 /* SecurityInterface.framework */,
+				6538454919E7ED7D002E5A98 /* SecurityFoundation.framework */,
+				6538454719E7E07E002E5A98 /* libsqlite3.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		65B4BAD21A894A1A003A4221 /* CoreSimulator */ = {
+			isa = PBXGroup;
+			children = (
+				65B4BAD31A894A1A003A4221 /* CoreSimulator.h */,
+			);
+			path = CoreSimulator;
+			sourceTree = SOURCE_ROOT;
+		};
+		65DBC69A1988C13F00F228AF = {
+			isa = PBXGroup;
+			children = (
+				65DBC6A51988C13F00F228AF /* iSimulatorExplorer */,
+				65DBC6B81988C13F00F228AF /* iSimulatorExplorerTests */,
+				6590378019E9B55900C4C366 /* Frameworks */,
+				65DBC6A41988C13F00F228AF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		65DBC6A41988C13F00F228AF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				65DBC6A31988C13F00F228AF /* iSimulatorExplorer.app */,
+				65DBC6B51988C13F00F228AF /* iSimulatorExplorerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		65DBC6A51988C13F00F228AF /* iSimulatorExplorer */ = {
+			isa = PBXGroup;
+			children = (
+				65B4BAD21A894A1A003A4221 /* CoreSimulator */,
+				650F807B19E2C51200BF6215 /* iSimulatorExplorer-Bridging-Header.h */,
+				650F807F19E2C73800BF6215 /* DCXCodeSupport.swift */,
+				65C30B7319AB1EAC00F710A5 /* DCSimulatorManager.swift */,
+				65D830B119E91FBC001D5B1D /* DCSimulatorTrustStore.swift */,
+				65DBC6AA1988C13F00F228AF /* AppDelegate.swift */,
+				65DBC6AE1988C13F00F228AF /* MainMenu.xib */,
+				65BB44BE199E6A3B00618978 /* DCSimulatorExplorerController.swift */,
+				655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */,
+				655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */,
+				6538454319E7C113002E5A98 /* DCSimulatorAppViewController.swift */,
+				6538454419E7C113002E5A98 /* DCSimulatorAppViewController.xib */,
+				650279FF19E434E7001F9E62 /* DCAppInfoTableCellView.swift */,
+				6538453F19E7B995002E5A98 /* DCSimulatorTrustStoreViewController.swift */,
+				6538454019E7B995002E5A98 /* DCSimulatorTrustStoreViewController.xib */,
+				6538454D19E7F1BB002E5A98 /* DCCertificateViewer.h */,
+				6538454E19E7F1BB002E5A98 /* DCCertificateViewer.m */,
+				65D830B319E943DB001D5B1D /* DCImportCertificateWindowController.swift */,
+				65D830B419E943DB001D5B1D /* DCImportCertificateWindowController.xib */,
+				65DBC6AC1988C13F00F228AF /* Images.xcassets */,
+				65DBC6A61988C13F00F228AF /* Supporting Files */,
+			);
+			path = iSimulatorExplorer;
+			sourceTree = "<group>";
+		};
+		65DBC6A61988C13F00F228AF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				65DBC6A71988C13F00F228AF /* Info.plist */,
+				65DBC6A81988C13F00F228AF /* main.swift */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		65DBC6B81988C13F00F228AF /* iSimulatorExplorerTests */ = {
+			isa = PBXGroup;
+			children = (
+				65DBC6BB1988C13F00F228AF /* iSimulatorExplorerTests.swift */,
+				65DBC6B91988C13F00F228AF /* Supporting Files */,
+			);
+			path = iSimulatorExplorerTests;
+			sourceTree = "<group>";
+		};
+		65DBC6B91988C13F00F228AF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				65DBC6BA1988C13F00F228AF /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		65DBC6A21988C13F00F228AF /* iSimulatorExplorer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65DBC6BF1988C13F00F228AF /* Build configuration list for PBXNativeTarget "iSimulatorExplorer" */;
+			buildPhases = (
+				65DBC69F1988C13F00F228AF /* Sources */,
+				65DBC6A01988C13F00F228AF /* Frameworks */,
+				65DBC6A11988C13F00F228AF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iSimulatorExplorer;
+			productName = iSimulatorExplorer;
+			productReference = 65DBC6A31988C13F00F228AF /* iSimulatorExplorer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		65DBC6B41988C13F00F228AF /* iSimulatorExplorerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65DBC6C21988C13F00F228AF /* Build configuration list for PBXNativeTarget "iSimulatorExplorerTests" */;
+			buildPhases = (
+				65DBC6B11988C13F00F228AF /* Sources */,
+				65DBC6B21988C13F00F228AF /* Frameworks */,
+				65DBC6B31988C13F00F228AF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				65DBC6B71988C13F00F228AF /* PBXTargetDependency */,
+			);
+			name = iSimulatorExplorerTests;
+			productName = iSimulatorExplorerTests;
+			productReference = 65DBC6B51988C13F00F228AF /* iSimulatorExplorerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		65DBC69B1988C13F00F228AF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "Daniel Cerutti";
+				TargetAttributes = {
+					65DBC6A21988C13F00F228AF = {
+						CreatedOnToolsVersion = 6.0;
+					};
+					65DBC6B41988C13F00F228AF = {
+						CreatedOnToolsVersion = 6.0;
+						TestTargetID = 65DBC6A21988C13F00F228AF;
+					};
+				};
+			};
+			buildConfigurationList = 65DBC69E1988C13F00F228AF /* Build configuration list for PBXProject "iSimulatorExplorer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 65DBC69A1988C13F00F228AF;
+			productRefGroup = 65DBC6A41988C13F00F228AF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				65DBC6A21988C13F00F228AF /* iSimulatorExplorer */,
+				65DBC6B41988C13F00F228AF /* iSimulatorExplorerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		65DBC6A11988C13F00F228AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				655E74AA19EA937600AA8031 /* DCSimulatorInfoViewController.xib in Resources */,
+				65DBC6AD1988C13F00F228AF /* Images.xcassets in Resources */,
+				65D830B619E943DB001D5B1D /* DCImportCertificateWindowController.xib in Resources */,
+				6538454619E7C113002E5A98 /* DCSimulatorAppViewController.xib in Resources */,
+				6538454219E7B995002E5A98 /* DCSimulatorTrustStoreViewController.xib in Resources */,
+				65DBC6B01988C13F00F228AF /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65DBC6B31988C13F00F228AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		65DBC69F1988C13F00F228AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65027A0019E434E7001F9E62 /* DCAppInfoTableCellView.swift in Sources */,
+				6538454119E7B995002E5A98 /* DCSimulatorTrustStoreViewController.swift in Sources */,
+				655E74A919EA937600AA8031 /* DCSimulatorInfoViewController.swift in Sources */,
+				65D830B519E943DB001D5B1D /* DCImportCertificateWindowController.swift in Sources */,
+				65DBC6AB1988C13F00F228AF /* AppDelegate.swift in Sources */,
+				650F808019E2C73800BF6215 /* DCXCodeSupport.swift in Sources */,
+				6538454519E7C113002E5A98 /* DCSimulatorAppViewController.swift in Sources */,
+				65C30B7419AB1EAC00F710A5 /* DCSimulatorManager.swift in Sources */,
+				65D830B219E91FBC001D5B1D /* DCSimulatorTrustStore.swift in Sources */,
+				65BB44BF199E6A3B00618978 /* DCSimulatorExplorerController.swift in Sources */,
+				6538454F19E7F1BB002E5A98 /* DCCertificateViewer.m in Sources */,
+				65DBC6A91988C13F00F228AF /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65DBC6B11988C13F00F228AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65DBC6BC1988C13F00F228AF /* iSimulatorExplorerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		65DBC6B71988C13F00F228AF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 65DBC6A21988C13F00F228AF /* iSimulatorExplorer */;
+			targetProxy = 65DBC6B61988C13F00F228AF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		65DBC6AE1988C13F00F228AF /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				65DBC6AF1988C13F00F228AF /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		65DBC6BD1988C13F00F228AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		65DBC6BE1988C13F00F228AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		65DBC6C01988C13F00F228AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = iSimulatorExplorer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "iSimulatorExplorer/iSimulatorExplorer-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		65DBC6C11988C13F00F228AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = iSimulatorExplorer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "iSimulatorExplorer/iSimulatorExplorer-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		65DBC6C31988C13F00F228AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/iSimulatorExplorer.app/Contents/MacOS/iSimulatorExplorer";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = iSimulatorExplorerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+			};
+			name = Debug;
+		};
+		65DBC6C41988C13F00F228AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/iSimulatorExplorer.app/Contents/MacOS/iSimulatorExplorer";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = iSimulatorExplorerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		65DBC69E1988C13F00F228AF /* Build configuration list for PBXProject "iSimulatorExplorer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65DBC6BD1988C13F00F228AF /* Debug */,
+				65DBC6BE1988C13F00F228AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65DBC6BF1988C13F00F228AF /* Build configuration list for PBXNativeTarget "iSimulatorExplorer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65DBC6C01988C13F00F228AF /* Debug */,
+				65DBC6C11988C13F00F228AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65DBC6C21988C13F00F228AF /* Build configuration list for PBXNativeTarget "iSimulatorExplorerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65DBC6C31988C13F00F228AF /* Debug */,
+				65DBC6C41988C13F00F228AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 65DBC69B1988C13F00F228AF /* Project object */;
+}

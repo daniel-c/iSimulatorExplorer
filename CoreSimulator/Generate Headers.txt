@@ -1,0 +1,4 @@
+With XCode 6
+=============
+
+class-dump -CSim /Applications/Xcode.app/Contents/Developer/Library/PrivateFrameworks/CoreSimulator.framework > CoreSimulator.h
