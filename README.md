@@ -1,10 +1,16 @@
 ### What is iSimulatorExplorer? ###
 
-* iSimulatorExplorer is a simple application to browse the available iOS Simulators on your system and to quickly open applications program and data folder. Additionaly iSimulatorExplorer can easily add/remove trusted certificate on iOS Simulators. This make it easy for example to test applications connecting to development server with self-signed certificates as importing CA certificates is not directly supported in the iOS simulator.
+iSimulatorExplorer is a simple OS X application written in Swift to browse the available iOS Simulators on your system. It provides the following functions:
+
+* View informations and status on each available iOS simulator.
+
+* Launch the iOS simulator
+
+* Quickly open applications program and data folder in Finder.
+
+* Add/remove/import/export CA certificate on iOS Simulators. This make it easy to test applications connecting to development server with self-signed certificates or using a man-in-the-middle proxy like mitmproxy where you need to install the proxy CA in the simulator.
 
 ![iSimulatorExplorer screen](img/screen1.jpg)
-
-* iSimulatorExplorer is written in Swift and is a good example of how accessing undocumented API using late-binding can be achieved in Swift. 
 
 ### System requirements ###
 
@@ -13,9 +19,9 @@
 
 ### Notes on CA certificates in iOS simulator ###
 
-* The trusted certificate management in iOS simulator is based on the [ADVTrustStore project](https://github.com/ADVTOOLS/ADVTrustStore) I have written 2 years ago, mainly on the documentation on the TrustStore.sqlite3 database format.
+* The trusted certificate management in iOS simulator is based on the [ADVTrustStore project](https://github.com/ADVTOOLS/ADVTrustStore) I have written 2 years ago.
 
-* To make it easy to test certificate imported with this tool, a sample iOS application is provided in this project: TestTrustedCertificate. It consist of a simple WebView to test a SSL connection to a server with a certificate not signed by a valid CA.
+* To make it easy to test certificate imported with this tool, a sample iOS application is provided in this project: TestTrustedCertificate. It consist of a simple WebView to test a SSL connection to a server.
 
 ### Copyright and license ###
 
