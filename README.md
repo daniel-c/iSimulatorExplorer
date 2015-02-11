@@ -2,6 +2,8 @@
 
 * iSimulatorExplorer is a simple application to browse the available iOS Simulators on your system and to quickly open applications program and data folder. Additionaly iSimulatorExplorer can easily add/remove trusted certificate on iOS Simulators. This make it easy for example to test applications connecting to development server with self-signed certificates as importing CA certificates is not directly supported in the iOS simulator.
 
+![iSimulatorExplorer screen](img/screen1.jpg)
+
 * iSimulatorExplorer is written in Swift and is a good example of how accessing undocumented API using late-binding can be achieved in Swift. 
 
 ### System requirements ###
