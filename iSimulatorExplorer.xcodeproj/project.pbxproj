@@ -15,7 +15,6 @@
 		6538454619E7C113002E5A98 /* DCSimulatorAppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6538454419E7C113002E5A98 /* DCSimulatorAppViewController.xib */; };
 		6538454819E7E07E002E5A98 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6538454719E7E07E002E5A98 /* libsqlite3.dylib */; };
 		6538454C19E7EEC0002E5A98 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6538454B19E7EEC0002E5A98 /* SecurityInterface.framework */; };
-		6538454F19E7F1BB002E5A98 /* DCCertificateViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6538454E19E7F1BB002E5A98 /* DCCertificateViewer.m */; };
 		655E74A919EA937600AA8031 /* DCSimulatorInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */; };
 		655E74AA19EA937600AA8031 /* DCSimulatorInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */; };
 		65BB44BF199E6A3B00618978 /* DCSimulatorExplorerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BB44BE199E6A3B00618978 /* DCSimulatorExplorerController.swift */; };
@@ -51,8 +50,6 @@
 		6538454719E7E07E002E5A98 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		6538454919E7ED7D002E5A98 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
 		6538454B19E7EEC0002E5A98 /* SecurityInterface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityInterface.framework; path = System/Library/Frameworks/SecurityInterface.framework; sourceTree = SDKROOT; };
-		6538454D19E7F1BB002E5A98 /* DCCertificateViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCCertificateViewer.h; sourceTree = "<group>"; };
-		6538454E19E7F1BB002E5A98 /* DCCertificateViewer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCCertificateViewer.m; sourceTree = "<group>"; };
 		6538455019E84F10002E5A98 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorInfoViewController.swift; sourceTree = "<group>"; };
 		655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DCSimulatorInfoViewController.xib; sourceTree = "<group>"; };
@@ -149,8 +146,6 @@
 				650279FF19E434E7001F9E62 /* DCAppInfoTableCellView.swift */,
 				6538453F19E7B995002E5A98 /* DCSimulatorTrustStoreViewController.swift */,
 				6538454019E7B995002E5A98 /* DCSimulatorTrustStoreViewController.xib */,
-				6538454D19E7F1BB002E5A98 /* DCCertificateViewer.h */,
-				6538454E19E7F1BB002E5A98 /* DCCertificateViewer.m */,
 				65D830B319E943DB001D5B1D /* DCImportCertificateWindowController.swift */,
 				65D830B419E943DB001D5B1D /* DCImportCertificateWindowController.xib */,
 				65DBC6AC1988C13F00F228AF /* Images.xcassets */,
@@ -298,7 +293,6 @@
 				65C30B7419AB1EAC00F710A5 /* DCSimulatorManager.swift in Sources */,
 				65D830B219E91FBC001D5B1D /* DCSimulatorTrustStore.swift in Sources */,
 				65BB44BF199E6A3B00618978 /* DCSimulatorExplorerController.swift in Sources */,
-				6538454F19E7F1BB002E5A98 /* DCCertificateViewer.m in Sources */,
 				65DBC6A91988C13F00F228AF /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

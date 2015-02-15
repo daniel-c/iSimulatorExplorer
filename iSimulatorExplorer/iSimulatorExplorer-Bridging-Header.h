@@ -6,7 +6,7 @@
 #import "CoreSimulator.h"
 #import "sqlite3.h"
 #import "CommonCrypto/CommonDigest.h"
-#import "DCCertificateViewer.h"
+#import <SecurityInterface/SFCertificatePanel.h>
 
 @interface DVTPlatform : NSObject
 + (BOOL)loadAllPlatformsReturningError:(NSError **)error;

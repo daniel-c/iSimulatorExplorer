@@ -8,7 +8,7 @@
 //
 
 import Cocoa
-
+import SecurityInterface
 
 class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableViewDataSource, NSTableViewDelegate {
 
@@ -95,21 +95,15 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
             if row >= 0 {
                 tableView.selectRowIndexes(NSIndexSet(index: row), byExtendingSelection: false)
                 if let cert = truststore?.items[row].certificate? {
-                    DCCertificateViewer.showCertificate(cert)
+                    showCertificate(cert)
                 }
             }
         }
         return;
-        /*
-        if tableView.selectedRow >= 0 {
-            if truststore != nil {
-                if let cert = truststore?.items[tableView.selectedRow].certificate? {
-                    truststore?.items[tableView.selectedRow].test()
-                    DCCertificateViewer.showCertificate(cert)
-                }
-            }
-        }
-*/
+    }
+    
+    func showCertificate(cert : SecCertificateRef) {
+        SFCertificatePanel.sharedCertificatePanel().runModalForCertificates([cert], showGroup: false)
     }
     
     @IBAction func importCertificateFromServerButtonPressed(sender: AnyObject) {
