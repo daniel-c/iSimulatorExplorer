@@ -1,15 +1,8 @@
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-
-# XCode
+# XCode #
+#########
 
 xcuserdata
+*.xccheckout
 
 # Packages #
 ############
@@ -23,10 +16,6 @@ xcuserdata
 *.rar
 *.tar
 *.zip
-
-# Logs and databases #
-######################
-*.sqlite*
 
 # OS generated files #
 ######################
