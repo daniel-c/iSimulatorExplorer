@@ -192,23 +192,32 @@ connectionManager:(SimServiceConnectionManager *)connectionManager
 - (BOOL)registerPort:(unsigned int)arg1 service:(id)arg2 error:(id *)arg3;
 - (unsigned int)lookup:(id)arg1 error:(id *)arg2;
 - (unsigned int)_lookup:(id)arg1 error:(id *)arg2;
+
 - (id)getenv:(id)arg1 error:(id *)arg2;
+
 - (BOOL)restoreContentsAndSettingsFromDevice:(id)arg1 error:(id *)arg2;
 - (void)restoreContentsAndSettingsAsyncFromDevice:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
+
 - (BOOL)updateUIWindowProperties:(id)arg1 error:(id *)arg2;
 - (void)updateAsyncUIWindowProperties:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
 - (void)_sendUIWindowPropertiesToDevice;
+
 - (BOOL)eraseContentsAndSettingsWithError:(id *)arg1;
 - (void)eraseContentsAndSettingsAsyncWithCompletionHandler:(CDUnknownBlockType)arg1;
+
 - (BOOL)upgradeToRuntime:(id)arg1 error:(id *)arg2;
 - (void)upgradeAsyncToRuntime:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
+
 - (BOOL)rename:(id)arg1 error:(id *)arg2;
 - (void)renameAsync:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
-- (BOOL)shutdownWithError:(id *)arg1;
+
+- (BOOL)shutdownWithError:(NSError **)error;
 - (BOOL)_shutdownWithError:(id *)arg1;
-- (void)shutdownAsyncWithCompletionHandler:(CDUnknownBlockType)arg1;
-- (BOOL)bootWithOptions:(id)arg1 error:(NSError **)error;
-- (void)bootAsyncWithOptions:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
+- (void)shutdownAsyncWithCompletionHandler:(void (^)(NSError *error))completionBlock;
+
+- (BOOL)bootWithOptions:(NSDictionary *)options error:(NSError **)error;
+- (void)bootAsyncWithOptions:(NSDictionary *)options completionHandler:(void (^)(NSError *error))completionBlock;
+
 - (void)launchdDeathHandlerWithDeathPort:(id)arg1;
 - (BOOL)startLaunchdWithDeathPort:(id)arg1 deathHandler:(CDUnknownBlockType)arg2 error:(id *)arg3;
 - (void)registerPortsWithLaunchd;

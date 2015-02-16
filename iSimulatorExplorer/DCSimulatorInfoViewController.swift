@@ -45,11 +45,11 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     }
     
     override func viewDidAppear() {
-        println("View appear")
+        // ViewController lifecycle methods are only available with OS X 10.10 and above
     }
     
     override func viewDidDisappear() {
-        println("viewDidDisappear")
+        // ViewController lifecycle methods are only available with OS X 10.10 and above
     }
     
     
@@ -70,22 +70,6 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
         }
         return nil
     }
-    /*
-    func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        
-        if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
-            if simulator != nil {
-                if let appList = simulator!.getAppList()? {
-                    let appInfo = appList[row]
-                    //result.textField!.stringValue = appInfo.displayName!
-                    result.appInfo = appInfo
-                }
-            }
-            return result
-        }
-        return nil
-    }
-    */
     
     func tableView(tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
         return false
@@ -94,8 +78,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     @IBAction func showInFinderPressed(sender: NSButton) {
         if simulator != nil {
-            NSWorkspace.sharedWorkspace().selectFile(simulator!.path!, // .stringByAppendingPathComponent("data"),
-                inFileViewerRootedAtPath: simulator!.path!)
+            NSWorkspace.sharedWorkspace().selectFile(simulator!.path!, inFileViewerRootedAtPath: simulator!.path!)
         }
     }
     

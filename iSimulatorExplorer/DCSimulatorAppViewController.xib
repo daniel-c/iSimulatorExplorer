@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6249" systemVersion="13F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DCSimulatorAppViewController" customModule="iSimulatorExplorer" customModuleProvider="target">
             <connections>
                 <outlet property="appTableView" destination="15f-8j-QNM" id="fzn-Hd-T1c"/>
+                <outlet property="installAppButton" destination="uO4-eG-tRP" id="Wym-57-0zV"/>
+                <outlet property="uninstallAppButton" destination="YwL-hL-RAl" id="x7v-gN-omV"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -17,13 +19,13 @@
             <rect key="frame" x="0.0" y="0.0" width="556" height="391"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView autohidesScrollers="YES" horizontalLineScroll="42" horizontalPageScroll="10" verticalLineScroll="42" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LuV-FJ-pDf">
+                <scrollView autohidesScrollers="YES" horizontalLineScroll="46" horizontalPageScroll="10" verticalLineScroll="46" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LuV-FJ-pDf">
                     <rect key="frame" x="20" y="67" width="516" height="304"/>
                     <clipView key="contentView" id="0Um-xQ-GRN">
                         <rect key="frame" x="1" y="17" width="238" height="117"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" rowSizeStyle="automatic" viewBased="YES" id="15f-8j-QNM">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="44" rowSizeStyle="automatic" viewBased="YES" id="15f-8j-QNM">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -66,11 +68,11 @@
                                                 </connections>
                                             </tableCellView>
                                             <tableCellView identifier="DataCell" id="wOT-Hh-MD3" customClass="DCAppInfoTableCellView" customModule="iSimulatorExplorer" customModuleProvider="target">
-                                                <rect key="frame" x="1" y="1" width="511" height="40"/>
+                                                <rect key="frame" x="1" y="20" width="511" height="44"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="zwR-bF-ibR">
-                                                        <rect key="frame" x="178" y="19" width="332" height="17"/>
+                                                        <rect key="frame" x="178" y="23" width="332" height="17"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="T40-12-sLZ">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -78,7 +80,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <button verticalHuggingPriority="750" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="MEv-Hp-Oo4">
-                                                        <rect key="frame" x="182" y="-1" width="153" height="17"/>
+                                                        <rect key="frame" x="182" y="3" width="150" height="17"/>
                                                         <buttonCell key="cell" type="inline" title="Open App Data in Finder" bezelStyle="inline" alignment="center" borderStyle="border" inset="2" id="73l-p3-N0F">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystemBold"/>
@@ -88,7 +90,7 @@
                                                         </connections>
                                                     </button>
                                                     <button verticalHuggingPriority="750" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="3cv-Es-fcj">
-                                                        <rect key="frame" x="8" y="-1" width="166" height="17"/>
+                                                        <rect key="frame" x="8" y="3" width="166" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="166" id="B6m-KM-W48"/>
                                                         </constraints>
@@ -101,7 +103,7 @@
                                                         </connections>
                                                     </button>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="wnL-Om-CBf">
-                                                        <rect key="frame" x="6" y="19" width="164" height="17"/>
+                                                        <rect key="frame" x="6" y="23" width="164" height="17"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="160" id="bvS-Rp-i1r"/>
                                                         </constraints>
@@ -147,12 +149,42 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YwL-hL-RAl">
+                    <rect key="frame" x="406" y="19" width="136" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="124" id="en8-c2-gGU"/>
+                    </constraints>
+                    <buttonCell key="cell" type="push" title="Uninstall App" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tmh-8Z-bKZ">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="uninstallApp:" target="-2" id="JLT-cs-fuV"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uO4-eG-tRP">
+                    <rect key="frame" x="251" y="19" width="136" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="124" id="EFC-aI-abd"/>
+                    </constraints>
+                    <buttonCell key="cell" type="push" title="Install App" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lWT-Pt-mCa">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="installApp:" target="-2" id="Egu-7D-ZnY"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="LuV-FJ-pDf" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" id="DWc-t9-v9a"/>
                 <constraint firstAttribute="trailing" secondItem="LuV-FJ-pDf" secondAttribute="trailing" constant="20" id="GSx-nM-lEi"/>
                 <constraint firstAttribute="bottom" secondItem="LuV-FJ-pDf" secondAttribute="bottom" constant="67" id="JpT-fK-13j"/>
+                <constraint firstItem="YwL-hL-RAl" firstAttribute="leading" secondItem="uO4-eG-tRP" secondAttribute="trailing" constant="31" id="Tdq-LM-JLz"/>
+                <constraint firstItem="YwL-hL-RAl" firstAttribute="centerY" secondItem="uO4-eG-tRP" secondAttribute="centerY" id="XqW-qr-GC6"/>
+                <constraint firstAttribute="bottom" secondItem="YwL-hL-RAl" secondAttribute="bottom" constant="26" id="a0F-3H-HDO"/>
                 <constraint firstItem="LuV-FJ-pDf" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" id="dcr-v9-ixu"/>
+                <constraint firstAttribute="trailing" secondItem="YwL-hL-RAl" secondAttribute="trailing" constant="20" id="lhM-fB-Jap"/>
             </constraints>
             <point key="canvasLocation" x="394" y="397.5"/>
         </customView>

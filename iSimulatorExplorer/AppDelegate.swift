@@ -9,19 +9,28 @@
 
 import Cocoa
 
+
 class AppDelegate: NSObject, NSApplicationDelegate {
                             
     @IBOutlet weak var window: NSWindow!
 
+    
+    class func showModalAlert (messageText : String, informativeText : String) {
+        var alert = NSAlert()
+        alert.messageText = messageText
+        alert.informativeText = informativeText
+        alert.runModal()
+    }
 
     func applicationDidFinishLaunching(aNotification: NSNotification?) {
         // Insert code here to initialize your application
         
-        if XCodeSupport.getDeveloperToolsPath() == nil {
-            var alert = NSAlert()
-            alert.messageText = NSLocalizedString("Error", comment: "")
-            alert.informativeText = NSLocalizedString("Xcode must be installed for iSimulatorExplorer to run", comment: "")
-            alert.runModal()
+        let xcodeVersion = XCodeSupport.getDeveloperToolsVersion()
+        if xcodeVersion == nil || xcodeVersion!.compare("6.0", options: NSStringCompareOptions.NumericSearch) == NSComparisonResult.OrderedAscending {
+            
+            AppDelegate.showModalAlert (
+                NSLocalizedString("Error", comment: ""),
+                informativeText: NSLocalizedString("Xcode 6 or above must be installed for iSimulatorExplorer to run", comment: ""))
             NSApplication.sharedApplication().terminate(nil)
         }
     }

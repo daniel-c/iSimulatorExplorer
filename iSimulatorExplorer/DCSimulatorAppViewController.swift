@@ -12,18 +12,34 @@ import Cocoa
 class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSource, NSTableViewDelegate {
 
     @IBOutlet weak var appTableView: NSTableView!
+    @IBOutlet weak var installAppButton: NSButton!
+    @IBOutlet weak var uninstallAppButton: NSButton!
+    var isBusy : Bool = false
+    
     var simulatorAppList : [SimulatorApp]?
     
     override var simulator : Simulator? {
         didSet {
             simulatorAppList = simulator!.getAppList()?
             appTableView.reloadData()
+            enableButtons()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+    }
+    
+    override func loadView() {
+        super.loadView()
+        enableButtons()
+    }
+    
+    func enableButtons() {
+        let enableActionOnSelected = (appTableView.selectedRow >= 0 && simulatorAppList != nil && simulatorAppList!.count > 0)
+        uninstallAppButton.enabled = enableActionOnSelected && !isBusy
+        installAppButton.enabled = !isBusy
     }
     
     func numberOfRowsInTableView(tableView: NSTableView) -> Int {
@@ -52,6 +68,11 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         return nil
     }
     
+    func tableViewSelectionDidChange(notification: NSNotification) {
+        enableButtons()
+    }
+
+    
     @IBAction func openAppDataInFinderPressed(sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
             if let path = appInfoCellView.appInfo?.dataPath? {
@@ -68,5 +89,62 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         }
     }
     
+    @IBAction func installApp(sender: AnyObject) {
+        var openPanel = NSOpenPanel()
+        openPanel.canChooseFiles = true
+        openPanel.canChooseDirectories = false
+        openPanel.allowsMultipleSelection = false
+        
+        if openPanel.runModal() == NSFileHandlingPanelOKButton {
+            if let urls = openPanel.URLs as? [NSURL] {
+                for url in urls {
+                    isBusy = true
+                    enableButtons()
+                    simulator!.installApp(url, completionHandler: { (error) -> Void in
+                        self.isBusy = false
+                        self.enableButtons()
+                        if error != nil {
+                            AppDelegate.showModalAlert(
+                                NSLocalizedString("Error installing app \(url)", comment: ""),
+                                informativeText: "Error details: \(error)")
+                            println("Install app \(url) error: \(error!)")
+                        }
+                        else {
+                            println("Install app \(url) successful")
+                            self.simulatorAppList = self.simulator!.getAppList()?
+                            self.appTableView.reloadData()
+                        }
+                    })
+                }
+            }
+        }
+    }
     
+    @IBAction func uninstallApp(sender: AnyObject) {
+        if appTableView.selectedRow >= 0 {
+            if let appId = simulatorAppList![appTableView.selectedRow].identifier? {
+            
+                isBusy = true
+                enableButtons()
+                simulator!.uninstallApp(appId, completionHandler: { (error) -> Void in
+                    self.isBusy = false
+                    self.enableButtons()
+                    if error != nil {
+
+                        AppDelegate.showModalAlert(
+                            NSLocalizedString("Error uninstalling app \(appId)", comment: ""),
+                            informativeText: "Error details: \(error)")
+                    }
+                    else {
+                        println("Uninstall app \(appId) successful")
+                        self.simulatorAppList = self.simulator!.getAppList()?
+                        self.appTableView.reloadData()
+                    }
+                })
+            }
+            
+        }
+    }
+    
+
 }
