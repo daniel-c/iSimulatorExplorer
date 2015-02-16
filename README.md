@@ -10,6 +10,8 @@ iSimulatorExplorer is a simple OS X application written in Swift to browse the a
 
 * Add/remove/import/export CA certificate on iOS Simulators. This make it easy to test applications connecting to development server with self-signed certificates or using a man-in-the-middle proxy like mitmproxy where you need to install the proxy CA in the simulator.
 
+* Install/Uninstall Apps in iOS simulator.
+
 ![iSimulatorExplorer screen](img/screen1.jpg)
 
 ### System requirements ###
