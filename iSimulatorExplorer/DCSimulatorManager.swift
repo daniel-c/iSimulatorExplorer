@@ -165,27 +165,53 @@ class DCSimulatorManager {
         }
     }
     
-    func startNotificationHandler(handler : (NSUUID, Int) -> Void ) {
+    enum NotificationType {
+        case DeviceState
+        case DeviceAdded
+        case DeviceRemoved
+        case DeviceRenamed
+    }
+    
+    func startNotificationHandler(handler : (NotificationType, NSUUID, Int) -> Void ) {
         if simDeviceSet != nil {
             
             simDeviceSet!.registerNotificationHandler({ (data : [NSObject : AnyObject]!) -> Void in
 
-                // NSLog("SimDeviceSet notification: \(data.debugDescription)")
                 if let notificationData = data as? [String : AnyObject] {
-                    if let notificationType = notificationData["notification"] as? String {
-                        if notificationType == "device_state"  {
-                            let simDevice: AnyObject! = notificationData["device"] as AnyObject!
-                            let state = notificationData["new_state"] as Int!
-                            
-                            NSLog("SimDevice \(simDevice.UDID) new state: \(state)")
-                            
-                            // handle notification
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                handler(simDevice.UDID, state)
-                            })
+                    if let notificationTypeString = notificationData["notification"] as? String {
+                        
+                        var state : Int = 0
+                        var notificationType : NotificationType?
+                        var udid : NSUUID?
+                        let simDevice : AnyObject? = notificationData["device"]
+                        
+                        switch notificationTypeString {
+                            case "device_state":
+                                notificationType = .DeviceState
+                                state = notificationData["new_state"] as Int!
+                                NSLog("SimDevice \(simDevice?.UDID) new state: \(state)")
+                                
+                            case "device_added":
+                                notificationType = .DeviceAdded
+                                NSLog("SimDevice \(simDevice?.UDID) added: \(simDevice?.stateString())")
+                                
+                            case "device_removed":
+                                notificationType = .DeviceRemoved
+                                NSLog("SimDevice \(simDevice?.UDID) removed")
+                                
+                            case "device_renamed":
+                                notificationType = .DeviceRenamed
+                                NSLog("SimDevice \(simDevice?.UDID) renamed to: \(simDevice?.name)")
+                                
+                            default:
+                                NSLog("Notification: %@", data)
                         }
-                        else {
-                            NSLog("Notification: %@", data)
+                        if notificationType != nil && simDevice != nil {
+                            
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                handler(notificationType!, simDevice!.UDID, 0)
+                            })
+                            
                         }
                     }
                 }

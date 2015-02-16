@@ -28,7 +28,7 @@ class SimulatorApp {
 
 
 class Simulator {
-    var name : String?
+    var _name : String?
     var deviceName : String?
     var version : String?
     var build : String?
@@ -52,6 +52,15 @@ class Simulator {
         return self.simDevice?.state
     }
     
+    var name : String? {
+        if simDevice != nil {
+            return simDevice!.name
+        }
+        else {
+            return _name
+        }
+    }
+    
     private func initTrustStorePath() {
         trustStorePath = path?.stringByAppendingPathComponent("data/Library/Keychains/TrustStore.sqlite3")
     }
@@ -73,7 +82,7 @@ class Simulator {
                 let name1 = plist["name"] as? String
                 let runtime = plist["runtime"] as String
                 version = runtime.componentsSeparatedByString(".").last
-                name = name1! + " v" + version!
+                _name = name1! + " v" + version!
                 isValid = true
                 initTrustStorePath()
             }
@@ -84,7 +93,6 @@ class Simulator {
     convenience init(device : AnyObject) {
         self.init()
         self.simDevice = device
-        self.name = device.name
         self.deviceName = device.deviceType?.name
         self.path = device.devicePath() as String?
         self.UDID = device.UDID as NSUUID

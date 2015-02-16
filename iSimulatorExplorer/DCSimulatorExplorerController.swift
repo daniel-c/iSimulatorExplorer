@@ -43,7 +43,10 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
             if _simulators == nil {
                 _simulators = [SimulatorVersion]()
                 
-                simulatorManager = DCSimulatorManager()
+                var firstInit = (simulatorManager == nil)
+                if firstInit {
+                    simulatorManager = DCSimulatorManager()
+                }
                 
                 dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { () -> Void in
                     
@@ -69,7 +72,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self._simulators = simulatorVersions
                         self.outlineView.reloadData()
-                        self.initView()
+                        self.initView(firstInit)
                     })
                 })
                 
@@ -79,7 +82,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
     }
 
     
-    func initView() {
+    func initView(firstInit : Bool) {
         initTabViewItem(tabView.selectedTabViewItem)
         outlineView.expandItem(nil, expandChildren: true)
         if (_simulators != nil) {
@@ -90,19 +93,32 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                 }
             }
         }
-        simulatorManager!.startNotificationHandler(simDeviceChanged)
+        if firstInit {
+            simulatorManager!.startNotificationHandler(simDeviceChanged)
+        }
     }
     
-    func simDeviceChanged (deviceUDID : NSUUID, newState : Int) -> Void {
-        if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
-            if sim.UDID == deviceUDID {
-                for tabViewItem in (tabView.tabViewItems as [NSTabViewItem]) {
-                    if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                        item.simulator = sim
+    func simDeviceChanged (notificationType :  DCSimulatorManager.NotificationType, deviceUDID : NSUUID, newState : Int) -> Void {
+        
+        switch notificationType {
+        case .DeviceState:
+            if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
+                if sim.UDID == deviceUDID {
+                    for tabViewItem in (tabView.tabViewItems as [NSTabViewItem]) {
+                        if let item = tabViewItem.identifier as? DCSimulatorViewController {
+                            item.simulator = sim
+                        }
                     }
                 }
             }
+
+        case .DeviceAdded, .DeviceRemoved, .DeviceRenamed:
+            // Simplified handling of other cases: just reloading the complete list
+            _simulators = nil
+            self.outlineView.reloadData()
+            
         }
+        
     }
     
 
