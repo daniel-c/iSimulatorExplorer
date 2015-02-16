@@ -14,6 +14,10 @@ iSimulatorExplorer is a simple OS X application written in Swift to browse the a
 
 ![iSimulatorExplorer screen](img/screen1.jpg)
 
+![iSimulatorExplorer screen](img/screen2.jpg)
+
+![iSimulatorExplorer screen](img/screen3.jpg)
+
 ### System requirements ###
 
 * OS X 10.9 or 10.10
