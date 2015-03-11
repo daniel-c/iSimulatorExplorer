@@ -25,7 +25,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     override var simulator : Simulator? {
         didSet {
             truststore = nil
-            if let truststorePath = simulator?.trustStorePath? {
+            if let truststorePath = simulator?.trustStorePath {
                 if NSFileManager.defaultManager().fileExistsAtPath(truststorePath) {
                     truststore = DCSimulatorTruststore(path : truststorePath)
                     truststore!.openTrustStore()
@@ -76,7 +76,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
             if truststore != nil {
-                if let text = truststore?.items[row].subjectSummary? {
+                if let text = truststore?.items[row].subjectSummary {
                     result.textField!.stringValue = text
                 }
             }
@@ -94,7 +94,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
             let row = tableView.rowForView(cellView)
             if row >= 0 {
                 tableView.selectRowIndexes(NSIndexSet(index: row), byExtendingSelection: false)
-                if let cert = truststore?.items[row].certificate? {
+                if let cert = truststore?.items[row].certificate {
                     showCertificate(cert)
                 }
             }
@@ -133,7 +133,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         if openPanel.runModal() == NSFileHandlingPanelOKButton {
             if let urls = openPanel.URLs as? [NSURL] {
                 for url in urls {
-                    if let data = NSData(contentsOfURL: url)? {
+                    if let data = NSData(contentsOfURL: url) {
                         
                         var format : SecExternalFormat = SecExternalFormat(kSecFormatUnknown)
                         var itemType : SecExternalItemType = SecExternalItemType(kSecItemTypeCertificate)
@@ -143,7 +143,15 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
                         if let itemCFArray = outItems?.takeRetainedValue() {
                             let itemArray = itemCFArray as NSArray
                             if itemArray.count > 0 && itemType == SecExternalItemType(kSecItemTypeCertificate) {
+                                
+                                // Here we must use an unconditional downcast (conditional downcast does not work here).
+                                // In Swift 1.2 it is 'as!' while in Swift < 1.2 there is only the unconditional cast 'as'
+                                
+                                //For Swift 1.2:
+                                // let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificateRef)
+                                //For Swift < 1.2:
                                 let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as SecCertificateRef)
+                                
                                 if truststore!.addItem(item) {
                                     tableView.reloadData()
                                 }
@@ -171,11 +179,11 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
             if truststore != nil {
                 let item = truststore!.items[tableView.selectedRow]
                 var savePanel = NSSavePanel()
-                if let text = item.subjectSummary? {
+                if let text = item.subjectSummary {
                     savePanel.nameFieldStringValue = text
                 }
                 if savePanel.runModal() == NSFileHandlingPanelOKButton {
-                    if let url = savePanel.URL? {
+                    if let url = savePanel.URL {
                         item.export(url)
                     }
                 }

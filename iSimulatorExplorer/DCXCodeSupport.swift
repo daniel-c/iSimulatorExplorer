@@ -14,7 +14,7 @@ class XCodeSupport {
             return developerDir
         }
         var error : NSError?
-        if let symDir = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath("/var/db/xcode_select_link", error: &error)? {
+        if let symDir = NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath("/var/db/xcode_select_link", error: &error) {
             return symDir
         }
         let defaultDir = "/Applications/Xcode.app/Contents/Developer"
@@ -25,7 +25,7 @@ class XCodeSupport {
     }
     
     class func getDeveloperToolsVersion() -> String? {
-        if let developerDir = getDeveloperToolsPath()? {
+        if let developerDir = getDeveloperToolsPath() {
             let fm = NSFileManager.defaultManager()
             let versionPlist = developerDir.stringByAppendingPathComponent("../version.plist")
             if fm.fileExistsAtPath(versionPlist) {

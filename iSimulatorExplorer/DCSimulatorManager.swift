@@ -17,11 +17,11 @@ class DCSimulatorManager {
     private let sim5BasePath = "~/Library/Application Support/iPhone Simulator".stringByExpandingTildeInPath
     private var simDeviceSetClass : AnyClass?
     private var simDeviceSet : AnyObject?
-    private let getSimulators : () -> [Simulator]
+    private var getSimulators : () -> [Simulator]
     
     // Helper to find a class by name and die if it isn't found.
     private func FindClassByName(nameOfClass : String) -> AnyClass! {
-        if let theClass : AnyClass = NSClassFromString(nameOfClass)? {
+        if let theClass : AnyClass = NSClassFromString(nameOfClass) {
             return theClass
         }
         else
@@ -33,20 +33,20 @@ class DCSimulatorManager {
     
     
     private func LoadSimulatorFramework() -> NSBundle! {
-        if let developerDir = XCodeSupport.getDeveloperToolsPath()? {
+        if let developerDir = XCodeSupport.getDeveloperToolsPath() {
             
             // The Simulator framework depends on some of the other Xcode private
             // frameworks; manually load them first so everything can be linked up.
             let dvtFoundationPath = developerDir.stringByAppendingPathComponent(kDVTFoundationRelativePath)
             
-            if let dvtFoundationBundle = NSBundle(path: dvtFoundationPath)? {
+            if let dvtFoundationBundle = NSBundle(path: dvtFoundationPath) {
                 if !(dvtFoundationBundle.load()) {
                     return nil
                 }
             }
             
             let devToolsFoundationPath = developerDir.stringByAppendingPathComponent(kDevToolsFoundationRelativePath)
-            if let devToolsFoundationBundle = NSBundle(path: devToolsFoundationPath)? {
+            if let devToolsFoundationBundle = NSBundle(path: devToolsFoundationPath) {
                 if !(devToolsFoundationBundle.load()) {
                     return nil
                 }
@@ -55,7 +55,7 @@ class DCSimulatorManager {
             
             // Prime DVTPlatform.
             var error : NSError?
-            if let DVTPlatformClass : AnyClass = FindClassByName("DVTPlatform")? {
+            if let DVTPlatformClass : AnyClass = FindClassByName("DVTPlatform") {
                 if !(DVTPlatformClass.loadAllPlatformsReturningError(&error)) {
                     NSLog("Unable to loadAllPlatformsReturningError. Error: %@", error!.localizedDescription)
                     return nil;
@@ -66,13 +66,13 @@ class DCSimulatorManager {
             let simulatorFrameworkRelativePath = "../SharedFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
             let kCoreSimulatorRelativePath = "Library/PrivateFrameworks/CoreSimulator.framework";
             let coreSimulatorPath = developerDir.stringByAppendingPathComponent(kCoreSimulatorRelativePath);
-            if let coreSimulatorBundle = NSBundle(path: coreSimulatorPath)? {
+            if let coreSimulatorBundle = NSBundle(path: coreSimulatorPath) {
                 if !(coreSimulatorBundle.load()) {
                     return nil
                 }
             }
             let simBundlePath = developerDir.stringByAppendingPathComponent(simulatorFrameworkRelativePath);
-            if let simBundle = NSBundle(path: simBundlePath)? {
+            if let simBundle = NSBundle(path: simBundlePath) {
                 if !(simBundle.load()) {
                     return nil
                 }
@@ -90,7 +90,7 @@ class DCSimulatorManager {
 
         simDeviceSet = simDeviceSetClass?.defaultSet()
         if simDeviceSet != nil  {
-            if let deviceList = simDeviceSet!.availableDevices? {
+            if let deviceList = simDeviceSet!.availableDevices {
                 for simDevice in deviceList {
                     var sim = Simulator(device: simDevice)
                     if sim.isValid {
@@ -108,17 +108,18 @@ class DCSimulatorManager {
         var simulators = [Simulator]()
         
         let simBasePath = "~/Library/Developer/CoreSimulator/Devices".stringByExpandingTildeInPath
-        let fileList1 = NSFileManager.defaultManager().contentsOfDirectoryAtPath(simBasePath, error: nil) as [String]?
-        if let fileList = fileList1?       {
-            for item in fileList
-            {
-                println("item is \(item)")
-                
-                let path = simBasePath.stringByAppendingPathComponent(item)
-                
-                var sim = Simulator(path: path)
-                if sim.isValid {
-                    simulators.append(sim);
+        if let fileList1 = NSFileManager.defaultManager().contentsOfDirectoryAtPath(simBasePath, error: nil) {
+            if let fileList = fileList1 as? [String] {
+                for item in fileList
+                {
+                    println("item is \(item)")
+                    
+                    let path = simBasePath.stringByAppendingPathComponent(item)
+                    
+                    var sim = Simulator(path: path)
+                    if sim.isValid {
+                        simulators.append(sim);
+                    }
                 }
             }
         }
@@ -139,7 +140,7 @@ class DCSimulatorManager {
             return [Simulator]()
         }
         
-        if let dtVersion = XCodeSupport.getDeveloperToolsVersion()? {
+        if let dtVersion = XCodeSupport.getDeveloperToolsVersion() {
             
             NSLog("XCode version \(dtVersion)")
             if dtVersion.compare("6.0", options: NSStringCompareOptions.NumericSearch) == NSComparisonResult.OrderedAscending {
@@ -188,9 +189,10 @@ class DCSimulatorManager {
                         switch notificationTypeString {
                             case "device_state":
                                 notificationType = .DeviceState
-                                state = notificationData["new_state"] as Int!
-                                NSLog("SimDevice \(simDevice?.UDID) new state: \(state)")
-                                
+                                if let state = notificationData["new_state"] as? Int {
+                                    NSLog("SimDevice \(simDevice?.UDID) new state: \(state)")
+                                }
+                            
                             case "device_added":
                                 notificationType = .DeviceAdded
                                 NSLog("SimDevice \(simDevice?.UDID) added: \(simDevice?.stateString())")

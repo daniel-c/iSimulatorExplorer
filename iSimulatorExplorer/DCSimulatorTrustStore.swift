@@ -55,7 +55,7 @@ class DCSimulatorTruststoreItem {
     var subjectSummary : String? {
         get {
             if certificate != nil {
-                return SecCertificateCopySubjectSummary(certificate).takeRetainedValue()
+                return SecCertificateCopySubjectSummary(certificate).takeRetainedValue() as String?
             }
             return nil
         }
@@ -90,7 +90,7 @@ class DCSimulatorTruststoreItem {
         var str : String = ""
         for var i = 0; i < data.length; i++ {
             dataBytes.memory
-            str += NSString(format: "%02x", dataBytes.memory)
+            str += NSString(format: "%02x", dataBytes.memory) as String
             dataBytes = dataBytes.successor()
         }
         return str
@@ -102,7 +102,7 @@ class DCSimulatorTruststoreItem {
     
     func export(url : NSURL) -> Bool {
         var result = false
-        if let cert = certificate? {
+        if let cert = certificate {
             var outData : Unmanaged<CFData>?
             let status = SecItemExport(cert, SecExternalFormat(kSecFormatUnknown), SecItemImportExportFlags(kSecItemPemArmour), nil, &outData)
             if status == errSecSuccess {

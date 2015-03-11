@@ -20,7 +20,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     
     override var simulator : Simulator? {
         didSet {
-            simulatorAppList = simulator!.getAppList()?
+            simulatorAppList = simulator!.getAppList()
             appTableView.reloadData()
             enableButtons()
         }
@@ -75,7 +75,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     
     @IBAction func openAppDataInFinderPressed(sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
-            if let path = appInfoCellView.appInfo?.dataPath? {
+            if let path = appInfoCellView.appInfo?.dataPath {
                 NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
             }
         }
@@ -83,7 +83,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     
     @IBAction func openAppBundleInFinderPressed(sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
-            if let path = appInfoCellView.appInfo?.path? {
+            if let path = appInfoCellView.appInfo?.path {
                 NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
             }
         }
@@ -111,7 +111,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
                         }
                         else {
                             println("Install app \(url) successful")
-                            self.simulatorAppList = self.simulator!.getAppList()?
+                            self.simulatorAppList = self.simulator!.getAppList()
                             self.appTableView.reloadData()
                         }
                     })
@@ -122,7 +122,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     
     @IBAction func uninstallApp(sender: AnyObject) {
         if appTableView.selectedRow >= 0 {
-            if let appId = simulatorAppList![appTableView.selectedRow].identifier? {
+            if let appId = simulatorAppList![appTableView.selectedRow].identifier {
             
                 isBusy = true
                 enableButtons()
@@ -137,7 +137,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
                     }
                     else {
                         println("Uninstall app \(appId) successful")
-                        self.simulatorAppList = self.simulator!.getAppList()?
+                        self.simulatorAppList = self.simulator!.getAppList()
                         self.appTableView.reloadData()
                     }
                 })

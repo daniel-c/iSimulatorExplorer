@@ -59,7 +59,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     }
 
     @IBAction func getServerDataButtonPressed(sender: AnyObject) {
-        if let url = NSURL(string: "https://" + urlTextField.stringValue)? {
+        if let url = NSURL(string: "https://" + urlTextField.stringValue) {
             println("url scheme: \(url.scheme) absolute: \(url.absoluteString)")
             if url.scheme != nil {
                 let request = NSURLRequest(URL: url)
@@ -87,7 +87,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
         NSLog("willSendRequestForAuthenticationChallenge for \(challenge.protectionSpace.authenticationMethod)")
         
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-            if let serverTrust = challenge.protectionSpace.serverTrust? {
+            if let serverTrust = challenge.protectionSpace.serverTrust {
                 
                 var evaluateResult : SecTrustResultType = 0;
                 let status = SecTrustEvaluate(serverTrust, &evaluateResult);
@@ -131,8 +131,12 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
             if certificates != nil {
-                let summary = SecCertificateCopySubjectSummary(certificates![row])?.takeRetainedValue()
-                result.textField!.stringValue = summary ?? "(Unknown)"
+                if let summary = SecCertificateCopySubjectSummary(certificates![row])?.takeRetainedValue() as? String {
+                    result.textField!.stringValue = summary
+                }
+                else {
+                    result.textField!.stringValue = "(Unknown)"
+                }
             }
             return result
         }

@@ -27,7 +27,7 @@ class ViewController: UIViewController, UIWebViewDelegate {
     }
 
     @IBAction func openUrlButton(sender: AnyObject) {
-        if let text = urlTextField.text? {
+        if let text = urlTextField.text {
             urlTextField.resignFirstResponder()
             if let url = NSURL(string: text){
                 let request = NSURLRequest(URL: url)

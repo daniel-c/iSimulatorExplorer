@@ -45,39 +45,20 @@ class DCAppInfoTableCellView: NSTableCellView {
         }
     }
 
-    override init() {
-        super.init()
-    }
-    
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder : coder)
-    }
-    
     override func drawRect(dirtyRect: NSRect) {
         super.drawRect(dirtyRect)
 
         // Drawing code here.
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
-    
-    
-    
     @IBAction func openAppBundleInFinderButtonPressed(sender: NSButton) {
-        if let path = appInfo?.path? {
+        if let path = appInfo?.path {
             NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
         }
     }
     
     @IBAction func openAppDataInFinderButtonPressed(sender: NSButton) {
-        if let path = appInfo?.dataPath? {
+        if let path = appInfo?.dataPath {
             NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
         }
     }

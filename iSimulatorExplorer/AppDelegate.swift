@@ -9,7 +9,7 @@
 
 import Cocoa
 
-
+@NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
                             
     @IBOutlet weak var window: NSWindow!
@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.runModal()
     }
 
-    func applicationDidFinishLaunching(aNotification: NSNotification?) {
+    func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
         
         let xcodeVersion = XCodeSupport.getDeveloperToolsVersion()
@@ -30,12 +30,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             AppDelegate.showModalAlert (
                 NSLocalizedString("Error", comment: ""),
-                informativeText: NSLocalizedString("Xcode 6 or above must be installed for iSimulatorExplorer to run", comment: ""))
+                informativeText: NSLocalizedString("Xcode 6 or above must be installed for iSimulatorExplorer to run.", comment: ""))
             NSApplication.sharedApplication().terminate(nil)
         }
     }
 
-    func applicationWillTerminate(aNotification: NSNotification?) {
+    func applicationWillTerminate(aNotification: NSNotification) {
         // Insert code here to tear down your application
     }
  

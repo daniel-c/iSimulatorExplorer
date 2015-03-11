@@ -86,7 +86,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         initTabViewItem(tabView.selectedTabViewItem)
         outlineView.expandItem(nil, expandChildren: true)
         if (_simulators != nil) {
-            if let sim = simulatorVersions.first?.simulators.first? {
+            if let sim = simulatorVersions.first?.simulators.first {
                 let row = outlineView.rowForItem(sim)
                 if row >= 0 {
                     outlineView.selectRowIndexes(NSIndexSet(index: row), byExtendingSelection: false)
@@ -104,9 +104,11 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         case .DeviceState:
             if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
                 if sim.UDID == deviceUDID {
-                    for tabViewItem in (tabView.tabViewItems as [NSTabViewItem]) {
-                        if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                            item.simulator = sim
+                    if let tabViewItems = tabView.tabViewItems as? [NSTabViewItem] {
+                        for tabViewItem in tabViewItems {
+                            if let item = tabViewItem.identifier as? DCSimulatorViewController {
+                                item.simulator = sim
+                            }
                         }
                     }
                 }
@@ -121,8 +123,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         
     }
     
-
-    func outlineView(outlineView: NSOutlineView!, child index: Int, ofItem item: AnyObject!) -> AnyObject! {
+    func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
         if (item == nil) {
             return simulatorVersions[index]
         }
@@ -130,11 +131,11 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
             return simulatorsForVersion.simulators[index];
         }
         else {
-            return nil;
+            return "";
         }
     }
 
-    func outlineView(outlineView: NSOutlineView!, numberOfChildrenOfItem item: AnyObject!) -> Int {
+    func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
         if (item == nil) {
             return simulatorVersions.count
         }
@@ -149,8 +150,8 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
     func outlineView(outlineView: NSOutlineView, isGroupItem item: AnyObject) -> Bool {
         return item is SimulatorVersion
     }
-    
-    func outlineView(outlineView: NSOutlineView!, isItemExpandable item: AnyObject!) -> Bool {
+
+    func outlineView(outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
         return item is SimulatorVersion
     }
 
@@ -173,9 +174,11 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
     func outlineViewSelectionDidChange(notification: NSNotification) {
         if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
             NSLog("selected: %@", sim.name!)
-            for tabViewItem in (tabView.tabViewItems as [NSTabViewItem]) {
-                if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                    item.simulator = sim
+            if let tabViewItems = tabView.tabViewItems as? [NSTabViewItem] {
+                for tabViewItem in tabViewItems {
+                    if let item = tabViewItem.identifier as? DCSimulatorViewController {
+                        item.simulator = sim
+                    }
                 }
             }
         }
