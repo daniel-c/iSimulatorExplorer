@@ -148,9 +148,9 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
                                 // In Swift 1.2 it is 'as!' while in Swift < 1.2 there is only the unconditional cast 'as'
                                 
                                 //For Swift 1.2:
-                                // let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificateRef)
+                                let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificateRef)
                                 //For Swift < 1.2:
-                                let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as SecCertificateRef)
+                                //let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as SecCertificateRef)
                                 
                                 if truststore!.addItem(item) {
                                     tableView.reloadData()
