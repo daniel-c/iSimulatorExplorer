@@ -36,12 +36,14 @@ class Simulator {
     var path : String?
     var trustStorePath : String?
     var isValid : Bool
+    var isWatchOS : Bool
     
     private var simDevice : AnyObject?
     // private var appDataDirMap : [String : String]?
     
     init() {
         isValid = false
+        isWatchOS = false
     }
     
     var stateString : String? {
@@ -65,6 +67,11 @@ class Simulator {
         trustStorePath = path?.stringByAppendingPathComponent("data/Library/Keychains/TrustStore.sqlite3")
     }
     
+    private func initDeviceType (runtimeIdentifier : String?)
+    {
+        isWatchOS = runtimeIdentifier != nil && runtimeIdentifier!.hasPrefix("com.apple.CoreSimulator.SimRuntime.watchOS")
+    }
+    
     convenience init(path : String) {
         self.init()
         self.path = path
@@ -84,6 +91,7 @@ class Simulator {
                     version = runtime.componentsSeparatedByString(".").last
                     _name = name1! + " v" + version!
                     isValid = true
+                    initDeviceType(runtime)
                     initTrustStorePath()
                 }
             }
@@ -98,9 +106,11 @@ class Simulator {
         self.path = device.devicePath() as String?
         self.UDID = device.UDID as NSUUID
         self.version = device.runtime?.versionString
+        
         self.build = device.runtime?.buildVersionString
-        self.isValid = true
+        initDeviceType(device.runtime?.identifier)
         initTrustStorePath()
+        isValid = true
     }
     
     func getAppDataDirMap() -> [String : String] {
@@ -231,14 +241,28 @@ class Simulator {
     
     func launchSimulatorApp() -> Bool {
         var result = false
+        let simulatorAppName : String
+        if XCodeSupport.getDeveloperToolsVersion()?.compare("7.0", options: NSStringCompareOptions.NumericSearch) == NSComparisonResult.OrderedAscending {
+            simulatorAppName = "iOS Simulator"
+        }
+        else
+        {
+            simulatorAppName = isWatchOS ? "Simulator (Watch)" : "Simulator"
+        }
         let workspace = NSWorkspace.sharedWorkspace()
         var appPath : String?
-        if let path = workspace.fullPathForApplication("iOS Simulator") {
+        if let path = workspace.fullPathForApplication(simulatorAppName) {
             appPath = path
         }
         else if let devPath = XCodeSupport.getDeveloperToolsPath() {
             NSLog("Try to find simulator app at \(devPath)")
-            let possibleAppPath = ["Applications/iOS Simulator.app", "../Applications/iOS Simulator.app", "../Applications/iPhone Simulator.app"]
+            let possibleAppPath : [String]
+            if isWatchOS {
+                possibleAppPath = ["Applications/Simulator (Watch).app"]
+            }
+            else {
+                possibleAppPath = ["Applications/iOS Simulator.app", "Applications/Simulator.app", "../Applications/iOS Simulator.app", "../Applications/iPhone Simulator.app"]
+            }
             let fm = NSFileManager.defaultManager()
             for testPath in possibleAppPath {
                 var path = devPath.stringByAppendingPathComponent(testPath)
@@ -249,6 +273,7 @@ class Simulator {
             }
         }
         if appPath != nil {
+            NSLog("Found simulator app at \(appPath)")
             if let appUrl = NSURL.fileURLWithPath(appPath!) {
                 var error : NSError?
                 let launchArg : [String : AnyObject] = (UDID != nil) ?
