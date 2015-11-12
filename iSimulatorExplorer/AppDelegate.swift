@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     
     class func showModalAlert (messageText : String, informativeText : String) {
-        var alert = NSAlert()
+        let alert = NSAlert()
         alert.messageText = messageText
         alert.informativeText = informativeText
         alert.runModal()

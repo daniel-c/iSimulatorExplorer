@@ -43,26 +43,37 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
             if _simulators == nil {
                 _simulators = [SimulatorVersion]()
                 
-                var firstInit = (simulatorManager == nil)
+                let firstInit = (simulatorManager == nil)
                 if firstInit {
                     simulatorManager = DCSimulatorManager()
                 }
                 
-                dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { () -> Void in
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
                     
                     var simulatorsByVersion = [String : [Simulator]]()
                     for sim in self.simulatorManager!.simulators {
-                        if simulatorsByVersion[sim.version!] == nil {
-                            var simulators = [Simulator]()
-                            simulatorsByVersion[sim.version!] = simulators
+                        let typeAndVersion : String
+                        switch sim.simulatorOS {
+                        case SimulatorOSType.tvOS:
+                            typeAndVersion = "tvOS Simulator v\(sim.version!)"
+                        case SimulatorOSType.watchOS:
+                            typeAndVersion = "watchOS Simulator v\(sim.version!)"
+                        default:
+                            typeAndVersion = "Simulator v\(sim.version!)"
+                            
                         }
-                        simulatorsByVersion[sim.version!]?.append(sim)
+                        
+                        if simulatorsByVersion[typeAndVersion] == nil {
+                            let simulators = [Simulator]()
+                            simulatorsByVersion[typeAndVersion] = simulators
+                        }
+                        simulatorsByVersion[typeAndVersion]?.append(sim)
                         
                     }
-                    var sortedKeys = simulatorsByVersion.keys.array
-                    sortedKeys.sort({ (s1, s2) -> Bool in
-                        return s2 > s1
-                    })
+                    let sortedKeys = simulatorsByVersion.keys.sort()
+                    //sortedKeys.sort({ (s1, s2) -> Bool in
+                    //    return s2 > s1
+                    //})
                     var simulatorVersions = [SimulatorVersion]()
                     for key in sortedKeys {
                         let sims = simulatorsByVersion[key]!
@@ -104,11 +115,9 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         case .DeviceState:
             if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
                 if sim.UDID == deviceUDID {
-                    if let tabViewItems = tabView.tabViewItems as? [NSTabViewItem] {
-                        for tabViewItem in tabViewItems {
-                            if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                                item.simulator = sim
-                            }
+                    for tabViewItem in tabView.tabViewItems {
+                        if let item = tabViewItem.identifier as? DCSimulatorViewController {
+                            item.simulator = sim
                         }
                     }
                 }
@@ -158,7 +167,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
         if let simulatorsForVersion = item as? SimulatorVersion {
             if let result = outlineView.makeViewWithIdentifier("HeaderCell", owner: self) as? NSTableCellView {
-                result.textField!.stringValue = "Simulator v\(simulatorsForVersion.version)"
+                result.textField!.stringValue = simulatorsForVersion.version
                 return result
             }
         }
@@ -174,11 +183,9 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
     func outlineViewSelectionDidChange(notification: NSNotification) {
         if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
             NSLog("selected: %@", sim.name!)
-            if let tabViewItems = tabView.tabViewItems as? [NSTabViewItem] {
-                for tabViewItem in tabViewItems {
-                    if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                        item.simulator = sim
-                    }
+            for tabViewItem in tabView.tabViewItems {
+                if let item = tabViewItem.identifier as? DCSimulatorViewController {
+                    item.simulator = sim
                 }
             }
         }

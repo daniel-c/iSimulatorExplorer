@@ -9,7 +9,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIWebViewDelegate {
+class TestWebViewController: UIViewController, UIWebViewDelegate {
 
     @IBOutlet weak var urlTextField: UITextField!
     @IBOutlet weak var webView: UIWebView!
@@ -35,9 +35,9 @@ class ViewController: UIViewController, UIWebViewDelegate {
             }
         }
     }
-    
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
-        let text = "<html><header></header><body><h2 style=\"color:red\">\(error.localizedDescription)</h2</body></html>"
+
+    func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
+        let text = "<html><header></header><body><h2 style=\"color:red\">\(error!.localizedDescription)</h2</body></html>"
         webView.loadHTMLString (text, baseURL:NSURL(string:"localhost"))
     }
 

@@ -60,15 +60,13 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
 
     @IBAction func getServerDataButtonPressed(sender: AnyObject) {
         if let url = NSURL(string: "https://" + urlTextField.stringValue) {
-            println("url scheme: \(url.scheme) absolute: \(url.absoluteString)")
-            if url.scheme != nil {
-                let request = NSURLRequest(URL: url)
-                if let connection = NSURLConnection(request: request, delegate: self, startImmediately: false) {
-                    connection.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
-                    connection.start()
-                    println("Connection started")
-                    infoTextField.stringValue = "Connecting..."
-                }
+            print("url scheme: \(url.scheme) absolute: \(url.absoluteString)", terminator: "\n")
+            let request = NSURLRequest(URL: url)
+            if let connection = NSURLConnection(request: request, delegate: self, startImmediately: false) {
+                connection.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+                connection.start()
+                print("Connection started", terminator: "\n")
+                infoTextField.stringValue = "Connecting..."
             }
         }
     }
@@ -104,15 +102,16 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
                 NSLog("number certificate in serverTrust: \(certCount)");
                 
                 for var index = 0; index < certCount; index++ {
-                    if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, index)?.takeUnretainedValue() {
+                    if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, index) {
                         
-                        let summary = SecCertificateCopySubjectSummary(serverCertificate)?.takeRetainedValue()
+                        let summary = SecCertificateCopySubjectSummary(serverCertificate)
                         NSLog("  server certificate: \(summary)")
                         
-                        let cdata = SecCertificateCopyData(serverCertificate)?.takeRetainedValue()
-                        let cert = SecCertificateCreateWithData(nil, cdata).takeRetainedValue()
+                        let cdata = SecCertificateCopyData(serverCertificate)
+                        if let cert = SecCertificateCreateWithData(nil, cdata) {
 
-                        certificates!.append(cert)
+                            certificates!.append(cert)
+                        }
                     }
                 }
                 tableView.reloadData()
@@ -120,7 +119,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
             }
         }
         
-        challenge.sender.performDefaultHandlingForAuthenticationChallenge!(challenge)
+        challenge.sender?.performDefaultHandlingForAuthenticationChallenge!(challenge)
     }
     
     func numberOfRowsInTableView(tableView: NSTableView) -> Int {
@@ -131,12 +130,8 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
             if certificates != nil {
-                if let summary = SecCertificateCopySubjectSummary(certificates![row])?.takeRetainedValue() as? String {
-                    result.textField!.stringValue = summary
-                }
-                else {
-                    result.textField!.stringValue = "(Unknown)"
-                }
+                let summary = SecCertificateCopySubjectSummary(certificates![row]) as String
+                result.textField!.stringValue = summary
             }
             return result
         }

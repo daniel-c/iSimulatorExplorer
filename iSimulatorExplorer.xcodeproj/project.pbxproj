@@ -17,6 +17,7 @@
 		6538454C19E7EEC0002E5A98 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6538454B19E7EEC0002E5A98 /* SecurityInterface.framework */; };
 		655E74A919EA937600AA8031 /* DCSimulatorInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */; };
 		655E74AA19EA937600AA8031 /* DCSimulatorInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */; };
+		657CC7DD1BABFC4E0072A615 /* CoreSimulatorWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 657CC7DC1BABFC4E0072A615 /* CoreSimulatorWrapper.m */; settings = {ASSET_TAGS = (); }; };
 		65BB44BF199E6A3B00618978 /* DCSimulatorExplorerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BB44BE199E6A3B00618978 /* DCSimulatorExplorerController.swift */; };
 		65C30B7419AB1EAC00F710A5 /* DCSimulatorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C30B7319AB1EAC00F710A5 /* DCSimulatorManager.swift */; };
 		65D24A861A924DE000998BAF /* DCSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D24A851A924DE000998BAF /* DCSimulator.swift */; };
@@ -53,6 +54,8 @@
 		6538455019E84F10002E5A98 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		655E74A719EA937600AA8031 /* DCSimulatorInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorInfoViewController.swift; sourceTree = "<group>"; };
 		655E74A819EA937600AA8031 /* DCSimulatorInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DCSimulatorInfoViewController.xib; sourceTree = "<group>"; };
+		657CC7DB1BABFC4E0072A615 /* CoreSimulatorWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreSimulatorWrapper.h; sourceTree = "<group>"; };
+		657CC7DC1BABFC4E0072A615 /* CoreSimulatorWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreSimulatorWrapper.m; sourceTree = "<group>"; };
 		65B4BAD31A894A1A003A4221 /* CoreSimulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreSimulator.h; sourceTree = "<group>"; };
 		65BB44BE199E6A3B00618978 /* DCSimulatorExplorerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorExplorerController.swift; sourceTree = "<group>"; };
 		65C30B7319AB1EAC00F710A5 /* DCSimulatorManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCSimulatorManager.swift; sourceTree = "<group>"; };
@@ -105,6 +108,8 @@
 			isa = PBXGroup;
 			children = (
 				65B4BAD31A894A1A003A4221 /* CoreSimulator.h */,
+				657CC7DB1BABFC4E0072A615 /* CoreSimulatorWrapper.h */,
+				657CC7DC1BABFC4E0072A615 /* CoreSimulatorWrapper.m */,
 			);
 			path = CoreSimulator;
 			sourceTree = SOURCE_ROOT;
@@ -224,7 +229,8 @@
 		65DBC69B1988C13F00F228AF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Daniel Cerutti";
 				TargetAttributes = {
 					65DBC6A21988C13F00F228AF = {
@@ -292,6 +298,7 @@
 				6538454519E7C113002E5A98 /* DCSimulatorAppViewController.swift in Sources */,
 				65C30B7419AB1EAC00F710A5 /* DCSimulatorManager.swift in Sources */,
 				65D830B219E91FBC001D5B1D /* DCSimulatorTrustStore.swift in Sources */,
+				657CC7DD1BABFC4E0072A615 /* CoreSimulatorWrapper.m in Sources */,
 				65BB44BF199E6A3B00618978 /* DCSimulatorExplorerController.swift in Sources */,
 				65D24A861A924DE000998BAF /* DCSimulator.swift in Sources */,
 			);
@@ -347,6 +354,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -412,6 +420,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = iSimulatorExplorer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ch.ceruttisoftware.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "iSimulatorExplorer/iSimulatorExplorer-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -426,6 +435,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = iSimulatorExplorer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ch.ceruttisoftware.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "iSimulatorExplorer/iSimulatorExplorer-Bridging-Header.h";
 			};
@@ -446,6 +456,7 @@
 				);
 				INFOPLIST_FILE = iSimulatorExplorerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ch.ceruttisoftware.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
@@ -462,6 +473,7 @@
 				);
 				INFOPLIST_FILE = iSimulatorExplorerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ch.ceruttisoftware.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 			};

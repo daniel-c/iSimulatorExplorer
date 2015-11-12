@@ -7,18 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		654510AE1BF5266500D494AE /* TestUrlSessionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654510AD1BF5266500D494AE /* TestUrlSessionViewController.swift */; };
 		6590379019E9CA0400C4C366 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6590378F19E9CA0400C4C366 /* AppDelegate.swift */; };
-		6590379219E9CA0400C4C366 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6590379119E9CA0400C4C366 /* ViewController.swift */; };
+		6590379219E9CA0400C4C366 /* TestWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6590379119E9CA0400C4C366 /* TestWebViewController.swift */; };
 		6590379519E9CA0400C4C366 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6590379319E9CA0400C4C366 /* Main.storyboard */; };
 		6590379719E9CA0400C4C366 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6590379619E9CA0400C4C366 /* Images.xcassets */; };
 		6590379A19E9CA0400C4C366 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6590379819E9CA0400C4C366 /* LaunchScreen.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		654510AD1BF5266500D494AE /* TestUrlSessionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestUrlSessionViewController.swift; sourceTree = "<group>"; };
 		6590378A19E9CA0400C4C366 /* TestTrustedCertificate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestTrustedCertificate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6590378E19E9CA0400C4C366 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6590378F19E9CA0400C4C366 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6590379119E9CA0400C4C366 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6590379119E9CA0400C4C366 /* TestWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestWebViewController.swift; sourceTree = "<group>"; };
 		6590379419E9CA0400C4C366 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6590379619E9CA0400C4C366 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6590379919E9CA0400C4C366 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -55,11 +57,12 @@
 			isa = PBXGroup;
 			children = (
 				6590378F19E9CA0400C4C366 /* AppDelegate.swift */,
-				6590379119E9CA0400C4C366 /* ViewController.swift */,
+				6590379119E9CA0400C4C366 /* TestWebViewController.swift */,
 				6590379319E9CA0400C4C366 /* Main.storyboard */,
 				6590379619E9CA0400C4C366 /* Images.xcassets */,
 				6590379819E9CA0400C4C366 /* LaunchScreen.xib */,
 				6590378D19E9CA0400C4C366 /* Supporting Files */,
+				654510AD1BF5266500D494AE /* TestUrlSessionViewController.swift */,
 			);
 			path = TestTrustedCertificate;
 			sourceTree = "<group>";
@@ -98,6 +101,7 @@
 		6590378219E9CA0400C4C366 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Cerutti Software Design";
 				TargetAttributes = {
@@ -142,8 +146,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6590379219E9CA0400C4C366 /* ViewController.swift in Sources */,
+				6590379219E9CA0400C4C366 /* TestWebViewController.swift in Sources */,
 				6590379019E9CA0400C4C366 /* AppDelegate.swift in Sources */,
+				654510AE1BF5266500D494AE /* TestUrlSessionViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

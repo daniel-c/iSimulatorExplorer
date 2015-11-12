@@ -36,7 +36,7 @@ class DCSimulatorTruststoreItem {
     
     convenience init (certificate : SecCertificate) {
         self.init()
-        let cdata = SecCertificateCopyData(certificate).takeRetainedValue()
+        let cdata = SecCertificateCopyData(certificate)
         data = cdata as NSData
         sha1 = getThumbprint()
         subject = getNormalizedSubject()
@@ -46,7 +46,7 @@ class DCSimulatorTruststoreItem {
     var certificate : SecCertificate? {
         get {
             if _certificate == nil && data != nil {
-                _certificate = SecCertificateCreateWithData(nil, data!)?.takeRetainedValue()
+                _certificate = SecCertificateCreateWithData(nil, data!)
             }
             return _certificate;
         }
@@ -55,7 +55,7 @@ class DCSimulatorTruststoreItem {
     var subjectSummary : String? {
         get {
             if certificate != nil {
-                return SecCertificateCopySubjectSummary(certificate).takeRetainedValue() as String?
+                return SecCertificateCopySubjectSummary(certificate!) as String?
             }
             return nil
         }
@@ -66,9 +66,11 @@ class DCSimulatorTruststoreItem {
         //BUG Something to causes an exception in the swift compiler!
         //if let data = SecCertificateCopyNormalizedSubjectContent(certificate, nil)?.takeRetainedValue() as? NSData {
         
-        if let cdata = SecCertificateCopyNormalizedSubjectContent(certificate, nil)?.takeRetainedValue() {
-            let data = cdata as NSData
-            return data
+        if certificate != nil {
+            if let cdata = SecCertificateCopyNormalizedSubjectContent(certificate!, nil) {
+                let data = cdata as NSData
+                return data
+            }
         }
         return nil
     }
@@ -103,10 +105,10 @@ class DCSimulatorTruststoreItem {
     func export(url : NSURL) -> Bool {
         var result = false
         if let cert = certificate {
-            var outData : Unmanaged<CFData>?
-            let status = SecItemExport(cert, SecExternalFormat(kSecFormatUnknown), SecItemImportExportFlags(kSecItemPemArmour), nil, &outData)
+            var outData : CFData?
+            let status = SecItemExport(cert, SecExternalFormat.FormatUnknown, SecItemImportExportFlags.PemArmour, nil, &outData)
             if status == errSecSuccess {
-                if let cdata = outData?.takeRetainedValue() {
+                if let cdata = outData {
                     let data = cdata as NSData
                     result = data.writeToURL(url, atomically: false)
                 }

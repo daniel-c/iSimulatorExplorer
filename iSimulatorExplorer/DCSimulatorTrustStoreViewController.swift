@@ -48,11 +48,6 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     }
     
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do view setup here.
-    }
-    
     override func loadView() {
         super.loadView()
         enableButtons()
@@ -108,7 +103,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     
     @IBAction func importCertificateFromServerButtonPressed(sender: AnyObject) {
         
-        var importPanel = DCImportCertificateWindowController(windowNibName: "DCImportCertificateWindowController")
+        let importPanel = DCImportCertificateWindowController(windowNibName: "DCImportCertificateWindowController")
         let result =  NSApplication.sharedApplication().runModalForWindow(importPanel.window!)
         if result == 0 {
             if importPanel.certificate != nil {
@@ -125,36 +120,32 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     }
     
     @IBAction func importCertificateFromFile(sender: AnyObject) {
-        var openPanel = NSOpenPanel()
+        let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
         if openPanel.runModal() == NSFileHandlingPanelOKButton {
-            if let urls = openPanel.URLs as? [NSURL] {
-                for url in urls {
-                    if let data = NSData(contentsOfURL: url) {
-                        
-                        var format : SecExternalFormat = SecExternalFormat(kSecFormatUnknown)
-                        var itemType : SecExternalItemType = SecExternalItemType(kSecItemTypeCertificate)
-                        var outItems : Unmanaged<CFArray>?
-                        
-                        let status = SecItemImport(data, nil, &format, &itemType, 0, nil, nil, &outItems)
-                        if let itemCFArray = outItems?.takeRetainedValue() {
-                            let itemArray = itemCFArray as NSArray
-                            if itemArray.count > 0 && itemType == SecExternalItemType(kSecItemTypeCertificate) {
-                                
-                                // Here we must use an unconditional downcast (conditional downcast does not work here).
-                                // In Swift 1.2 it is 'as!' while in Swift < 1.2 there is only the unconditional cast 'as'
-                                
-                                //For Swift 1.2:
-                                let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificateRef)
-                                //For Swift < 1.2:
-                                //let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as SecCertificateRef)
-                                
-                                if truststore!.addItem(item) {
-                                    tableView.reloadData()
-                                }
+            for url in openPanel.URLs {
+                if let data = NSData(contentsOfURL: url) {
+                    
+                    var format : SecExternalFormat = SecExternalFormat.FormatUnknown
+                    var itemType : SecExternalItemType = SecExternalItemType.ItemTypeCertificate
+                    //var outItems : Unmanaged<CFArray>?
+                    var outItems : CFArray?
+                    //var outItems : UnsafeMutablePointer<CFArray?>
+                    
+                    let status = SecItemImport(data, nil, &format, &itemType, SecItemImportExportFlags(rawValue: 0), nil, nil, &outItems)
+                    //if let itemCFArray = outItems?.takeRetainedValue() {
+                    if let itemCFArray = outItems {
+                        let itemArray = itemCFArray as NSArray
+                        if itemArray.count > 0 && itemType == SecExternalItemType.ItemTypeCertificate {
+                            
+                            // Here we must use an unconditional downcast (conditional downcast does not work here).
+                            let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificateRef)
+                            
+                            if truststore!.addItem(item) {
+                                tableView.reloadData()
                             }
                         }
                     }
@@ -178,7 +169,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         if tableView.selectedRow >= 0 {
             if truststore != nil {
                 let item = truststore!.items[tableView.selectedRow]
-                var savePanel = NSSavePanel()
+                let savePanel = NSSavePanel()
                 if let text = item.subjectSummary {
                     savePanel.nameFieldStringValue = text
                 }

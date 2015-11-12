@@ -14,11 +14,11 @@ class DCSimulatorManager {
     private let kDVTFoundationRelativePath = "../SharedFrameworks/DVTFoundation.framework"
     private let kDevToolsFoundationRelativePath = "../OtherFrameworks/DevToolsFoundation.framework"
     private let kSimulatorRelativePath = "Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app"
-    private let sim5BasePath = "~/Library/Application Support/iPhone Simulator".stringByExpandingTildeInPath
+    private let sim5BasePath = ("~/Library/Application Support/iPhone Simulator" as NSString).stringByExpandingTildeInPath
     private var simDeviceSetClass : AnyClass?
     private var simDeviceSet : AnyObject?
     private var getSimulators : () -> [Simulator]
-    
+
     // Helper to find a class by name and die if it isn't found.
     private func FindClassByName(nameOfClass : String) -> AnyClass! {
         if let theClass : AnyClass = NSClassFromString(nameOfClass) {
@@ -30,11 +30,10 @@ class DCSimulatorManager {
             return nil
         }
     }
-    
-    
+
     private func LoadSimulatorFramework() -> NSBundle! {
-        if let developerDir = XCodeSupport.getDeveloperToolsPath() {
-            
+        if let developerDir = XCodeSupport.getDeveloperToolsPath() as NSString? {
+
             // The Simulator framework depends on some of the other Xcode private
             // frameworks; manually load them first so everything can be linked up.
             let dvtFoundationPath = developerDir.stringByAppendingPathComponent(kDVTFoundationRelativePath)
@@ -52,16 +51,36 @@ class DCSimulatorManager {
                 }
             }
             
-            
+
             // Prime DVTPlatform.
-            var error : NSError?
+            do {
+                try CoreSimulatorHelper.loadAllPlatformsReturningError()
+            }
+            catch let error as NSError {
+                NSLog("Unable to loadAllPlatformsReturningError. Error: %@", error.localizedDescription)
+                return nil;
+            }
+            catch {
+                NSLog("Unable to loadAllPlatformsReturningError. Unknown Error")
+                return nil;
+            }
+
+/*
             if let DVTPlatformClass : AnyClass = FindClassByName("DVTPlatform") {
-                if !(DVTPlatformClass.loadAllPlatformsReturningError(&error)) {
-                    NSLog("Unable to loadAllPlatformsReturningError. Error: %@", error!.localizedDescription)
+                do {
+                    try DVTPlatformClass.loadAllPlatformsReturningError()
+                }
+                catch let error as NSError {
+                    NSLog("Unable to loadAllPlatformsReturningError. Error: %@", error.localizedDescription)
+                    return nil;
+                }
+                catch {
+                    NSLog("Unable to loadAllPlatformsReturningError. Unknown Error")
                     return nil;
                 }
             }
-            
+  */
+
             // The path within the developer dir of the private Simulator frameworks.
             let simulatorFrameworkRelativePath = "../SharedFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
             let kCoreSimulatorRelativePath = "Library/PrivateFrameworks/CoreSimulator.framework";
@@ -81,7 +100,7 @@ class DCSimulatorManager {
         }
         return nil;
     }
-    
+
     
     // Get XCode version 6.0 simulators using CoreSimulator framework
     private func getXcode6SimulatorsFromCoreSimulator() -> [Simulator] {
@@ -107,19 +126,17 @@ class DCSimulatorManager {
         
         var simulators = [Simulator]()
         
-        let simBasePath = "~/Library/Developer/CoreSimulator/Devices".stringByExpandingTildeInPath
-        if let fileList1 = NSFileManager.defaultManager().contentsOfDirectoryAtPath(simBasePath, error: nil) {
-            if let fileList = fileList1 as? [String] {
-                for item in fileList
-                {
-                    println("item is \(item)")
-                    
-                    let path = simBasePath.stringByAppendingPathComponent(item)
-                    
-                    var sim = Simulator(path: path)
-                    if sim.isValid {
-                        simulators.append(sim);
-                    }
+        let simBasePath = ("~/Library/Developer/CoreSimulator/Devices" as NSString).stringByExpandingTildeInPath
+        if let fileList = try? NSFileManager.defaultManager().contentsOfDirectoryAtPath(simBasePath) {
+            for item in fileList
+            {
+                print("item is \(item)", terminator:"\n")
+                
+                let path = (simBasePath as NSString).stringByAppendingPathComponent(item)
+                
+                var sim = Simulator(path: path)
+                if sim.isValid {
+                    simulators.append(sim);
                 }
             }
         }
@@ -132,7 +149,7 @@ class DCSimulatorManager {
             return getSimulators()
         }
     }
-   
+
     
     init() {
         
@@ -165,7 +182,7 @@ class DCSimulatorManager {
             }
         }
     }
-    
+
     enum NotificationType {
         case DeviceState
         case DeviceAdded
@@ -181,9 +198,9 @@ class DCSimulatorManager {
                 if let notificationData = data as? [String : AnyObject] {
                     if let notificationTypeString = notificationData["notification"] as? String {
                         
-                        var state : Int = 0
+                        //var state : Int = 0
                         var notificationType : NotificationType?
-                        var udid : NSUUID?
+                        //var udid : NSUUID?
                         let simDevice : AnyObject? = notificationData["device"]
                         
                         switch notificationTypeString {
@@ -221,5 +238,5 @@ class DCSimulatorManager {
             NSLog("SimDeviceSet notification started")
         }
     }
-    
+
 }

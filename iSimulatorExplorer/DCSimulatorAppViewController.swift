@@ -26,11 +26,6 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do view setup here.
-    }
-    
     override func loadView() {
         super.loadView()
         enableButtons()
@@ -90,32 +85,30 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     }
     
     @IBAction func installApp(sender: AnyObject) {
-        var openPanel = NSOpenPanel()
+        let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
         if openPanel.runModal() == NSFileHandlingPanelOKButton {
-            if let urls = openPanel.URLs as? [NSURL] {
-                for url in urls {
-                    isBusy = true
-                    enableButtons()
-                    simulator!.installApp(url, completionHandler: { (error) -> Void in
-                        self.isBusy = false
-                        self.enableButtons()
-                        if error != nil {
-                            AppDelegate.showModalAlert(
-                                NSLocalizedString("Error installing app \(url)", comment: ""),
-                                informativeText: "Error details: \(error)")
-                            println("Install app \(url) error: \(error!)")
-                        }
-                        else {
-                            println("Install app \(url) successful")
-                            self.simulatorAppList = self.simulator!.getAppList()
-                            self.appTableView.reloadData()
-                        }
-                    })
-                }
+            for url in openPanel.URLs {
+                isBusy = true
+                enableButtons()
+                simulator!.installApp(url, completionHandler: { (error) -> Void in
+                    self.isBusy = false
+                    self.enableButtons()
+                    if error != nil {
+                        AppDelegate.showModalAlert(
+                            NSLocalizedString("Error installing app \(url)", comment: ""),
+                            informativeText: "Error details: \(error)")
+                        print("Install app \(url) error: \(error!)", terminator:"\n")
+                    }
+                    else {
+                        print("Install app \(url) successful", terminator:"\n")
+                        self.simulatorAppList = self.simulator!.getAppList()
+                        self.appTableView.reloadData()
+                    }
+                })
             }
         }
     }
@@ -136,7 +129,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
                             informativeText: "Error details: \(error)")
                     }
                     else {
-                        println("Uninstall app \(appId) successful")
+                        print("Uninstall app \(appId) successful", terminator:"\n")
                         self.simulatorAppList = self.simulator!.getAppList()
                         self.appTableView.reloadData()
                     }

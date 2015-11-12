@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DCSimulatorAppViewController" customModule="iSimulatorExplorer" customModuleProvider="target">
@@ -26,9 +26,11 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="44" rowSizeStyle="automatic" viewBased="YES" id="15f-8j-QNM">
+                                <rect key="frame" x="0.0" y="0.0" width="514" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
+                                <animations/>
                                 <size key="intercellSpacing" width="3" height="2"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
                                     <tableColumn width="511" minWidth="40" maxWidth="1000" id="41h-fE-2t3">
@@ -50,6 +52,7 @@
                                                 <subviews>
                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="SCb-NX-yKc">
                                                         <rect key="frame" x="0.0" y="0.0" width="511" height="17"/>
+                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="No installed App" id="QUi-3u-e6u">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -63,6 +66,7 @@
                                                     <constraint firstItem="SCb-NX-yKc" firstAttribute="leading" secondItem="4M1-9D-iIb" secondAttribute="leading" constant="2" id="Xl7-JE-0xL"/>
                                                     <constraint firstItem="SCb-NX-yKc" firstAttribute="top" secondItem="4M1-9D-iIb" secondAttribute="top" id="fvc-Gk-Vhc"/>
                                                 </constraints>
+                                                <animations/>
                                                 <connections>
                                                     <outlet property="textField" destination="SCb-NX-yKc" id="lIh-fW-Tec"/>
                                                 </connections>
@@ -73,14 +77,16 @@
                                                 <subviews>
                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="zwR-bF-ibR">
                                                         <rect key="frame" x="178" y="23" width="332" height="17"/>
+                                                        <animations/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="T40-12-sLZ">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <button verticalHuggingPriority="750" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="MEv-Hp-Oo4">
+                                                    <button verticalHuggingPriority="750" misplaced="YES" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="MEv-Hp-Oo4">
                                                         <rect key="frame" x="182" y="3" width="150" height="17"/>
+                                                        <animations/>
                                                         <buttonCell key="cell" type="inline" title="Open App Data in Finder" bezelStyle="inline" alignment="center" borderStyle="border" inset="2" id="73l-p3-N0F">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystemBold"/>
@@ -94,6 +100,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="166" id="B6m-KM-W48"/>
                                                         </constraints>
+                                                        <animations/>
                                                         <buttonCell key="cell" type="inline" title="Open App Bundle in Finder" bezelStyle="inline" alignment="center" borderStyle="border" inset="2" id="93E-Dv-fxF">
                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                             <font key="font" metaFont="smallSystemBold"/>
@@ -107,6 +114,7 @@
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="160" id="bvS-Rp-i1r"/>
                                                         </constraints>
+                                                        <animations/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="Axh-pm-7Xb">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -125,6 +133,7 @@
                                                     <constraint firstItem="MEv-Hp-Oo4" firstAttribute="centerY" secondItem="3cv-Es-fcj" secondAttribute="centerY" id="peY-9k-VQh"/>
                                                     <constraint firstItem="wnL-Om-CBf" firstAttribute="centerY" secondItem="zwR-bF-ibR" secondAttribute="centerY" id="yMx-Oa-zVi"/>
                                                 </constraints>
+                                                <animations/>
                                                 <connections>
                                                     <outlet property="textField" destination="wnL-Om-CBf" id="97b-YF-OEx"/>
                                                 </connections>
@@ -138,15 +147,19 @@
                                 </connections>
                             </tableView>
                         </subviews>
+                        <animations/>
                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </clipView>
+                    <animations/>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="ZXb-0f-it1">
                         <rect key="frame" x="1" y="119" width="223" height="15"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="1Bu-sz-hVc">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <animations/>
                     </scroller>
                 </scrollView>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YwL-hL-RAl">
@@ -154,6 +167,7 @@
                     <constraints>
                         <constraint firstAttribute="width" constant="124" id="en8-c2-gGU"/>
                     </constraints>
+                    <animations/>
                     <buttonCell key="cell" type="push" title="Uninstall App" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tmh-8Z-bKZ">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -167,6 +181,7 @@
                     <constraints>
                         <constraint firstAttribute="width" constant="124" id="EFC-aI-abd"/>
                     </constraints>
+                    <animations/>
                     <buttonCell key="cell" type="push" title="Install App" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lWT-Pt-mCa">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -186,6 +201,7 @@
                 <constraint firstItem="LuV-FJ-pDf" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" id="dcr-v9-ixu"/>
                 <constraint firstAttribute="trailing" secondItem="YwL-hL-RAl" secondAttribute="trailing" constant="20" id="lhM-fB-Jap"/>
             </constraints>
+            <animations/>
             <point key="canvasLocation" x="394" y="397.5"/>
         </customView>
     </objects>

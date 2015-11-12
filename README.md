@@ -20,9 +20,9 @@ iSimulatorExplorer is a simple OS X application written in Swift to browse the a
 
 ### System requirements ###
 
-* OS X 10.9 or 10.10
+* OS X 10.10 or above
 * Xcode 6.0 or above
-* Xcode 6.3 or 6.4 to build the current version of the project.
+* Xcode 7.0 or 7.1 to build the current version of the project.
 
 ### Notes on CA certificates in iOS simulator ###
 
