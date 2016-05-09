@@ -111,7 +111,7 @@ class DCSimulatorManager {
         if simDeviceSet != nil  {
             if let deviceList = simDeviceSet!.availableDevices {
                 for simDevice in deviceList {
-                    var sim = Simulator(device: simDevice)
+                    let sim = Simulator(device: simDevice)
                     if sim.isValid {
                         simulators.append(sim)
                     }
@@ -134,7 +134,7 @@ class DCSimulatorManager {
                 
                 let path = (simBasePath as NSString).stringByAppendingPathComponent(item)
                 
-                var sim = Simulator(path: path)
+                let sim = Simulator(path: path)
                 if sim.isValid {
                     simulators.append(sim);
                 }

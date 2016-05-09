@@ -101,7 +101,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
                 let certCount = SecTrustGetCertificateCount(serverTrust)
                 NSLog("number certificate in serverTrust: \(certCount)");
                 
-                for var index = 0; index < certCount; index++ {
+                for index in 0 ..< certCount {
                     if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, index) {
                         
                         let summary = SecCertificateCopySubjectSummary(serverCertificate)
