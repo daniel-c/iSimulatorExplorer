@@ -97,7 +97,7 @@ class Simulator {
                 format: nil)
             {
             if let plist = plistobj as? Dictionary<String, AnyObject> {
-                let deviceType = plist["deviceType"] as? String
+                //let deviceType = plist["deviceType"] as? String
                 let name1 = plist["name"] as? String
                 if let runtime = plist["runtime"] as? String {
                     version = runtime.componentsSeparatedByString(".").last

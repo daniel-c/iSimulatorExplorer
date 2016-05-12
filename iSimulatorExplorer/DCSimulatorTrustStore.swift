@@ -77,7 +77,7 @@ class DCSimulatorTruststoreItem {
     
     func calcSHA1(data : NSData) -> NSData {
         
-        var digest = NSMutableData(length: Int(CC_SHA1_DIGEST_LENGTH))
+        let digest = NSMutableData(length: Int(CC_SHA1_DIGEST_LENGTH))
         CC_SHA1(data.bytes, CC_LONG(data.length), UnsafeMutablePointer<UInt8>(digest!.mutableBytes))
         return digest!
     }
@@ -90,7 +90,7 @@ class DCSimulatorTruststoreItem {
     func hexstringFromData(data : NSData) -> String {
         var dataBytes = UnsafePointer<UInt8>(data.bytes)
         var str : String = ""
-        for var i = 0; i < data.length; i++ {
+        for _ in 0 ..< data.length {
             dataBytes.memory
             str += NSString(format: "%02x", dataBytes.memory) as String
             dataBytes = dataBytes.successor()

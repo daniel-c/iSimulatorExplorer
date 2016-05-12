@@ -135,7 +135,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
                     var outItems : CFArray?
                     //var outItems : UnsafeMutablePointer<CFArray?>
                     
-                    let status = SecItemImport(data, nil, &format, &itemType, SecItemImportExportFlags(rawValue: 0), nil, nil, &outItems)
+                    SecItemImport(data, nil, &format, &itemType, SecItemImportExportFlags(rawValue: 0), nil, nil, &outItems)
                     //if let itemCFArray = outItems?.takeRetainedValue() {
                     if let itemCFArray = outItems {
                         let itemArray = itemCFArray as NSArray
