@@ -38,7 +38,7 @@ class Simulator {
     var deviceName : String?
     var version : String?
     var build : String?
-    var UDID : NSUUID?
+    var UDID : UUID?
     var path : String?
     var trustStorePath : String?
     var isValid : Bool
@@ -70,10 +70,10 @@ class Simulator {
     }
     
     private func initTrustStorePath() {
-        trustStorePath = (path as NSString?)?.stringByAppendingPathComponent("data/Library/Keychains/TrustStore.sqlite3")
+        trustStorePath = (path as NSString?)?.appendingPathComponent("data/Library/Keychains/TrustStore.sqlite3")
     }
     
-    private func initDeviceType (runtimeIdentifier : String?)
+    private func initDeviceType (_ runtimeIdentifier : String?)
     {
         if runtimeIdentifier != nil {
             if runtimeIdentifier!.hasPrefix("com.apple.CoreSimulator.SimRuntime.watchOS") {
@@ -88,19 +88,19 @@ class Simulator {
     convenience init(path : String) {
         self.init()
         self.path = path
-        let devicePlist = (path as NSString).stringByAppendingPathComponent("device.plist")
-        let fm = NSFileManager.defaultManager()
-        if fm.fileExistsAtPath(devicePlist) {
-            let plistData = fm.contentsAtPath(devicePlist)!
-            if let plistobj : AnyObject? = try? NSPropertyListSerialization.propertyListWithData(plistData,
-                options: NSPropertyListReadOptions(rawValue: 0),
-                format: nil)
+        let devicePlist = (path as NSString).appendingPathComponent("device.plist")
+        let fm = FileManager.default
+        if fm.fileExists(atPath: devicePlist) {
+            let plistData = fm.contents(atPath: devicePlist)!
+            if let plistobj : AnyObject? = try! PropertyListSerialization.propertyList(from: plistData,
+                options: PropertyListSerialization.ReadOptions(rawValue: 0),
+                format: nil) as AnyObject??
             {
             if let plist = plistobj as? Dictionary<String, AnyObject> {
                 //let deviceType = plist["deviceType"] as? String
                 let name1 = plist["name"] as? String
                 if let runtime = plist["runtime"] as? String {
-                    version = runtime.componentsSeparatedByString(".").last
+                    version = runtime.components(separatedBy: ".").last
                     _name = name1! + " v" + version!
                     isValid = true
                     initDeviceType(runtime)
@@ -117,7 +117,7 @@ class Simulator {
         self.simDevice = SimDeviceWrapper(device)
         self.deviceName = device.deviceType?.name
         self.path = device.devicePath() as String?
-        self.UDID = device.UDID as NSUUID
+        self.UDID = device.udid as UUID
         self.version = device.runtime?.versionString
         
         self.build = device.runtime?.buildVersionString
@@ -128,18 +128,18 @@ class Simulator {
     
     func getAppDataDirMap() -> [String : String] {
         var map = [String : String]()
-        let fm = NSFileManager.defaultManager()
-        let appDataContainerFolder = (self.path! as NSString).stringByAppendingPathComponent("data/Containers/Data/Application")
-        if let dataFolders = try? fm.contentsOfDirectoryAtPath(appDataContainerFolder) {
+        let fm = FileManager.default
+        let appDataContainerFolder = (self.path! as NSString).appendingPathComponent("data/Containers/Data/Application")
+        if let dataFolders = try? fm.contentsOfDirectory(atPath: appDataContainerFolder) {
             for folderName in dataFolders {
-                let folderPath = (appDataContainerFolder as NSString).stringByAppendingPathComponent(folderName)
-                let metadataInfoFile = (folderPath as NSString).stringByAppendingPathComponent(".com.apple.mobile_container_manager.metadata.plist")
-                if fm.fileExistsAtPath(metadataInfoFile) {
+                let folderPath = (appDataContainerFolder as NSString).appendingPathComponent(folderName)
+                let metadataInfoFile = (folderPath as NSString).appendingPathComponent(".com.apple.mobile_container_manager.metadata.plist")
+                if fm.fileExists(atPath: metadataInfoFile) {
                     
-                    let plistData = fm.contentsAtPath(metadataInfoFile)!
-                    if let plistobj : AnyObject? = try? NSPropertyListSerialization.propertyListWithData(plistData,
-                        options: NSPropertyListReadOptions(rawValue: 0),
-                        format: nil) {
+                    let plistData = fm.contents(atPath: metadataInfoFile)!
+                    if let plistobj : AnyObject? = try! PropertyListSerialization.propertyList(from: plistData,
+                        options: PropertyListSerialization.ReadOptions(rawValue: 0),
+                        format: nil) as AnyObject?? {
                         if let identifier = (plistobj as? Dictionary<String, AnyObject>)?["MCMMetadataIdentifier"] as? String {
                             map[identifier] = folderPath
                         }
@@ -150,18 +150,18 @@ class Simulator {
         return map
     }
     
-    func getAppInfoFromFolder(path : String) -> SimulatorApp? {
-        let fm = NSFileManager.defaultManager()
-        if let bundleFolders = try? fm.contentsOfDirectoryAtPath(path) {
+    func getAppInfoFromFolder(_ path : String) -> SimulatorApp? {
+        let fm = FileManager.default
+        if let bundleFolders = try? fm.contentsOfDirectory(atPath: path) {
             for filename in bundleFolders {
-                let bundleFolder = (path as NSString).stringByAppendingPathComponent(filename)
-                let appInfoFile = (bundleFolder as NSString).stringByAppendingPathComponent("info.plist")
-                if fm.fileExistsAtPath(appInfoFile) {
+                let bundleFolder = (path as NSString).appendingPathComponent(filename)
+                let appInfoFile = (bundleFolder as NSString).appendingPathComponent("info.plist")
+                if fm.fileExists(atPath: appInfoFile) {
                     
-                    let plistData = fm.contentsAtPath(appInfoFile)!
-                    if let plistobj : AnyObject? = try? NSPropertyListSerialization.propertyListWithData(plistData,
-                        options: NSPropertyListReadOptions(rawValue: 0),
-                        format: nil) {
+                    let plistData = fm.contents(atPath: appInfoFile)!
+                    if let plistobj : AnyObject? = try! PropertyListSerialization.propertyList(from: plistData,
+                        options: PropertyListSerialization.ReadOptions(rawValue: 0),
+                        format: nil) as AnyObject?? {
                         if let plist = plistobj as? Dictionary<String, AnyObject> {
                             let appInfo = SimulatorApp(appInfo: plist)
                             appInfo.path = path
@@ -174,19 +174,19 @@ class Simulator {
         return nil
     }
     
-    private func includeAppFilter(appInfo : SimulatorApp) -> Bool {
+    private func includeAppFilter(_ appInfo : SimulatorApp) -> Bool {
         return appInfo.identifier == nil || !appInfo.identifier!.hasPrefix("com.apple.")
     }
     
     func getAppListFromContent() -> [SimulatorApp] {
         var appList = [SimulatorApp]()
         
-        let fm = NSFileManager.defaultManager()
+        let fm = FileManager.default
         // For iOS < 8.0
-        let appDataContainerFolder = (self.path! as NSString).stringByAppendingPathComponent("data/Applications")
-        if let dataFolders = try? fm.contentsOfDirectoryAtPath(appDataContainerFolder) {
+        let appDataContainerFolder = (self.path! as NSString).appendingPathComponent("data/Applications")
+        if let dataFolders = try? fm.contentsOfDirectory(atPath: appDataContainerFolder) {
             for folderName in dataFolders {
-                let folderPath = (appDataContainerFolder as NSString).stringByAppendingPathComponent(folderName)
+                let folderPath = (appDataContainerFolder as NSString).appendingPathComponent(folderName)
                 if let appInfo = getAppInfoFromFolder(folderPath) {
                     if includeAppFilter(appInfo) {
                         appInfo.dataPath = appInfo.path
@@ -200,10 +200,10 @@ class Simulator {
             let map = getAppDataDirMap()
             
             // For iOS >= 8.0
-            let appDataContainerFolder = (self.path! as NSString).stringByAppendingPathComponent("data/Containers/Bundle/Application")
-            if let dataFolders = try? fm.contentsOfDirectoryAtPath(appDataContainerFolder) {
+            let appDataContainerFolder = (self.path! as NSString).appendingPathComponent("data/Containers/Bundle/Application")
+            if let dataFolders = try? fm.contentsOfDirectory(atPath: appDataContainerFolder) {
                 for folderName in dataFolders {
-                    let folderPath = (appDataContainerFolder as NSString).stringByAppendingPathComponent(folderName)
+                    let folderPath = (appDataContainerFolder as NSString).appendingPathComponent(folderName)
                     if let appInfo = getAppInfoFromFolder(folderPath) {
                         if includeAppFilter(appInfo) {
                             appInfo.dataPath = map[appInfo.identifier!]
@@ -220,10 +220,10 @@ class Simulator {
     
     func getAppList() -> [SimulatorApp]?
     {
-        if self.simDevice?.state == SimDeviceState.Booted {
+        if self.simDevice?.state == SimDeviceState.booted {
             do {
-                let app: AnyObject = try self.simDevice!.installedApps()
-                let appDict = app as? [String : NSDictionary]
+                let appDict = try self.simDevice!.installedApps() as? [String : NSDictionary]
+                //let appDict = app as? [String : NSDictionary]
                 NSLog("apps: %@", appDict!)
                 
                 let map = getAppDataDirMap()
@@ -255,16 +255,16 @@ class Simulator {
     func launchSimulatorApp() -> Bool {
         var result = false
         let simulatorAppName : String
-        if XCodeSupport.getDeveloperToolsVersion()?.compare("7.0", options: NSStringCompareOptions.NumericSearch) == NSComparisonResult.OrderedAscending {
+        if XCodeSupport.getDeveloperToolsVersion()?.compare("7.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
             simulatorAppName = "iOS Simulator"
         }
         else
         {
             simulatorAppName = (simulatorOS == SimulatorOSType.watchOS)  ? "Simulator (Watch)" : "Simulator"
         }
-        let workspace = NSWorkspace.sharedWorkspace()
+        let workspace = NSWorkspace.shared()
         var appPath : String?
-        if let path = workspace.fullPathForApplication(simulatorAppName) {
+        if let path = workspace.fullPath(forApplication: simulatorAppName) {
             appPath = path
         }
         else if let devPath = XCodeSupport.getDeveloperToolsPath() {
@@ -276,10 +276,10 @@ class Simulator {
             else {
                 possibleAppPath = ["Applications/iOS Simulator.app", "Applications/Simulator.app", "../Applications/iOS Simulator.app", "../Applications/iPhone Simulator.app"]
             }
-            let fm = NSFileManager.defaultManager()
+            let fm = FileManager.default
             for testPath in possibleAppPath {
-                let path = (devPath as NSString).stringByAppendingPathComponent(testPath)
-                if fm.fileExistsAtPath(path) {
+                let path = (devPath as NSString).appendingPathComponent(testPath)
+                if fm.fileExists(atPath: path) {
                     appPath = path
                     break
                 }
@@ -287,14 +287,14 @@ class Simulator {
         }
         if appPath != nil {
             NSLog("Found simulator app at \(appPath)")
-            let appUrl = NSURL.fileURLWithPath(appPath!)
-            let launchArg : [String : AnyObject] = (UDID != nil) ?
-                [NSWorkspaceLaunchConfigurationArguments : ["-CurrentDeviceUDID", UDID!.UUIDString]] : [String : AnyObject]()
+            let appUrl = URL(fileURLWithPath: appPath!)
+            let launchArg = (UDID != nil) ?
+                [NSWorkspaceLaunchConfigurationArguments : ["-CurrentDeviceUDID", UDID!.uuidString]] : [String : Array<String>]()
             
             NSLog("Launching iOS Simulator with \(launchArg)")
 
             do {
-                let runningApp = try workspace.launchApplicationAtURL(appUrl, options: NSWorkspaceLaunchOptions.Default, configuration: launchArg)
+                let runningApp = try workspace.launchApplication(at: appUrl, options: NSWorkspaceLaunchOptions.default, configuration: launchArg)
                 NSLog("Simulator started. PID=%u", runningApp.processIdentifier)
                 result = true
             }
@@ -312,101 +312,101 @@ class Simulator {
         return result
     }
     
-    func boot(completionHandler : ((error : NSError?) -> Void)?) {
+    func boot(_ completionHandler : ((_ error : Error?) -> Void)?) {
         
         if simDevice != nil {
             let options : [String : AnyObject] = [
-                "env" : [String : AnyObject](),
-                "persist" : true,
-                "disabled_jobs" : ["com.apple.backboardd" : true]]
+                "env" : [String : AnyObject]() as AnyObject,
+                "persist" : true as AnyObject,
+                "disabled_jobs" : ["com.apple.backboardd" : true] as AnyObject]
             
-            simDevice!.bootAsyncWithOptions(options, completionHandler: { (error : NSError?) -> Void in
+            simDevice!.bootAsync(options: options, completionHandler: { (error : Error?) -> Void in
                 if error != nil {
-                    NSLog("boot error:%@", error!)
+                    NSLog("boot error:\(error!)")
                 }
                 else {
                     NSLog("boot success")
                 }
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler?(error: error)
+                DispatchQueue.main.async(execute: { () -> Void in
+                    completionHandler?(error)
                 })
             })
         }
         else {
-            completionHandler?(error: NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot boot device when CoreSimulator is not available"]))
+            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot boot device when CoreSimulator is not available"]))
         }
     }
     
-    func shutdown(completionHandler : ((error : NSError?) -> Void)?) {
+    func shutdown(_ completionHandler : ((_ error : Error?) -> Void)?) {
         
         if simDevice != nil {
-            simDevice!.shutdownAsyncWithCompletionHandler { (error : NSError?) -> Void in
+            simDevice!.shutdownAsync { (error : Error?) -> Void in
                 if error != nil {
-                    NSLog("shutdown error:%@", error!)
+                    NSLog("shutdown error:\(error!)")
                 }
                 else {
                     NSLog("shutdown success")
                 }
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    completionHandler?(error: error)
+                DispatchQueue.main.async(execute: { () -> Void in
+                    completionHandler?(error)
                 })
             }
         }
         else {
-            completionHandler?(error: NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot shutdown device when CoreSimulator is not available"]))
+            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot shutdown device when CoreSimulator is not available"]))
         }
     }
     
-    enum SimulatorActionError : ErrorType {
-        case InvalidBundleIdentifier
+    enum SimulatorActionError : Error {
+        case invalidBundleIdentifier
     }
     
     private func doActionWithBootAndShutdown<T> (
-        arg1 : T,
-        action: ((arg1 : T, completionHandler : ((error : NSError?) -> Void)?) throws -> Void),
-        completionHandler : ((error : NSError?) -> Void)?) {
+        _ arg1 : T,
+        action: @escaping ((_ arg1 : T, _ completionHandler : ((_ error : Error?) -> Void)?) throws -> Void),
+        completionHandler : ((_ error : Error?) -> Void)?) {
             
-            if simDevice!.state != SimDeviceState.Booted {
+            if simDevice!.state != SimDeviceState.booted {
                 boot({ (error) -> Void in
                     if error != nil {
-                        completionHandler?(error: error)
+                        completionHandler?(error)
                     }
-                    try! action(arg1: arg1, completionHandler : { (error) -> Void in
+                    try! action(arg1, { (error) -> Void in
                         self.shutdown({ (shutdownError) -> Void in
-                            completionHandler?(error: error)
+                            completionHandler?(error)
                         })
                     })
                 })
             }
             else {
-                try! action(arg1 : arg1, completionHandler : completionHandler)
+                try! action(arg1, completionHandler)
             }
     }
     
-    func installApp (appUrl : NSURL, completionHandler : ((error : NSError?) -> Void)?) {
-        
-        let installAppAction = {(appUrl : NSURL, completionHandler : ((error : NSError?) -> Void)?) -> Void in
-            var bundleId = NSBundle(URL: appUrl)?.bundleIdentifier
+    func installApp (_ appUrl : URL, completionHandler : ((_ error : Error?) -> Void)?) {
+        /*
+        let installAppAction = {(appUrl : URL, completionHandler : ((_ error : NSError?) -> Void)?) -> Void in
+            var bundleId = Bundle(url: appUrl)?.bundleIdentifier
             if bundleId == nil {
-                let plistUrl = appUrl.URLByAppendingPathComponent("Info.plist")
-                if let plist = NSDictionary(contentsOfURL: plistUrl)  {
+                let plistUrl = appUrl.appendingPathComponent("Info.plist")
+                if let plist = NSDictionary(contentsOf: plistUrl)  {
                     bundleId = plist["CFBundleIdentifier"] as? String
                 }
             }
             
             if bundleId != nil {
-                let options : [String : AnyObject] = ["CFBundleIdentifier" : bundleId!]
+                let options : [String : AnyObject] = ["CFBundleIdentifier" : bundleId! as AnyObject]
 
                 do {
                     try self.simDevice!.installApplication(appUrl, withOptions: options)
-                    completionHandler?(error: nil)
+                    completionHandler?(nil)
                 }
                 catch let error as NSError {
-                    completionHandler?(error: error)
+                    completionHandler?(error)
                 }
             }
             else {
-                completionHandler?(error: NSError(
+                completionHandler?(NSError(
                     domain: "iSimulatorExplorer",
                     code: 2,
                     userInfo: [NSLocalizedDescriptionKey : "Cannot install app: bundle Identifier not found"]))
@@ -418,19 +418,21 @@ class Simulator {
             doActionWithBootAndShutdown(appUrl, action: installAppAction, completionHandler: completionHandler)
         }
         else {
-            completionHandler?(error: NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot install app when CoreSimulator is not available"]))
+            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot install app when CoreSimulator is not available"]))
         }
+ */
     }
     
-    func uninstallApp (appId : String, completionHandler : ((error : NSError?) -> Void)?) {
+    func uninstallApp (_ appId : String, completionHandler : ((_ error : Error?) -> Void)?) {
+        /*
         
-        let uninstallAppAction = { (appId : String, completionHandler : ((error : NSError?) -> Void)?) -> Void in
+        let uninstallAppAction = { (appId : String, completionHandler : ((_ error : Error?) -> Void)?) -> Void in
             do {
                 try self.simDevice!.uninstallApplication(appId, withOptions: nil)
-                completionHandler?(error: nil)
+                completionHandler?(nil)
             }
             catch let error as NSError {
-                completionHandler?(error: error)
+                completionHandler?(error)
             }
         }
         
@@ -438,7 +440,8 @@ class Simulator {
             doActionWithBootAndShutdown(appId, action: uninstallAppAction, completionHandler: completionHandler)
         }
         else {
-            completionHandler?(error: NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot uninstall app when CoreSimulator is not available"]))
+            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot uninstall app when CoreSimulator is not available"]))
         }
+ */
     }
 }

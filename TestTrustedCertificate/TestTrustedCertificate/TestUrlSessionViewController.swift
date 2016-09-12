@@ -3,7 +3,8 @@
 //  TestTrustedCertificate
 //
 //  Created by Daniel Cerutti on 12/11/15.
-//  Copyright © 2015 Cerutti Software Design. All rights reserved.
+//  Copyright © 2014-2016 Daniel Cerutti. All rights reserved.
+//  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 //
 
 import UIKit
@@ -28,21 +29,21 @@ class TestUrlSessionViewController: UIViewController, UIWebViewDelegate {
     @IBAction func openUrlButton(sender: AnyObject) {
         if let text = urlTextField.text {
             urlTextField.resignFirstResponder()
-            if let url = NSURL(string: text){
+            if let url = URL(string: text){
                 
-                let session = NSURLSession.init(configuration: NSURLSessionConfiguration.defaultSessionConfiguration(), delegate: nil, delegateQueue: NSOperationQueue.mainQueue())
+                let session = URLSession.init(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: OperationQueue.main)
                 
-                session.dataTaskWithURL(url, completionHandler: { (data : NSData?, response : NSURLResponse?, error : NSError?) -> Void in
+                session.dataTask(with: url, completionHandler: { (data : Data?, response : URLResponse?, error : Error?) -> Void in
                     if error != nil {
-                        let text = "<html><header></header><body><h2 style=\"color:red\">\(error!.localizedDescription)</h2</body></html>"
-                        self.webView.loadHTMLString (text, baseURL:NSURL(string:"localhost"))
+                        let text = "<html><header></header><body><h2 style=\"color:red\">\(error!.localizedDescription)</h2><p>\(error!)<p></body></html>"
+                        self.webView.loadHTMLString (text, baseURL:URL(string:"localhost"))
                     }
                     else
                     {
-                        let mimeType = (response?.MIMEType != nil) ? response!.MIMEType! : "text/html"
+                        let mimeType = (response?.mimeType != nil) ? response!.mimeType! : "text/html"
                         let encoding = (response?.textEncodingName != nil) ? response!.textEncodingName! : "utf-8"
                         
-                        self.webView.loadData(data!, MIMEType: mimeType, textEncodingName: encoding, baseURL: url)
+                        self.webView.load(data!, mimeType: mimeType, textEncodingName: encoding, baseURL: url)
                     }
                 }).resume()
             }

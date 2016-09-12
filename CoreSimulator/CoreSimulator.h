@@ -8,6 +8,8 @@
 
 #pragma mark Forwared declaration
 
+#import "xpc/xpc.h"
+
 @protocol SimBridge;
 @class SimDeviceSet;
 @class SimDeviceType;
@@ -40,16 +42,16 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 
 @protocol SimDeviceNotifier
 - (BOOL)unregisterNotificationHandler:(unsigned long long)handler error:(NSError **)error;
-- (unsigned long long)registerNotificationHandlerOnQueue:(NSObject<OS_dispatch_queue> *)queue handler:(void (^)(NSDictionary *))handlerBlock;
+//- (unsigned long long)registerNotificationHandlerOnQueue:(NSObject<OS_dispatch_queue> *)queue handler:(void (^)(NSDictionary *))handlerBlock;
 - (unsigned long long)registerNotificationHandler:(void (^)(NSDictionary *))handlerBlock;
 @end
 
 @interface SimDeviceNotificationManager : NSObject <SimDeviceNotifier>
 
-@property(retain) NSObject<OS_dispatch_queue> *sendQueue;
+//@property(retain) NSObject<OS_dispatch_queue> *sendQueue;
 @property unsigned long long next_regID;
 @property(retain) NSMutableDictionary *handlers;
-@property(retain) NSObject<OS_dispatch_queue> *handlersQueue;
+//@property(retain) NSObject<OS_dispatch_queue> *handlersQueue;
 
 - (void)sendNotification:(id)arg1;
 - (id)init;
@@ -62,7 +64,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 + (id)connectionError;
 + (id)sharedVerifier;
 
-@property(retain) NSObject<OS_dispatch_queue> *serviceConnectionQueue;
+//@property(retain) NSObject<OS_dispatch_queue *> *serviceConnectionQueue;
 @property(retain) NSObject<OS_xpc_object> *serviceConnection;
 - (id)verifyDyldSim:(id)arg1;
 - (id)verifyAll;
@@ -78,7 +80,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 + (id)sharedConnectionManager;
 
 @property(retain) NSDate *lastConnectionTime;
-@property(retain) NSObject<OS_dispatch_queue> *serviceConnectionQueue;
+//@property(retain) NSObject<OS_dispatch_queue> *serviceConnectionQueue;
 @property(retain) NSObject<OS_xpc_object> *serviceConnection;
 - (void)handleXPCEvent:(id)arg1;
 - (BOOL)connect;
@@ -119,9 +121,9 @@ connectionManager:(SimServiceConnectionManager *)connectionManager
 @property(retain, nonatomic) NSMachPort *simBridgePort;
 @property(retain, nonatomic) NSMachPort *hostSupportPort;
 @property(retain) NSMachPort *deathTriggerPort;
-@property(retain) NSObject<OS_dispatch_queue> *stateVariableQueue;
+//@property(retain) NSObject<OS_dispatch_queue> *stateVariableQueue;
 @property(retain) NSMutableDictionary *registeredServices;
-@property(retain) NSObject<OS_dispatch_queue> *bootstrapQueue;
+//@property(retain) NSObject<OS_dispatch_queue> *bootstrapQueue;
 @property(retain) SimDeviceNotificationManager *notificationManager;
 @property(copy) NSString *setPath;
 @property(retain) SimServiceConnectionManager *connectionManager;
@@ -298,7 +300,7 @@ connectionManager:(SimServiceConnectionManager *)connectionManager
 @property(retain) SimServiceConnectionManager *connectionManager;
 @property(retain) NSMutableDictionary *devicesNotificationRegIDs;
 @property(retain) NSMutableDictionary *_devicesByUDID;
-@property(retain) NSObject<OS_dispatch_queue> *devicesQueue;
+//@property(retain) NSObject<OS_dispatch_queue> *devicesQueue;
 @property(copy) NSString *setPath;
 
 - (void)handleXPCRequestDeleteDevice:(id)arg1 peer:(id)arg2 device:(id)arg3;

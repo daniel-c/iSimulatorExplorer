@@ -10,17 +10,17 @@ import Foundation
 import Cocoa
 
 class DCSimulatorManager {
-    private var simulatorFramework : NSBundle?
+    private var simulatorFramework : Bundle?
     private let kDVTFoundationRelativePath = "../SharedFrameworks/DVTFoundation.framework"
     private let kDevToolsFoundationRelativePath = "../OtherFrameworks/DevToolsFoundation.framework"
     private let kSimulatorRelativePath = "Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app"
-    private let sim5BasePath = ("~/Library/Application Support/iPhone Simulator" as NSString).stringByExpandingTildeInPath
+    private let sim5BasePath = ("~/Library/Application Support/iPhone Simulator" as NSString).expandingTildeInPath
     private var simDeviceSetClass : AnyClass?
     private var simDeviceSet : AnyObject?
     private var getSimulators : () -> [Simulator]
 
     // Helper to find a class by name and die if it isn't found.
-    private func FindClassByName(nameOfClass : String) -> AnyClass! {
+    private func FindClassByName(_ nameOfClass : String) -> AnyClass! {
         if let theClass : AnyClass = NSClassFromString(nameOfClass) {
             return theClass
         }
@@ -31,21 +31,21 @@ class DCSimulatorManager {
         }
     }
 
-    private func LoadSimulatorFramework() -> NSBundle! {
+    private func LoadSimulatorFramework() -> Bundle! {
         if let developerDir = XCodeSupport.getDeveloperToolsPath() as NSString? {
 
             // The Simulator framework depends on some of the other Xcode private
             // frameworks; manually load them first so everything can be linked up.
-            let dvtFoundationPath = developerDir.stringByAppendingPathComponent(kDVTFoundationRelativePath)
+            let dvtFoundationPath = developerDir.appendingPathComponent(kDVTFoundationRelativePath)
             
-            if let dvtFoundationBundle = NSBundle(path: dvtFoundationPath) {
+            if let dvtFoundationBundle = Bundle(path: dvtFoundationPath) {
                 if !(dvtFoundationBundle.load()) {
                     return nil
                 }
             }
             
-            let devToolsFoundationPath = developerDir.stringByAppendingPathComponent(kDevToolsFoundationRelativePath)
-            if let devToolsFoundationBundle = NSBundle(path: devToolsFoundationPath) {
+            let devToolsFoundationPath = developerDir.appendingPathComponent(kDevToolsFoundationRelativePath)
+            if let devToolsFoundationBundle = Bundle(path: devToolsFoundationPath) {
                 if !(devToolsFoundationBundle.load()) {
                     return nil
                 }
@@ -84,14 +84,14 @@ class DCSimulatorManager {
             // The path within the developer dir of the private Simulator frameworks.
             let simulatorFrameworkRelativePath = "../SharedFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
             let kCoreSimulatorRelativePath = "Library/PrivateFrameworks/CoreSimulator.framework";
-            let coreSimulatorPath = developerDir.stringByAppendingPathComponent(kCoreSimulatorRelativePath);
-            if let coreSimulatorBundle = NSBundle(path: coreSimulatorPath) {
+            let coreSimulatorPath = developerDir.appendingPathComponent(kCoreSimulatorRelativePath);
+            if let coreSimulatorBundle = Bundle(path: coreSimulatorPath) {
                 if !(coreSimulatorBundle.load()) {
                     return nil
                 }
             }
-            let simBundlePath = developerDir.stringByAppendingPathComponent(simulatorFrameworkRelativePath);
-            if let simBundle = NSBundle(path: simBundlePath) {
+            let simBundlePath = developerDir.appendingPathComponent(simulatorFrameworkRelativePath);
+            if let simBundle = Bundle(path: simBundlePath) {
                 if !(simBundle.load()) {
                     return nil
                 }
@@ -103,15 +103,15 @@ class DCSimulatorManager {
 
     
     // Get XCode version 6.0 simulators using CoreSimulator framework
-    private func getXcode6SimulatorsFromCoreSimulator() -> [Simulator] {
+    fileprivate func getXcode6SimulatorsFromCoreSimulator() -> [Simulator] {
         
         var simulators = [Simulator]()
 
-        simDeviceSet = simDeviceSetClass?.defaultSet()
+        simDeviceSet = simDeviceSetClass?.default()
         if simDeviceSet != nil  {
             if let deviceList = simDeviceSet!.availableDevices {
                 for simDevice in deviceList {
-                    let sim = Simulator(device: simDevice)
+                    let sim = Simulator(device: simDevice as AnyObject)
                     if sim.isValid {
                         simulators.append(sim)
                     }
@@ -126,13 +126,13 @@ class DCSimulatorManager {
         
         var simulators = [Simulator]()
         
-        let simBasePath = ("~/Library/Developer/CoreSimulator/Devices" as NSString).stringByExpandingTildeInPath
-        if let fileList = try? NSFileManager.defaultManager().contentsOfDirectoryAtPath(simBasePath) {
+        let simBasePath = ("~/Library/Developer/CoreSimulator/Devices" as NSString).expandingTildeInPath
+        if let fileList = try? FileManager.default.contentsOfDirectory(atPath: simBasePath) {
             for item in fileList
             {
                 print("item is \(item)", terminator:"\n")
                 
-                let path = (simBasePath as NSString).stringByAppendingPathComponent(item)
+                let path = (simBasePath as NSString).appendingPathComponent(item)
                 
                 let sim = Simulator(path: path)
                 if sim.isValid {
@@ -160,7 +160,7 @@ class DCSimulatorManager {
         if let dtVersion = XCodeSupport.getDeveloperToolsVersion() {
             
             NSLog("XCode version \(dtVersion)")
-            if dtVersion.compare("6.0", options: NSStringCompareOptions.NumericSearch) == NSComparisonResult.OrderedAscending {
+            if dtVersion.compare("6.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
                 
                 NSLog("XCode version < 6.0. Not Supported")
                 
@@ -184,16 +184,16 @@ class DCSimulatorManager {
     }
 
     enum NotificationType {
-        case DeviceState
-        case DeviceAdded
-        case DeviceRemoved
-        case DeviceRenamed
+        case deviceState
+        case deviceAdded
+        case deviceRemoved
+        case deviceRenamed
     }
     
-    func startNotificationHandler(handler : (NotificationType, NSUUID, Int) -> Void ) {
+    func startNotificationHandler(_ handler : @escaping (NotificationType, UUID, Int) -> Void ) {
         if simDeviceSet != nil {
             
-            simDeviceSet!.registerNotificationHandler({ (data : [NSObject : AnyObject]!) -> Void in
+            let _ = simDeviceSet!.registerNotificationHandler({ (data : [AnyHashable: Any]?) -> Void in
 
                 if let notificationData = data as? [String : AnyObject] {
                     if let notificationTypeString = notificationData["notification"] as? String {
@@ -201,34 +201,35 @@ class DCSimulatorManager {
                         //var state : Int = 0
                         var notificationType : NotificationType?
                         //var udid : NSUUID?
-                        let simDevice : AnyObject? = notificationData["device"]
+                        //TODO : review if SimDevice cast work
+                        let simDevice : AnyObject? = notificationData["device"] // as? SimDevice
                         
                         switch notificationTypeString {
                             case "device_state":
-                                notificationType = .DeviceState
+                                notificationType = .deviceState
                                 if let state = notificationData["new_state"] as? Int {
-                                    NSLog("SimDevice \(simDevice?.UDID) new state: \(state)")
+                                    NSLog("SimDevice \(simDevice?.udid) new state: \(state)")
                                 }
                             
                             case "device_added":
-                                notificationType = .DeviceAdded
-                                NSLog("SimDevice \(simDevice?.UDID) added: \(simDevice?.stateString())")
+                                notificationType = .deviceAdded
+                                NSLog("SimDevice \(simDevice?.udid) added: \(simDevice?.stateString())")
                                 
                             case "device_removed":
-                                notificationType = .DeviceRemoved
-                                NSLog("SimDevice \(simDevice?.UDID) removed")
+                                notificationType = .deviceRemoved
+                                NSLog("SimDevice \(simDevice?.udid) removed")
                                 
                             case "device_renamed":
-                                notificationType = .DeviceRenamed
-                                NSLog("SimDevice \(simDevice?.UDID) renamed to: \(simDevice?.name)")
+                                notificationType = .deviceRenamed
+                                //NSLog("SimDevice \(simDevice?.udid) renamed to: \(simDevice?.name)")
                                 
                             default:
-                                NSLog("Notification: %@", data)
+                                NSLog("Notification: \(data)")
                         }
                         if notificationType != nil && simDevice != nil {
                             
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                handler(notificationType!, simDevice!.UDID, 0)
+                            DispatchQueue.main.async(execute: { () -> Void in
+                                handler(notificationType!, simDevice!.udid, 0)
                             })
                             
                         }

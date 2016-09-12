@@ -33,11 +33,11 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     
     func enableButtons() {
         let enableActionOnSelected = (appTableView.selectedRow >= 0 && simulatorAppList != nil && simulatorAppList!.count > 0)
-        uninstallAppButton.enabled = enableActionOnSelected && !isBusy
-        installAppButton.enabled = !isBusy
+        uninstallAppButton.isEnabled = enableActionOnSelected && !isBusy
+        installAppButton.isEnabled = !isBusy
     }
     
-    func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+    func numberOfRows(in tableView: NSTableView) -> Int {
         
         if simulatorAppList != nil {
             return (simulatorAppList!.count > 0) ? simulatorAppList!.count : 1
@@ -45,11 +45,11 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         return 0
     }
     
-    func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
+    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if simulatorAppList != nil && simulatorAppList!.count == 0 {
-            return tableView.makeViewWithIdentifier("NoAppCell", owner: self) as? NSTableCellView
+            return tableView.make(withIdentifier: "NoAppCell", owner: self) as? NSTableCellView
         }
-        if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? DCAppInfoTableCellView {
+        if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? DCAppInfoTableCellView {
             if let appInfo = simulatorAppList?[row] {
                 //result.textField!.stringValue = appInfo.displayName!
                 result.appInfo = appInfo
@@ -59,39 +59,39 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         return nil
     }
     
-    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         return nil
     }
     
-    func tableViewSelectionDidChange(notification: NSNotification) {
+    func tableViewSelectionDidChange(_ notification: Notification) {
         enableButtons()
     }
 
     
-    @IBAction func openAppDataInFinderPressed(sender: NSButton) {
+    @IBAction func openAppDataInFinderPressed(_ sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
             if let path = appInfoCellView.appInfo?.dataPath {
-                NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
+                NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
             }
         }
     }
     
-    @IBAction func openAppBundleInFinderPressed(sender: NSButton) {
+    @IBAction func openAppBundleInFinderPressed(_ sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
             if let path = appInfoCellView.appInfo?.path {
-                NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
+                NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
             }
         }
     }
     
-    @IBAction func installApp(sender: AnyObject) {
+    @IBAction func installApp(_ sender: AnyObject) {
         let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
         if openPanel.runModal() == NSFileHandlingPanelOKButton {
-            for url in openPanel.URLs {
+            for url in openPanel.urls {
                 isBusy = true
                 enableButtons()
                 simulator!.installApp(url, completionHandler: { (error) -> Void in
@@ -113,7 +113,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         }
     }
     
-    @IBAction func uninstallApp(sender: AnyObject) {
+    @IBAction func uninstallApp(_ sender: AnyObject) {
         if appTableView.selectedRow >= 0 {
             if let appId = simulatorAppList![appTableView.selectedRow].identifier {
             

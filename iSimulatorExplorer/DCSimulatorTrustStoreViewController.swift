@@ -26,7 +26,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         didSet {
             truststore = nil
             if let truststorePath = simulator?.trustStorePath {
-                if NSFileManager.defaultManager().fileExistsAtPath(truststorePath) {
+                if FileManager.default.fileExists(atPath: truststorePath) {
                     truststore = DCSimulatorTruststore(path : truststorePath)
                     truststore!.openTrustStore()
                     NSLog("Trustore has \(truststore!.items.count) items")
@@ -37,12 +37,12 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
             if simulator != nil && truststore == nil {
                 // If we do not find the truststore.sqlite3 file it is usually because the simulator has not yet been run
                 // indicate it with an appropriate message and hide the tableview
-                notavailableInfoTextField.hidden = false
-                tableScrollView!.hidden = true
+                notavailableInfoTextField.isHidden = false
+                tableScrollView!.isHidden = true
             }
             else {
-                notavailableInfoTextField.hidden = true
-                tableScrollView!.hidden = false
+                notavailableInfoTextField.isHidden = true
+                tableScrollView!.isHidden = false
             }
         }
     }
@@ -56,20 +56,20 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     func enableButtons() {
         let enableActionOnSelected = (tableView.selectedRow >= 0)
         let enableActionOnTrustStore = (truststore != nil)
-        removeButton.enabled = enableActionOnSelected
-        exportButton.enabled = enableActionOnSelected
-        importServerButton.enabled = enableActionOnTrustStore
-        importFileButton.enabled = enableActionOnTrustStore
+        removeButton.isEnabled = enableActionOnSelected
+        exportButton.isEnabled = enableActionOnSelected
+        importServerButton.isEnabled = enableActionOnTrustStore
+        importFileButton.isEnabled = enableActionOnTrustStore
     }
     
     
-    func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+    func numberOfRows(in tableView: NSTableView) -> Int {
         
         return truststore?.items.count ?? 0
     }
     
-    func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
+    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
             if truststore != nil {
                 if let text = truststore?.items[row].subjectSummary {
                     result.textField!.stringValue = text
@@ -80,15 +80,15 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         return nil
     }
     
-    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         return nil;
     }
     
-    @IBAction func viewCertificateButtonPressed(sender: NSButton) {
+    @IBAction func viewCertificateButtonPressed(_ sender: NSButton) {
         if let cellView = sender.superview as? NSTableCellView {
-            let row = tableView.rowForView(cellView)
+            let row = tableView.row(for: cellView)
             if row >= 0 {
-                tableView.selectRowIndexes(NSIndexSet(index: row), byExtendingSelection: false)
+                tableView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
                 if let cert = truststore?.items[row].certificate {
                     showCertificate(cert)
                 }
@@ -97,14 +97,14 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         return;
     }
     
-    func showCertificate(cert : SecCertificateRef) {
-        SFCertificatePanel.sharedCertificatePanel().runModalForCertificates([cert], showGroup: false)
+    func showCertificate(_ cert : SecCertificate) {
+        SFCertificatePanel.shared().runModal(forCertificates: [cert], showGroup: false)
     }
     
-    @IBAction func importCertificateFromServerButtonPressed(sender: AnyObject) {
+    @IBAction func importCertificateFromServerButtonPressed(_ sender: AnyObject) {
         
         let importPanel = DCImportCertificateWindowController(windowNibName: "DCImportCertificateWindowController")
-        let result =  NSApplication.sharedApplication().runModalForWindow(importPanel.window!)
+        let result =  NSApplication.shared().runModal(for: importPanel.window!)
         if result == 0 {
             if importPanel.certificate != nil {
                 let item = DCSimulatorTruststoreItem(certificate: importPanel.certificate!)
@@ -119,30 +119,30 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         
     }
     
-    @IBAction func importCertificateFromFile(sender: AnyObject) {
+    @IBAction func importCertificateFromFile(_ sender: AnyObject) {
         let openPanel = NSOpenPanel()
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
         if openPanel.runModal() == NSFileHandlingPanelOKButton {
-            for url in openPanel.URLs {
-                if let data = NSData(contentsOfURL: url) {
+            for url in openPanel.urls {
+                if let data = try? Data(contentsOf: url) {
                     
-                    var format : SecExternalFormat = SecExternalFormat.FormatUnknown
-                    var itemType : SecExternalItemType = SecExternalItemType.ItemTypeCertificate
+                    var format : SecExternalFormat = SecExternalFormat.formatUnknown
+                    var itemType : SecExternalItemType = SecExternalItemType.itemTypeCertificate
                     //var outItems : Unmanaged<CFArray>?
                     var outItems : CFArray?
                     //var outItems : UnsafeMutablePointer<CFArray?>
                     
-                    SecItemImport(data, nil, &format, &itemType, SecItemImportExportFlags(rawValue: 0), nil, nil, &outItems)
+                    SecItemImport(data as CFData, nil, &format, &itemType, SecItemImportExportFlags(rawValue: 0), nil, nil, &outItems)
                     //if let itemCFArray = outItems?.takeRetainedValue() {
                     if let itemCFArray = outItems {
                         let itemArray = itemCFArray as NSArray
-                        if itemArray.count > 0 && itemType == SecExternalItemType.ItemTypeCertificate {
+                        if itemArray.count > 0 && itemType == SecExternalItemType.itemTypeCertificate {
                             
                             // Here we must use an unconditional downcast (conditional downcast does not work here).
-                            let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificateRef)
+                            let item = DCSimulatorTruststoreItem(certificate: itemArray[0] as! SecCertificate)
                             
                             if truststore!.addItem(item) {
                                 tableView.reloadData()
@@ -154,7 +154,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         }
     }
     
-    @IBAction func removeCertificateButtonPressed(sender: AnyObject) {
+    @IBAction func removeCertificateButtonPressed(_ sender: AnyObject) {
         if tableView.selectedRow >= 0 {
             if truststore != nil {
                 if truststore!.removeItem(tableView.selectedRow) {
@@ -165,7 +165,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         }
     }
     
-    @IBAction func exportButtonPressed(sender: AnyObject) {
+    @IBAction func exportButtonPressed(_ sender: AnyObject) {
         if tableView.selectedRow >= 0 {
             if truststore != nil {
                 let item = truststore!.items[tableView.selectedRow]
@@ -174,7 +174,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
                     savePanel.nameFieldStringValue = text
                 }
                 if savePanel.runModal() == NSFileHandlingPanelOKButton {
-                    if let url = savePanel.URL {
+                    if let url = savePanel.url {
                         item.export(url)
                     }
                 }
@@ -182,7 +182,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         }
     }
     
-    func tableViewSelectionDidChange(notification: NSNotification) {
+    func tableViewSelectionDidChange(_ notification: Notification) {
         enableButtons()
     }
 }

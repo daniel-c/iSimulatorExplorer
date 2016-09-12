@@ -15,31 +15,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var window: NSWindow!
 
     
-    class func showModalAlert (messageText : String, informativeText : String) {
+    class func showModalAlert (_ messageText : String, informativeText : String) {
         let alert = NSAlert()
         alert.messageText = messageText
         alert.informativeText = informativeText
         alert.runModal()
     }
 
-    func applicationDidFinishLaunching(aNotification: NSNotification) {
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         
         let xcodeVersion = XCodeSupport.getDeveloperToolsVersion()
-        if xcodeVersion == nil || xcodeVersion!.compare("6.0", options: NSStringCompareOptions.NumericSearch) == NSComparisonResult.OrderedAscending {
+        if xcodeVersion == nil || xcodeVersion!.compare("6.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
             
             AppDelegate.showModalAlert (
                 NSLocalizedString("Error", comment: ""),
                 informativeText: NSLocalizedString("Xcode 6 or above must be installed for iSimulatorExplorer to run.", comment: ""))
-            NSApplication.sharedApplication().terminate(nil)
+            NSApplication.shared().terminate(nil)
         }
     }
 
-    func applicationWillTerminate(aNotification: NSNotification) {
+    func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
  
-    func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication) -> Bool {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }
 }

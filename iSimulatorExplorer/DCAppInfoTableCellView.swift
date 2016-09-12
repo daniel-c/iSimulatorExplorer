@@ -45,21 +45,21 @@ class DCAppInfoTableCellView: NSTableCellView {
         }
     }
 
-    override func drawRect(dirtyRect: NSRect) {
-        super.drawRect(dirtyRect)
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
 
         // Drawing code here.
     }
     
-    @IBAction func openAppBundleInFinderButtonPressed(sender: NSButton) {
+    @IBAction func openAppBundleInFinderButtonPressed(_ sender: NSButton) {
         if let path = appInfo?.path {
-            NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
+            NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
         }
     }
     
-    @IBAction func openAppDataInFinderButtonPressed(sender: NSButton) {
+    @IBAction func openAppDataInFinderButtonPressed(_ sender: NSButton) {
         if let path = appInfo?.dataPath {
-            NSWorkspace.sharedWorkspace().selectFile(path, inFileViewerRootedAtPath: path)
+            NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
         }
     }
 }

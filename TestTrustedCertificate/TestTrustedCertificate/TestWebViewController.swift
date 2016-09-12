@@ -3,7 +3,7 @@
 //  TestTrustedCertificate
 //
 //  Created by Daniel Cerutti on 11/10/14.
-//  Copyright (c) 2014 Daniel Cerutti. All rights reserved.
+//  Copyright (c) 2014-2016 Daniel Cerutti. All rights reserved.
 //  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 //
 
@@ -29,16 +29,16 @@ class TestWebViewController: UIViewController, UIWebViewDelegate {
     @IBAction func openUrlButton(sender: AnyObject) {
         if let text = urlTextField.text {
             urlTextField.resignFirstResponder()
-            if let url = NSURL(string: text){
-                let request = NSURLRequest(URL: url)
+            if let url = URL(string: text){
+                let request = URLRequest(url: url)
                 webView.loadRequest(request)
             }
         }
     }
 
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
-        let text = "<html><header></header><body><h2 style=\"color:red\">\(error!.localizedDescription)</h2</body></html>"
-        webView.loadHTMLString (text, baseURL:NSURL(string:"localhost"))
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        let text = "<html><header></header><body><h2 style=\"color:red\">\(error.localizedDescription)</h2</body></html>"
+        webView.loadHTMLString (text, baseURL:URL(string:"localhost"))
     }
 
 }

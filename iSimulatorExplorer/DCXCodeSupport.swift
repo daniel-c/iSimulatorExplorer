@@ -10,14 +10,14 @@ import Foundation
 
 class XCodeSupport {
     class func getDeveloperToolsPath() -> String? {
-        if let developerDir = NSProcessInfo.processInfo().environment["DEVELOPER_DIR"] {
+        if let developerDir = ProcessInfo.processInfo.environment["DEVELOPER_DIR"] {
             return developerDir
         }
-        if let symDir = try? NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath("/var/db/xcode_select_link") {
+        if let symDir = try? FileManager.default.destinationOfSymbolicLink(atPath: "/var/db/xcode_select_link") {
             return symDir
         }
         let defaultDir = "/Applications/Xcode.app/Contents/Developer"
-        if NSFileManager.defaultManager().fileExistsAtPath(defaultDir) {
+        if FileManager.default.fileExists(atPath: defaultDir) {
             return defaultDir
         }
         return nil
@@ -25,14 +25,14 @@ class XCodeSupport {
     
     class func getDeveloperToolsVersion() -> String? {
         if let developerDir = getDeveloperToolsPath() {
-            let fm = NSFileManager.defaultManager()
-            let versionPlist = (developerDir as NSString).stringByAppendingPathComponent("../version.plist")
-            if fm.fileExistsAtPath(versionPlist) {
-                let versionPlistData = NSFileManager.defaultManager().contentsAtPath(versionPlist)!
+            let fm = FileManager.default
+            let versionPlist = (developerDir as NSString).appendingPathComponent("../version.plist")
+            if fm.fileExists(atPath: versionPlist) {
+                let versionPlistData = FileManager.default.contents(atPath: versionPlist)!
                 do {
-                    let plistobj: AnyObject? = try NSPropertyListSerialization.propertyListWithData(versionPlistData,
-                        options: NSPropertyListReadOptions(rawValue: 0),
-                        format: nil)
+                    let plistobj: AnyObject? = try PropertyListSerialization.propertyList(from: versionPlistData,
+                        options: PropertyListSerialization.ReadOptions(rawValue: 0),
+                        format: nil) as AnyObject?
                     if let plist = plistobj as? Dictionary<String, AnyObject> {
                         return plist["CFBundleShortVersionString"] as? String
                     }

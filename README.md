@@ -22,7 +22,7 @@ iSimulatorExplorer is a simple OS X application written in Swift to browse the a
 
 * OS X 10.10 or above
 * Xcode 6.0 or above
-* Xcode 7.0 or 7.1 to build the current version of the project.
+* Xcode 8 to build the current version of the project.
 
 ### Notes on CA certificates in iOS simulator ###
 
@@ -32,4 +32,4 @@ iSimulatorExplorer is a simple OS X application written in Swift to browse the a
 
 ### Copyright and license ###
 
-Copyright (c) 2015, Daniel Cerutti. Licensed under the MIT license. See LICENSE file in this project.
+Copyright (c) 2015-2016, Daniel Cerutti. Licensed under the MIT license. See LICENSE file in this project.

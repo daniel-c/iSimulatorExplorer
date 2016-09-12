@@ -32,38 +32,38 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     }
     
     func enableButtons() {
-        importButton.enabled = (tableView.selectedRow >= 0)
+        importButton.isEnabled = (tableView.selectedRow >= 0)
     }
     
     func enableGetServerDataButton() {
-        getServerDataButton.enabled = (urlTextField.stringValue != "")
+        getServerDataButton.isEnabled = (urlTextField.stringValue != "")
     }
     
     
-    @IBAction func cancelButtonPressed(sender: AnyObject) {
-        NSApplication.sharedApplication().stopModalWithCode(1)
+    @IBAction func cancelButtonPressed(_ sender: AnyObject) {
+        NSApplication.shared().stopModal(withCode: 1)
         window!.close();
     }
     
-    func windowShouldClose(sender: AnyObject) -> Bool {
-        NSApplication.sharedApplication().stopModalWithCode(2)
+    func windowShouldClose(_ sender: Any) -> Bool {
+        NSApplication.shared().stopModal(withCode: 2)
         return true
     }
 
-    @IBAction func importButtonPressed(sender: AnyObject) {
+    @IBAction func importButtonPressed(_ sender: AnyObject) {
         if tableView.selectedRow >= 0 {
             certificate = certificates?[tableView.selectedRow]
         }
-        NSApplication.sharedApplication().stopModalWithCode(0)
+        NSApplication.shared().stopModal(withCode: 0)
         window!.close();
     }
 
-    @IBAction func getServerDataButtonPressed(sender: AnyObject) {
-        if let url = NSURL(string: "https://" + urlTextField.stringValue) {
+    @IBAction func getServerDataButtonPressed(_ sender: AnyObject) {
+        if let url = URL(string: "https://" + urlTextField.stringValue) {
             print("url scheme: \(url.scheme) absolute: \(url.absoluteString)", terminator: "\n")
-            let request = NSURLRequest(URL: url)
+            let request = URLRequest(url: url)
             if let connection = NSURLConnection(request: request, delegate: self, startImmediately: false) {
-                connection.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+                connection.schedule(in: RunLoop.current, forMode: RunLoopMode.commonModes)
                 connection.start()
                 print("Connection started", terminator: "\n")
                 infoTextField.stringValue = "Connecting..."
@@ -71,26 +71,26 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
         }
     }
     
-    func connection(connection: NSURLConnection, didFailWithError error: NSError) {
-        infoTextField.textColor = NSColor.redColor()
+    func connection(_ connection: NSURLConnection, didFailWithError error: Error) {
+        infoTextField.textColor = NSColor.red
         infoTextField.stringValue = error.localizedDescription
     }
     
-    func connectionDidFinishLoading(connection: NSURLConnection) {
-        infoTextField.textColor = NSColor.textColor()
+    func connectionDidFinishLoading(_ connection: NSURLConnection) {
+        infoTextField.textColor = NSColor.textColor
         infoTextField.stringValue = "Successful"
     }
  
-    func connection(connection: NSURLConnection, willSendRequestForAuthenticationChallenge challenge: NSURLAuthenticationChallenge) {
+    func connection(_ connection: NSURLConnection, willSendRequestFor challenge: URLAuthenticationChallenge) {
         NSLog("willSendRequestForAuthenticationChallenge for \(challenge.protectionSpace.authenticationMethod)")
         
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
             if let serverTrust = challenge.protectionSpace.serverTrust {
                 
-                var evaluateResult : SecTrustResultType = 0;
+                var evaluateResult : SecTrustResultType = .invalid;
                 let status = SecTrustEvaluate(serverTrust, &evaluateResult);
                 
-                if (status == errSecSuccess)  && (evaluateResult == 1 /* kSecTrustResultProceed */ || evaluateResult == 4 /*kSecTrustResultUnspecified */) {
+                if (status == errSecSuccess)  && (evaluateResult == .proceed  || evaluateResult == .unspecified ) {
                     NSLog("Certificate is trusted")
                 }
                 else
@@ -119,16 +119,16 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
             }
         }
         
-        challenge.sender?.performDefaultHandlingForAuthenticationChallenge!(challenge)
+        challenge.sender?.performDefaultHandling!(for: challenge)
     }
     
-    func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+    func numberOfRows(in tableView: NSTableView) -> Int {
         
         return certificates?.count ?? 0
     }
     
-    func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if let result = tableView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
+    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
             if certificates != nil {
                 let summary = SecCertificateCopySubjectSummary(certificates![row]) as String
                 result.textField!.stringValue = summary
@@ -138,15 +138,15 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
         return nil
     }
     
-    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         return nil;
     }
     
-    func tableViewSelectionDidChange(notification: NSNotification) {
+    func tableViewSelectionDidChange(_ notification: Notification) {
         enableButtons()
     }
 
-    override func controlTextDidChange(obj: NSNotification) {
+    override func controlTextDidChange(_ obj: Notification) {
         enableGetServerDataButton()
     }
 }

@@ -48,7 +48,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                     simulatorManager = DCSimulatorManager()
                 }
                 
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), { () -> Void in
+                DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.low).async(execute: { () -> Void in
                     
                     var simulatorsByVersion = [String : [Simulator]]()
                     for sim in self.simulatorManager!.simulators {
@@ -70,7 +70,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                         simulatorsByVersion[typeAndVersion]?.append(sim)
                         
                     }
-                    let sortedKeys = simulatorsByVersion.keys.sort()
+                    let sortedKeys = simulatorsByVersion.keys.sorted()
                     //sortedKeys.sort({ (s1, s2) -> Bool in
                     //    return s2 > s1
                     //})
@@ -80,7 +80,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                         simulatorVersions.append(SimulatorVersion(version: key, simulators: sims))
                         
                     }
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    DispatchQueue.main.async(execute: { () -> Void in
                         self._simulators = simulatorVersions
                         self.outlineView.reloadData()
                         self.initView(firstInit)
@@ -93,14 +93,14 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
     }
 
     
-    func initView(firstInit : Bool) {
+    func initView(_ firstInit : Bool) {
         initTabViewItem(tabView.selectedTabViewItem)
         outlineView.expandItem(nil, expandChildren: true)
         if (_simulators != nil) {
             if let sim = simulatorVersions.first?.simulators.first {
-                let row = outlineView.rowForItem(sim)
+                let row = outlineView.row(forItem: sim)
                 if row >= 0 {
-                    outlineView.selectRowIndexes(NSIndexSet(index: row), byExtendingSelection: false)
+                    outlineView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
                 }
             }
         }
@@ -109,11 +109,11 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         }
     }
     
-    func simDeviceChanged (notificationType :  DCSimulatorManager.NotificationType, deviceUDID : NSUUID, newState : Int) -> Void {
+    func simDeviceChanged (_ notificationType :  DCSimulatorManager.NotificationType, deviceUDID : UUID, newState : Int) -> Void {
         
         switch notificationType {
-        case .DeviceState:
-            if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
+        case .deviceState:
+            if let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
                 if sim.UDID == deviceUDID {
                     for tabViewItem in tabView.tabViewItems {
                         if let item = tabViewItem.identifier as? DCSimulatorViewController {
@@ -123,7 +123,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                 }
             }
 
-        case .DeviceAdded, .DeviceRemoved, .DeviceRenamed:
+        case .deviceAdded, .deviceRemoved, .deviceRenamed:
             // Simplified handling of other cases: just reloading the complete list
             _simulators = nil
             self.outlineView.reloadData()
@@ -132,7 +132,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         
     }
     
-    func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
+    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         if (item == nil) {
             return simulatorVersions[index]
         }
@@ -144,7 +144,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         }
     }
 
-    func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
+    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         if (item == nil) {
             return simulatorVersions.count
         }
@@ -156,23 +156,23 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         }
     }
     
-    func outlineView(outlineView: NSOutlineView, isGroupItem item: AnyObject) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, isGroupItem item: Any) -> Bool {
         return item is SimulatorVersion
     }
 
-    func outlineView(outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
         return item is SimulatorVersion
     }
 
-    func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView? {
+    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         if let simulatorsForVersion = item as? SimulatorVersion {
-            if let result = outlineView.makeViewWithIdentifier("HeaderCell", owner: self) as? NSTableCellView {
+            if let result = outlineView.make(withIdentifier: "HeaderCell", owner: self) as? NSTableCellView {
                 result.textField!.stringValue = simulatorsForVersion.version
                 return result
             }
         }
         else if let sim = item as? Simulator {
-            if let result = outlineView.makeViewWithIdentifier("DataCell", owner: self) as? NSTableCellView {
+            if let result = outlineView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
                 result.textField!.stringValue = sim.name!
                 return result
             }
@@ -180,8 +180,8 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         return nil
     }
     
-    func outlineViewSelectionDidChange(notification: NSNotification) {
-        if let sim = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator {
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+        if let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
             NSLog("selected: %@", sim.name!)
             for tabViewItem in tabView.tabViewItems {
                 if let item = tabViewItem.identifier as? DCSimulatorViewController {
@@ -191,11 +191,11 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         }
     }
     
-    func outlineView(outlineView: NSOutlineView, shouldSelectItem item: AnyObject) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
         return item is Simulator
     }
     
-    func initTabViewItem(tabViewItem: NSTabViewItem?) {
+    func initTabViewItem(_ tabViewItem: NSTabViewItem?) {
         if let identifier = tabViewItem?.identifier as? String {
             var viewController : NSViewController?
             switch identifier {
@@ -213,14 +213,14 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                 tabViewItem?.identifier = viewController!
                 if outlineView.selectedRow >= 0 {
                     if let item = viewController as? DCSimulatorViewController {
-                        item.simulator = outlineView.itemAtRow(outlineView.selectedRow) as? Simulator
+                        item.simulator = outlineView.item(atRow: outlineView.selectedRow) as? Simulator
                     }
                 }
             }
         }
     }
     
-    func tabView(tabView: NSTabView, shouldSelectTabViewItem tabViewItem: NSTabViewItem?) -> Bool {
+    func tabView(_ tabView: NSTabView, shouldSelect tabViewItem: NSTabViewItem?) -> Bool {
         initTabViewItem(tabViewItem)
         return true;
     }

@@ -29,9 +29,9 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
             }
             infoItems.append(DCInfoViewItem(name: NSLocalizedString("Version:", comment: ""), value: "\(simulator!.version ?? empty) - \(simulator!.build ?? empty)"))
             if simulator!.UDID != nil {
-                infoItems.append(DCInfoViewItem(name: NSLocalizedString("UDID:", comment: ""), value: simulator!.UDID!.UUIDString))
+                infoItems.append(DCInfoViewItem(name: NSLocalizedString("UDID:", comment: ""), value: simulator!.UDID!.uuidString))
             }
-            infoItems.append(DCInfoViewItem(name: NSLocalizedString("Path:", comment: ""), value: (simulator!.path as NSString?)?.stringByAbbreviatingWithTildeInPath ?? empty))
+            infoItems.append(DCInfoViewItem(name: NSLocalizedString("Path:", comment: ""), value: (simulator!.path as NSString?)?.abbreviatingWithTildeInPath ?? empty))
             if simulator!.stateString != nil {
                 infoItems.append(DCInfoViewItem(name: NSLocalizedString("State:", comment: ""), value: simulator!.stateString!))
             }
@@ -48,7 +48,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     }
     
     
-    func numberOfRowsInTableView(tableView: NSTableView) -> Int {
+    func numberOfRows(in tableView: NSTableView) -> Int {
         
         if simulator != nil {
             return infoItems.count
@@ -56,7 +56,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
         return 0
     }
     
-    func tableView(tableView: NSTableView, objectValueForTableColumn tableColumn: NSTableColumn?, row: Int) -> AnyObject? {
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         
         if tableColumn?.identifier == "NameColumn" {
             return infoItems[row].name
@@ -66,18 +66,18 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
         return nil
     }
     
-    func tableView(tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
+    func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
         return false
     }
     
     
-    @IBAction func showInFinderPressed(sender: NSButton) {
+    @IBAction func showInFinderPressed(_ sender: NSButton) {
         if simulator != nil {
-            NSWorkspace.sharedWorkspace().selectFile(simulator!.path!, inFileViewerRootedAtPath: simulator!.path!)
+            NSWorkspace.shared().selectFile(simulator!.path!, inFileViewerRootedAtPath: simulator!.path!)
         }
     }
     
-    @IBAction func openSimulatorPressed(sender: NSButton) {
+    @IBAction func openSimulatorPressed(_ sender: NSButton) {
         if simulator != nil {
             simulator?.launchSimulatorApp()
         }

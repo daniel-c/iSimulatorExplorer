@@ -11,9 +11,9 @@ import Foundation
 
 class DCSimulatorTruststoreItem {
     
-    var sha1: NSData?, subject : NSData?, data : NSData?
+    var sha1: Data?, subject : Data?, data : Data?
     
-    var tset : NSData?
+    var tset : Data?
     
     init() {
         
@@ -21,11 +21,11 @@ class DCSimulatorTruststoreItem {
             "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
             "<plist version=\"1.0\">\n" +
             "<array/>\n" +
-            "</plist>\n").dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+            "</plist>\n").data(using: String.Encoding.utf8, allowLossyConversion: false)
         
     }
     
-    convenience init (sha1: NSData?, subject : NSData?, tset : NSData?, data : NSData?)
+    convenience init (sha1: Data?, subject : Data?, tset : Data?, data : Data?)
     {
         self.init()
         self.sha1 = sha1
@@ -37,7 +37,7 @@ class DCSimulatorTruststoreItem {
     convenience init (certificate : SecCertificate) {
         self.init()
         let cdata = SecCertificateCopyData(certificate)
-        data = cdata as NSData
+        data = cdata as Data
         sha1 = getThumbprint()
         subject = getNormalizedSubject()
     }
@@ -46,7 +46,7 @@ class DCSimulatorTruststoreItem {
     var certificate : SecCertificate? {
         get {
             if _certificate == nil && data != nil {
-                _certificate = SecCertificateCreateWithData(nil, data!)
+                _certificate = SecCertificateCreateWithData(nil, data! as CFData)
             }
             return _certificate;
         }
@@ -62,55 +62,57 @@ class DCSimulatorTruststoreItem {
     }
     
     
-    func getNormalizedSubject() -> NSData? {
+    func getNormalizedSubject() -> Data? {
         //BUG Something to causes an exception in the swift compiler!
         //if let data = SecCertificateCopyNormalizedSubjectContent(certificate, nil)?.takeRetainedValue() as? NSData {
         
         if certificate != nil {
             if let cdata = SecCertificateCopyNormalizedSubjectContent(certificate!, nil) {
-                let data = cdata as NSData
+                let data = cdata as Data
                 return data
             }
         }
         return nil
     }
     
-    func calcSHA1(data : NSData) -> NSData {
+    func calcSHA1(_ data : Data) -> Data {
         
         let digest = NSMutableData(length: Int(CC_SHA1_DIGEST_LENGTH))
-        CC_SHA1(data.bytes, CC_LONG(data.length), UnsafeMutablePointer<UInt8>(digest!.mutableBytes))
-        return digest!
+        CC_SHA1((data as NSData).bytes, CC_LONG(data.count), digest!.mutableBytes.assumingMemoryBound(to: UInt8.self))
+        return digest! as Data
     }
     
-    func getThumbprint() -> NSData {
+    func getThumbprint() -> Data {
         
         return calcSHA1(data!)
     }
     
-    func hexstringFromData(data : NSData) -> String {
-        var dataBytes = UnsafePointer<UInt8>(data.bytes)
-        var str : String = ""
-        for _ in 0 ..< data.length {
-            dataBytes.memory
-            str += NSString(format: "%02x", dataBytes.memory) as String
-            dataBytes = dataBytes.successor()
+    func hexstringFromData(_ data : Data) -> String {
+        
+        return data.withUnsafeBytes { (bytes : UnsafePointer<UInt8>) -> String in
+            var str : String = ""
+            var dataBytes = bytes
+            for _ in 0 ..< data.count {
+                str += NSString(format: "%02x", dataBytes.pointee) as String
+                dataBytes = dataBytes.successor()
+            }
+            return str
         }
-        return str
     }
     
     func getThumbprintAsHexString() -> String {
         return hexstringFromData(getThumbprint())
     }
     
-    func export(url : NSURL) -> Bool {
+    func export(_ url : URL) -> Bool {
         var result = false
         if let cert = certificate {
             var outData : CFData?
-            let status = SecItemExport(cert, SecExternalFormat.FormatUnknown, SecItemImportExportFlags.PemArmour, nil, &outData)
+            let status = SecItemExport(cert, SecExternalFormat.formatUnknown, SecItemImportExportFlags.pemArmour, nil, &outData)
             if status == errSecSuccess {
                 if let cdata = outData {
-                    let data = cdata as NSData
-                    result = data.writeToURL(url, atomically: false)
+                    let data = cdata as Data
+                    result = (try? data.write(to: url, options: [])) != nil
                 }
             }
         }
@@ -131,10 +133,10 @@ class DCSimulatorTruststore {
     
     func openTrustStore() {
         
-        var database : COpaquePointer = nil
-        var result = sqlite3_open(path.cStringUsingEncoding(NSUTF8StringEncoding)!, &database)
+        var database : OpaquePointer? = nil
+        var result = sqlite3_open(path.cString(using: String.Encoding.utf8)!, &database)
         if result == SQLITE_OK {
-            var sqlStatements : COpaquePointer = nil
+            var sqlStatements : OpaquePointer? = nil
             result = sqlite3_prepare(database, "SELECT sha1, subj, tset, data FROM tsettings", -1, &sqlStatements, nil)
             if result == SQLITE_OK {
                 while (sqlite3_step(sqlStatements) == SQLITE_ROW)
@@ -142,28 +144,31 @@ class DCSimulatorTruststore {
                     var dataLength = sqlite3_column_bytes(sqlStatements, 0);
                     if (dataLength > 0)
                     {
-                        var blobData = sqlite3_column_blob(sqlStatements, 0);
-                        let sha1 = NSData(bytes: blobData, length: Int(dataLength))
+                        let blobData = sqlite3_column_blob(sqlStatements, 0)
+                        let sha1 = Data(bytes: blobData!, count: Int(dataLength))
                         
-                        var subj : NSData?;
-                        var tset : NSData?;
-                        var data : NSData?;
+                        var subj : Data?;
+                        var tset : Data?;
+                        var data : Data?;
                         
                         dataLength = sqlite3_column_bytes(sqlStatements, 1);
                         if dataLength > 0 {
-                            blobData = sqlite3_column_blob(sqlStatements, 1);
-                            subj = NSData(bytes: blobData, length: Int(dataLength))
+                            if let blobData = sqlite3_column_blob(sqlStatements, 1) {
+                                subj = Data(bytes: blobData, count: Int(dataLength))
+                            }
                         }
                         dataLength = sqlite3_column_bytes(sqlStatements, 2);
                         if dataLength > 0 {
-                            blobData = sqlite3_column_blob(sqlStatements, 2);
-                            tset = NSData(bytes: blobData, length: Int(dataLength))
+                            if let blobData = sqlite3_column_blob(sqlStatements, 2) {
+                                tset = Data(bytes: blobData, count: Int(dataLength))
+                            }
                         }
                         dataLength = sqlite3_column_bytes(sqlStatements, 3);
                         if dataLength > 0 {
-                            blobData = sqlite3_column_blob(sqlStatements, 3);
-                            data = NSData(bytes: blobData, length: Int(dataLength))
-                            
+                            if let blobData = sqlite3_column_blob(sqlStatements, 3) {
+                                data = Data(bytes: blobData, count: Int(dataLength))
+                            }
+
                             let item = DCSimulatorTruststoreItem(sha1: sha1, subject: subj, tset: tset, data: data)
                             items.append(item)
                         }
@@ -179,17 +184,17 @@ class DCSimulatorTruststore {
         }
     }
     
-    func removeItem(index : Int) -> Bool {
+    func removeItem(_ index : Int) -> Bool {
         var success = false
         if index >= 0 && index < items.count {
             let item = items[index]
             
-            let certificateSha1 = item.getThumbprintAsHexString().uppercaseString.cStringUsingEncoding(NSUTF8StringEncoding)!
+            let certificateSha1 = item.getThumbprintAsHexString().uppercased().cString(using: String.Encoding.utf8)!
             
-            var database : COpaquePointer = nil
-            var result = sqlite3_open(path.cStringUsingEncoding(NSUTF8StringEncoding)!, &database)
+            var database : OpaquePointer? = nil
+            var result = sqlite3_open(path.cString(using: String.Encoding.utf8)!, &database)
             if result == SQLITE_OK {
-                var sqlStatements : COpaquePointer = nil
+                var sqlStatements : OpaquePointer? = nil
                 result = sqlite3_prepare_v2(database, "DELETE FROM tsettings WHERE hex(sha1)=?", -1, &sqlStatements, nil)
                 if result == SQLITE_OK {
                     
@@ -198,7 +203,7 @@ class DCSimulatorTruststore {
                         result = sqlite3_step(sqlStatements);
                         if result == SQLITE_DONE  {
                             if (sqlite3_changes(database) > 0) {
-                                items.removeAtIndex(index)
+                                items.remove(at: index)
                                 success = true
                             }
                             else {
@@ -221,20 +226,20 @@ class DCSimulatorTruststore {
         return success
     }
     
-    func addItem(item : DCSimulatorTruststoreItem) -> Bool {
+    func addItem(_ item : DCSimulatorTruststoreItem) -> Bool {
         
         var success = false
-        var database : COpaquePointer = nil
-        var result = sqlite3_open(path.cStringUsingEncoding(NSUTF8StringEncoding)!, &database)
+        var database : OpaquePointer? = nil
+        var result = sqlite3_open(path.cString(using: String.Encoding.utf8)!, &database)
         if result == SQLITE_OK {
-            var sqlStatements : COpaquePointer = nil
+            var sqlStatements : OpaquePointer? = nil
             result = sqlite3_prepare_v2(database, "INSERT INTO tsettings (sha1, subj, tset, data) VALUES (?, ?, ?, ?)", -1, &sqlStatements, nil)
             
             if result == SQLITE_OK {
-                result = sqlite3_bind_blob(sqlStatements, 1, item.sha1!.bytes, Int32(item.sha1!.length), nil) //SQLITE_TRANSIENT);
-                result = sqlite3_bind_blob(sqlStatements, 2, item.subject!.bytes, Int32(item.subject!.length), nil) // SQLITE_STATIC);
-                result = sqlite3_bind_blob(sqlStatements, 3, item.tset!.bytes, Int32(item.tset!.length), nil) // SQLITE_STATIC);
-                result = sqlite3_bind_blob(sqlStatements, 4, item.data!.bytes, Int32(item.data!.length), nil) //SQLITE_STATIC);
+                result = sqlite3_bind_blob(sqlStatements, 1, (item.sha1! as NSData).bytes, Int32(item.sha1!.count), nil) //SQLITE_TRANSIENT);
+                result = sqlite3_bind_blob(sqlStatements, 2, (item.subject! as NSData).bytes, Int32(item.subject!.count), nil) // SQLITE_STATIC);
+                result = sqlite3_bind_blob(sqlStatements, 3, (item.tset! as NSData).bytes, Int32(item.tset!.count), nil) // SQLITE_STATIC);
+                result = sqlite3_bind_blob(sqlStatements, 4, (item.data! as NSData).bytes, Int32(item.data!.count), nil) //SQLITE_STATIC);
                 if result == SQLITE_OK {
                     result = sqlite3_step(sqlStatements);
                     if result == SQLITE_DONE {
