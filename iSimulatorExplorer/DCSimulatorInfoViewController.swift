@@ -17,6 +17,7 @@ struct DCInfoViewItem {
 class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataSource, NSTableViewDelegate {
 
     @IBOutlet weak var infoTableView: NSTableView!
+    @IBOutlet weak var startStopButton: NSButton!
 
     private var infoItems = [DCInfoViewItem]()
     override var simulator : Simulator? {
@@ -36,6 +37,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
                 infoItems.append(DCInfoViewItem(name: NSLocalizedString("State:", comment: ""), value: simulator!.stateString!))
             }
             infoTableView.reloadData()
+            updateStartStopButton()
         }
     }
     
@@ -79,7 +81,41 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     @IBAction func openSimulatorPressed(_ sender: NSButton) {
         if simulator != nil {
-            simulator?.launchSimulatorApp()
+            let _ = simulator?.launchSimulatorApp()
+        }
+    }
+    
+    
+    func updateStartStopButton() {
+        if (simulator!.state == nil) {
+            startStopButton.isHidden = true
+        }
+        else {
+            startStopButton.isHidden = false
+            switch simulator!.state! {
+            case .booted:
+                startStopButton.isEnabled = true
+                startStopButton.title = "Shutdown"
+            case .shutDown:
+                startStopButton.isEnabled = true
+                startStopButton.title = "Boot"
+            default:
+                startStopButton.isEnabled = false
+            }
+        }
+    }
+    
+    
+    @IBAction func startStopSimulatorPressed(_ sender: NSButton) {
+        if (simulator!.state! == .shutDown) {
+            simulator?.boot({ (error) in
+                NSLog("boot complete. \(error)")
+            })
+        }
+        else {
+            simulator?.shutdown({ (error) in
+                NSLog("shudown complete. \(error)")
+            })
         }
     }
 }

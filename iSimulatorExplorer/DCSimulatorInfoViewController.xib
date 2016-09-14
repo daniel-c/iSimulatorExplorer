@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9059"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DCSimulatorInfoViewController" customModule="iSimulatorExplorer" customModuleProvider="target">
             <connections>
                 <outlet property="infoTableView" destination="DJ1-Db-fI0" id="pLJ-AO-POb"/>
+                <outlet property="startStopButton" destination="nEZ-uW-Xm9" id="DWu-fW-qnX"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -23,7 +24,6 @@
                         <constraint firstAttribute="width" constant="126" id="SuW-pk-OKz"/>
                         <constraint firstAttribute="height" constant="21" id="zF7-km-K61"/>
                     </constraints>
-                    <animations/>
                     <buttonCell key="cell" type="push" title="Show in finder" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="R3S-dx-gHl">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -38,7 +38,6 @@
                         <constraint firstAttribute="width" constant="126" id="698-TB-3bQ"/>
                         <constraint firstAttribute="height" constant="21" id="Ssv-Ik-EwH"/>
                     </constraints>
-                    <animations/>
                     <buttonCell key="cell" type="push" title="Open Simulator" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="AjO-05-jjY">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -50,13 +49,12 @@
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2kd-39-ya5">
                     <rect key="frame" x="20" y="253" width="465" height="135"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="pC0-qw-jo1">
-                        <rect key="frame" x="1" y="17" width="238" height="117"/>
+                        <rect key="frame" x="0.0" y="0.0" width="465" height="135"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" id="DJ1-Db-fI0">
-                                <rect key="frame" x="0.0" y="0.0" width="465" height="19"/>
+                                <rect key="frame" x="0.0" y="0.0" width="465" height="135"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <tableViewGridLines key="gridStyleMask" dashed="YES"/>
@@ -95,24 +93,33 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <animations/>
-                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </clipView>
                     <constraints>
                         <constraint firstAttribute="height" constant="135" id="0Mn-aD-Oj1"/>
                     </constraints>
-                    <animations/>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="gkv-2U-SmC">
                         <rect key="frame" x="1" y="77" width="149" height="16"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="TMY-18-IrK">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
                     </scroller>
                 </scrollView>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nEZ-uW-Xm9">
+                    <rect key="frame" x="353" y="13" width="138" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="PTe-Tb-Xir"/>
+                        <constraint firstAttribute="width" constant="126" id="wG0-NM-Kg6"/>
+                    </constraints>
+                    <buttonCell key="cell" type="push" title="Boot" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2iQ-hh-hXm">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="startStopSimulatorPressed:" target="-2" id="ZXy-sa-hhb"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="2kd-39-ya5" secondAttribute="trailing" constant="20" id="05f-Ze-ufc"/>
@@ -120,10 +127,11 @@
                 <constraint firstItem="HjE-P7-vLF" firstAttribute="leading" secondItem="5Op-yj-EMh" secondAttribute="trailing" constant="64" id="9Co-jn-oZW"/>
                 <constraint firstItem="HjE-P7-vLF" firstAttribute="centerY" secondItem="5Op-yj-EMh" secondAttribute="centerY" id="9Da-P6-v13"/>
                 <constraint firstAttribute="bottom" secondItem="5Op-yj-EMh" secondAttribute="bottom" constant="20" id="ON1-gQ-8Zx"/>
+                <constraint firstAttribute="bottom" secondItem="nEZ-uW-Xm9" secondAttribute="bottom" constant="20" id="bqr-3L-AgT"/>
                 <constraint firstItem="2kd-39-ya5" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" id="cl9-2M-RUf"/>
                 <constraint firstItem="5Op-yj-EMh" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" id="gIA-oG-eNU"/>
+                <constraint firstAttribute="trailing" secondItem="nEZ-uW-Xm9" secondAttribute="trailing" constant="20" id="h4A-gy-dqq"/>
             </constraints>
-            <animations/>
             <point key="canvasLocation" x="169.5" y="255"/>
         </customView>
     </objects>
