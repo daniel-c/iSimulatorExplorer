@@ -13,8 +13,8 @@ class DCSimulatorManager {
     private var simulatorFramework : Bundle?
     private let kDVTFoundationRelativePath = "../SharedFrameworks/DVTFoundation.framework"
     private let kDevToolsFoundationRelativePath = "../OtherFrameworks/DevToolsFoundation.framework"
-    private let kSimulatorRelativePath = "Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone Simulator.app"
-    private let sim5BasePath = ("~/Library/Application Support/iPhone Simulator" as NSString).expandingTildeInPath
+    private var developerDir : String?
+    private var simServiceContextClass : AnyClass?
     private var simDeviceSetClass : AnyClass?
     private var simDeviceSet : AnyObject?
     private var getSimulators : () -> [Simulator]
@@ -32,11 +32,12 @@ class DCSimulatorManager {
     }
 
     private func LoadSimulatorFramework() -> Bundle! {
-        if let developerDir = XCodeSupport.getDeveloperToolsPath() as NSString? {
+        if let devDir = XCodeSupport.getDeveloperToolsPath() as NSString? {
+            self.developerDir = devDir as String
 
             // The Simulator framework depends on some of the other Xcode private
             // frameworks; manually load them first so everything can be linked up.
-            let dvtFoundationPath = developerDir.appendingPathComponent(kDVTFoundationRelativePath)
+            let dvtFoundationPath = devDir.appendingPathComponent(kDVTFoundationRelativePath)
             
             if let dvtFoundationBundle = Bundle(path: dvtFoundationPath) {
                 if !(dvtFoundationBundle.load()) {
@@ -44,7 +45,7 @@ class DCSimulatorManager {
                 }
             }
             
-            let devToolsFoundationPath = developerDir.appendingPathComponent(kDevToolsFoundationRelativePath)
+            let devToolsFoundationPath = devDir.appendingPathComponent(kDevToolsFoundationRelativePath)
             if let devToolsFoundationBundle = Bundle(path: devToolsFoundationPath) {
                 if !(devToolsFoundationBundle.load()) {
                     return nil
@@ -65,32 +66,16 @@ class DCSimulatorManager {
                 return nil;
             }
 
-/*
-            if let DVTPlatformClass : AnyClass = FindClassByName("DVTPlatform") {
-                do {
-                    try DVTPlatformClass.loadAllPlatformsReturningError()
-                }
-                catch let error as NSError {
-                    NSLog("Unable to loadAllPlatformsReturningError. Error: %@", error.localizedDescription)
-                    return nil;
-                }
-                catch {
-                    NSLog("Unable to loadAllPlatformsReturningError. Unknown Error")
-                    return nil;
-                }
-            }
-  */
-
             // The path within the developer dir of the private Simulator frameworks.
             let simulatorFrameworkRelativePath = "../SharedFrameworks/DVTiPhoneSimulatorRemoteClient.framework";
             let kCoreSimulatorRelativePath = "Library/PrivateFrameworks/CoreSimulator.framework";
-            let coreSimulatorPath = developerDir.appendingPathComponent(kCoreSimulatorRelativePath);
+            let coreSimulatorPath = devDir.appendingPathComponent(kCoreSimulatorRelativePath);
             if let coreSimulatorBundle = Bundle(path: coreSimulatorPath) {
                 if !(coreSimulatorBundle.load()) {
                     return nil
                 }
             }
-            let simBundlePath = developerDir.appendingPathComponent(simulatorFrameworkRelativePath);
+            let simBundlePath = devDir.appendingPathComponent(simulatorFrameworkRelativePath);
             if let simBundle = Bundle(path: simBundlePath) {
                 if !(simBundle.load()) {
                     return nil
@@ -102,27 +87,34 @@ class DCSimulatorManager {
     }
 
     
-    // Get XCode version 6.0 simulators using CoreSimulator framework
-    fileprivate func getXcode6SimulatorsFromCoreSimulator() -> [Simulator] {
-        
-        var simulators = [Simulator]()
+    // Get XCode version 8 simulators using CoreSimulator framework
+    fileprivate func getXcode8SimulatorsFromCoreSimulator() -> [Simulator] {
 
-        simDeviceSet = simDeviceSetClass?.default()
-        if simDeviceSet != nil  {
-            if let deviceList = simDeviceSet!.availableDevices {
-                for simDevice in deviceList {
-                    let sim = Simulator(device: simDevice as AnyObject)
-                    if sim.isValid {
-                        simulators.append(sim)
+        var simulators = [Simulator]()
+        
+        //if let context = try? simServiceContextClass!.sharedServiceContext(forDeveloperDir: developerDir!) {
+        if let context = try? SimServiceContextWrapper.sharedServiceContext(forDeveloperDir: developerDir!, simServiceContextClass:simServiceContextClass!) {
+
+            simDeviceSet = try! context.defaultDeviceSet()
+            
+            if simDeviceSet != nil  {
+                if let deviceList = simDeviceSet!.availableDevices {
+                    for simDevice in deviceList {
+                        let sim = Simulator(device: simDevice as AnyObject)
+                        if sim.isValid {
+                            simulators.append(sim)
+                        }
                     }
                 }
             }
+
         }
+ 
         return simulators;
     }
     
-    // Get XCode version 6.0 simulators by browsing the file system
-    private func getXcode6SimulatorsFromFileSystem() -> [Simulator] {
+    // Get XCode simulators by browsing the file system
+    private func getXcode8SimulatorsFromFileSystem() -> [Simulator] {
         
         var simulators = [Simulator]()
         
@@ -160,24 +152,24 @@ class DCSimulatorManager {
         if let dtVersion = XCodeSupport.getDeveloperToolsVersion() {
             
             NSLog("XCode version \(dtVersion)")
-            if dtVersion.compare("6.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
+            if dtVersion.compare("8.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
                 
-                NSLog("XCode version < 6.0. Not Supported")
+                NSLog("XCode version < 8.0. Not Supported")
                 
             }
             else {
-                NSLog("XCode version >= 6.0")
+                NSLog("XCode version >= 8.0")
 
-                // XCode version 6.0 simulators
+                // XCode version 8.0 simulators
                 simulatorFramework = LoadSimulatorFramework()
                 simDeviceSetClass = FindClassByName("SimDeviceSet")
-                
-                if simDeviceSetClass != nil {
-                    getSimulators = getXcode6SimulatorsFromCoreSimulator
+                simServiceContextClass = FindClassByName("SimServiceContext")
+                if simServiceContextClass != nil {
+                    getSimulators = getXcode8SimulatorsFromCoreSimulator
                 }
                 else
                 {
-                    getSimulators = getXcode6SimulatorsFromFileSystem
+                    getSimulators = getXcode8SimulatorsFromFileSystem
                 }
             }
         }

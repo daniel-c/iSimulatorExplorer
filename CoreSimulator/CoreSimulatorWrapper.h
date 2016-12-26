@@ -18,6 +18,14 @@
 //@class SimDevice;
 
 
+@interface SimServiceContextWrapper : NSObject
+
++ (SimServiceContext *)sharedServiceContextForDeveloperDir:(NSString *)developerDir simServiceContextClass:(Class)serviceClass error:(NSError **)error;
+
+
+@end
+
+
 @interface SimDeviceWrapper : NSObject
 
 + (instancetype)simDeviceWrapper:(id)simDevice;

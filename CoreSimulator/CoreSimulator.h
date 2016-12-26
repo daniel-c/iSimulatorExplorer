@@ -3,7 +3,7 @@
 //
 //     class-dump is Copyright (C) 1997-1998, 2000-2001, 2004-2013 by Steve Nygard.
 //
-// Xcode 8 version
+// Xcode 8.2 version
 // Modified by Daniel Cerutti to add type informations
 //
 
@@ -13,6 +13,7 @@
 #import "AppKit/AppKit.h"
 
 @protocol SimDeviceIOBundleInterface;
+@protocol SimDeviceIOPortInterface;
 @class SimDevice;
 @class SimDeviceSet;
 @class SimDeviceType;
@@ -51,18 +52,23 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 @protocol SimDeviceIOInterface
 - (BOOL)unregisterService:(NSString *)arg1 error:(id *)error;
 - (BOOL)registerPort:(unsigned int)arg1 service:(NSString *)arg2 error:(id *)error;
-- (struct NSDictionary *)makeRequest:(NSString *)arg1 fields:(struct NSDictionary *)arg2;
 @end
 
 @protocol SimDeviceIOPortConsumer
-@property(readonly, retain, nonatomic) NSUUID *consumerUUID;
-@property(readonly, retain, nonatomic) NSString *consumerIdentifier;
+@property(readonly, nonatomic) NSUUID *consumerUUID;
+@property(readonly, nonatomic) NSString *consumerIdentifier;
 @end
 
 @protocol SimDeviceIOPortDescriptorState
 @property(readonly, nonatomic) int powerState;
 @end
 
+@protocol SimDeviceIOProtocol <NSObject>
+- (void)detachConsumer:(NSObject<SimDeviceIOPortConsumer> *)arg1 fromPort:(NSObject<SimDeviceIOPortInterface> *)arg2;
+- (void)attachConsumer:(NSObject<SimDeviceIOPortConsumer> *)arg1 toPort:(NSObject<SimDeviceIOPortInterface> *)arg2;
+- (NSArray<SimDeviceIOPortInterface> *)ioPorts;
+- (NSObject<SimDeviceIOPortInterface> *)ioPortForUUID:(NSUUID *)arg1;
+@end
 
 @protocol SimDeviceNotifier
 - (BOOL)unregisterNotificationHandler:(unsigned long long)handler error:(id *)error;
@@ -73,7 +79,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 @protocol SimDisplayDescriptorState <SimDeviceIOPortDescriptorState>
 @property(readonly, nonatomic) unsigned int defaultHeightForDisplay;
 @property(readonly, nonatomic) unsigned int defaultWidthForDisplay;
-@property(readonly, nonatomic) int displayClass;
+@property(readonly, nonatomic) unsigned short displayClass;
 @end
 
 @protocol SimPasteboard <SimDeviceNotifier>
@@ -87,7 +93,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 - (NSObject<NSSecureCoding> *)retrieveValueForSimPasteboardItem:(SimPasteboardItem *)arg1 type:(NSString *)arg2;
 @end
 
-@interface SimDeviceIO : NSObject <SimDeviceIOInterface>
+@interface SimDeviceIO : NSObject <SimDeviceIOInterface, SimDeviceIOProtocol>
 
 + (id)ioForSimDevice:(id)arg1;
 @property(nonatomic) __weak SimDevice *device;
@@ -96,7 +102,6 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 - (void)attachConsumer:(id)arg1 toPort:(id)arg2;
 - (BOOL)unregisterService:(id)arg1 error:(id *)arg2;
 - (BOOL)registerPort:(unsigned int)arg1 service:(id)arg2 error:(id *)arg3;
-- (struct NSDictionary *)makeRequest:(id)arg1 fields:(struct NSDictionary *)arg2;
 - (id)ioPortForUUID:(id)arg1;
 - (id)ioPorts;
 - (id)initWithDevice:(id)arg1;
@@ -111,7 +116,6 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 
 - (BOOL)unregisterService:(id)arg1 error:(id *)arg2;
 - (BOOL)registerPort:(unsigned int)arg1 service:(id)arg2 error:(id *)arg3;
-- (struct NSDictionary *)makeRequest:(id)arg1 fields:(struct NSDictionary *)arg2;
 - (id)tvOutDisplayDescriptorState;
 - (id)mainDisplayDescriptorState;
 - (BOOL)unloadAllBundles;
@@ -135,11 +139,11 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 
 @property(retain, nonatomic) NSObject<OS_dispatch_source> *serverSource;
 @property(retain, nonatomic) dispatch_queue_t serverQueue;
-@property(readonly, retain, nonatomic) NSString *name;
-@property(readonly, retain, nonatomic) NSMachPort *port;
+@property(readonly, nonatomic) NSString *name;
+@property(readonly, nonatomic) NSMachPort *port;
 
 - (id)description;
-- (id)initWithName:(id)arg1 machMessageHandler:(CDUnknownFunctionPointerType)arg2 machMessageSize:(unsigned int)arg3 error:(id *)arg4;
+- (id)initWithName:(id)arg1 machMessageHandler:(const CDUnknownFunctionPointerType)arg2 machMessageSize:(unsigned int)arg3 error:(id *)arg4;
 
 @end
 
@@ -196,7 +200,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 
 + (id)loadedBundleForURL:(id)arg1;
 @property(retain, nonatomic) id <SimDeviceIOBundleInterface> bundleInterface;
-@property(nonatomic) NSBundle *bundle;
+@property(retain, nonatomic) NSBundle *bundle;
 
 - (id)initWithURL:(id)arg1;
 
@@ -309,22 +313,28 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 - (void)_monitorProfilesParentDirectory:(int)arg1 nextPathComponent:(id)arg2 path:(id)arg3;
 - (void)_monitorProfilesPath:(id)arg1;
 - (void)fence;
-@property(readonly, copy) NSArray *monitoredPaths;
+@property(readonly, nonatomic) NSArray *monitoredPaths;
 - (void)monitorProfilesPath:(id)arg1;
 - (void)monitorDefaultProfilePaths;
 - (id)initWithContext:(id)arg1;
-- (id)init;
 
 @end
 
+@interface SimDisplayDefaultDescriptorState : NSObject <SimDisplayDescriptorState>
 
++ (instancetype)defaultDisplayDescriptorStateWithPowerState:(int)arg1 displayClass:(unsigned short)arg2 width:(unsigned int)arg3 height:(unsigned int)arg4;
+@property(nonatomic) unsigned int defaultHeightForDisplay; // @synthesize defaultHeightForDisplay=_defaultHeightForDisplay;
+@property(nonatomic) unsigned int defaultWidthForDisplay; // @synthesize defaultWidthForDisplay=_defaultWidthForDisplay;
+@property(nonatomic) unsigned short displayClass; // @synthesize displayClass=_displayClass;
+@property(nonatomic) int powerState; // @synthesize powerState=_powerState;
+- (id)xpcObject;
+
+@end
 @interface SimServiceContext : NSObject
 
-+ (void)setSharedContextConnectionType:(long long)arg1;
-+ (id)simContextWithConnectionType:(long long)arg1;
-+ (id)sharedServiceContext;
-+ (id)serviceContextForDeveloperDir:(id)arg1 connectionType:(long long)arg2 error:(id *)arg3;
-+ (id)sharedServiceContextForDeveloperDir:(id)arg1 error:(id *)arg2;
++ (void)setSharedContextConnectionType:(long long)connectionType;
++ (instancetype)serviceContextForDeveloperDir:(NSString *)developerDir connectionType:(long long)connectionType error:(NSError **)error;
++ (instancetype)sharedServiceContextForDeveloperDir:(NSString *)developerDir error:(NSError **)error;
 
 @property(retain, nonatomic) dispatch_queue_t allDeviceSetsQueue;
 @property(nonatomic) BOOL initialized;
@@ -333,11 +343,12 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 @property(retain, nonatomic) NSDate *lastConnectionTime;
 @property(retain, nonatomic) dispatch_queue_t serviceConnectionQueue;
 @property(retain, nonatomic) NSObject<OS_xpc_object> *serviceConnection;
-@property(copy, nonatomic) NSString *developerDir;
+@property(retain, nonatomic) NSString *developerDir;
 @property(nonatomic) long long connectionType;
 
 - (void)handleXPCEvent:(id)arg1;
 - (void)handleReconnectionBookkeeping;
+- (void)addProfilesForDeveloperDir:(id)arg1;
 - (void)supportedRuntimesAddProfilesAtPath:(id)arg1;
 - (void)supportedDeviceTypesAddProfilesAtPath:(id)arg1;
 - (void)serviceAddProfilesAtPath:(id)arg1;
@@ -351,12 +362,10 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 @property(readonly, nonatomic) NSArray *bundledDeviceTypes;
 @property(readonly, nonatomic) NSArray *supportedDeviceTypes;
 - (id)allDeviceSets;
-- (id)deviceSetWithPath:(id)arg1 error:(id *)arg2;
-- (id)defaultDeviceSetWithError:(id *)arg1;
-- (void)dealloc;
+-(SimDeviceSet *)deviceSetWithPath:(id)arg1 error:(NSError * __autoreleasing *)error;
+-(SimDeviceSet *)defaultDeviceSetWithError:(NSError * __autoreleasing *)error;
 - (void)connect;
 - (id)initWithDeveloperDir:(id)arg1 connectionType:(long long)arg2;
-- (id)init;
 
 @end
 
@@ -402,12 +411,14 @@ runtimeIdentifier:(id)arg4
 @property(retain, nonatomic) SimDevicePasteboard *pasteboard;
 @property(copy, nonatomic) NSUUID *UDID;
 @property(copy, nonatomic) NSString *deviceTypeIdentifier;
-@property(readonly, nonatomic) NSMutableDictionary *headServicePorts;
 
+- (BOOL)bootstrapQueueSync:(CDUnknownBlockType)arg1;
+- (void)bootstrapQueueAsync:(CDUnknownBlockType)arg1 completionQueue:(id)arg2 completionHandler:(CDUnknownBlockType)arg3;
 - (BOOL)isAvailableWithError:(NSError **)error;
-@property(readonly) BOOL available;
+@property(readonly, nonatomic) BOOL available;
 - (BOOL)syncUnpairedDevicesWithError:(NSError **)error;
 - (BOOL)triggerCloudSyncWithError:(NSError **)error;
+- (void)triggerCloudSyncWithCompletionQueue:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
 - (void)triggerCloudSyncWithCompletionHandler:(CDUnknownBlockType)arg1;
 - (BOOL)darwinNotificationSetState:(unsigned long long)arg1 name:(id)arg2 error:(NSError **)error;
 - (BOOL)darwinNotificationGetState:(unsigned long long *)arg1 name:(id)arg2 error:(NSError **)error;
@@ -416,7 +427,6 @@ runtimeIdentifier:(id)arg4
 - (void)terminateApplicationWithID:(id)arg1 error:(NSError **)error;
 
 - (pid_t)launchApplicationWithID:(NSString *)appId options:(NSDictionary *)options error:(NSError **)error;
-- (void)launchApplicationAsyncWithID:(NSString *)appId options:(NSDictionary *)options completionHandler:(CDUnknownBlockType)arg3;
 - (void)launchApplicationAsyncWithID:(NSString *)appId options:(NSDictionary *)options completionQueue:(id)arg3 completionHandler:(CDUnknownBlockType)arg4;
 
 - (NSDictionary *)installedAppsWithError:(NSError **)error;
@@ -426,11 +436,11 @@ runtimeIdentifier:(id)arg4
 - (BOOL)installApplication:(NSURL *)appUrl withOptions:(NSDictionary *)options error:(NSError **)error;
 
 - (BOOL)setKeyboardLanguage:(NSString *)lang error:(NSError **)error;
-- (BOOL)addPhoto:(NSURL *)url error:(NSError **)error;
 - (BOOL)addVideo:(NSURL *)url error:(NSError **)error;
+- (BOOL)addPhoto:(NSURL *)url error:(NSError **)error;
+- (BOOL)addMedia:(NSURL *)url error:(NSError **)error;
 - (BOOL)openURL:(NSURL *)url error:(NSError **)error;
-
-@property(readonly, retain, nonatomic) NSMachPort *hostSupportPort;
+- (NSMachPort *)hostSupportPortWithError:(NSError **)error;
 - (long long)compare:(id)arg1;
 - (struct NSMutableDictionary *)newDeviceNotification;
 - (struct NSMutableDictionary *)createXPCNotification:(id)arg1;
@@ -462,7 +472,7 @@ runtimeIdentifier:(id)arg4
 
 - (void)simulateMemoryWarning;
 - (id)memoryWarningFilePath;
-@property(readonly, copy, nonatomic) NSString *logPath;
+@property(readonly, nonatomic) NSString *logPath;
 - (NSString *)dataPath;
 - (NSString *)devicePath;
 - (NSDictionary *)environment;
@@ -470,8 +480,6 @@ runtimeIdentifier:(id)arg4
 - (int)_spawnFromSelfWithPath:(id)arg1 options:(id)arg2 terminationQueue:(id)arg3 terminationHandler:(CDUnknownBlockType)arg4 error:(id *)arg5;
 - (int)_spawnFromLaunchdWithPath:(id)arg1 options:(id)arg2 terminationQueue:(id)arg3 terminationHandler:(CDUnknownBlockType)arg4 error:(id *)arg5;
 - (int)spawnWithPath:(id)arg1 options:(id)arg2 terminationQueue:(id)arg3 terminationHandler:(CDUnknownBlockType)arg4 error:(id *)arg5;
-- (int)spawnWithPath:(id)arg1 options:(id)arg2 terminationHandler:(CDUnknownBlockType)arg3 error:(id *)arg4;
-- (void)spawnAsyncWithPath:(id)arg1 options:(id)arg2 terminationHandler:(CDUnknownBlockType)arg3 completionHandler:(CDUnknownBlockType)arg4;
 - (void)spawnAsyncWithPath:(id)arg1 options:(id)arg2 terminationQueue:(id)arg3 terminationHandler:(CDUnknownBlockType)arg4 completionQueue:(id)arg5 completionHandler:(CDUnknownBlockType)arg6;
 - (BOOL)unregisterService:(id)arg1 error:(id *)arg2;
 - (BOOL)_unregisterService:(id)arg1 error:(id *)arg2;
@@ -481,26 +489,19 @@ runtimeIdentifier:(id)arg4
 - (unsigned int)_lookup:(id)arg1 error:(id *)arg2;
 
 - (id)getenv:(id)arg1 error:(id *)arg2;
-
 - (BOOL)restoreContentsAndSettingsFromDevice:(id)arg1 error:(id *)arg2;
-- (void)restoreContentsAndSettingsAsyncFromDevice:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
 - (void)restoreContentsAndSettingsAsyncFromDevice:(id)arg1 completionQueue:(id)arg2 completionHandler:(CDUnknownBlockType)arg3;
+- (BOOL)_onBootstrapQueue_eraseContentsAndSettingsUsingInitialDataPath:(id)arg1 error:(id *)arg2;
 - (BOOL)eraseContentsAndSettingsWithError:(id *)arg1;
-- (BOOL)_bq_eraseContentsAndSettingsUsingInitialDataPath:(id)arg1 error:(id *)arg2;
 - (void)eraseContentsAndSettingsAsyncWithCompletionQueue:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
-- (void)eraseContentsAndSettingsAsyncWithCompletionHandler:(CDUnknownBlockType)arg1;
+- (BOOL)_onBootstrapQueue_upgradeToRuntime:(id)arg1 error:(id *)arg2;
 - (BOOL)upgradeToRuntime:(id)arg1 error:(id *)arg2;
 - (void)upgradeAsyncToRuntime:(id)arg1 completionQueue:(id)arg2 completionHandler:(CDUnknownBlockType)arg3;
 - (BOOL)rename:(id)arg1 error:(id *)arg2;
-- (void)renameAsync:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
 - (void)renameAsync:(id)arg1 completionQueue:(id)arg2 completetionHandler:(CDUnknownBlockType)arg3;
-
 - (BOOL)shutdownWithError:(NSError **)error;
-- (BOOL)_shutdownWithError:(NSError **)error;
 - (void)shutdownAsyncWithCompletionHandler:(void (^)(NSError *error))completionBlock;
 - (void)shutdownAsyncWithCompletionQueue:(id)arg1 completionHandler:(void (^)(NSError *error))completionBlock;;
-
-- (BOOL)_bootWithOptions:(NSDictionary *)options deathMonitorPort:(id)arg2 deathTriggerPort:(id)arg3 error:(NSError **)error;
 - (BOOL)bootWithOptions:(NSDictionary *)options error:(NSError **)error;
 - (void)bootAsyncWithOptions:(NSDictionary *)options completionHandler:(void (^)(NSError *error))completionBlock;
 - (void)bootAsyncWithOptions:(NSDictionary *)options completionQueue:(id)arg2 completionHandler:(void (^)(NSError *error))completionBlock;
@@ -516,14 +517,25 @@ runtimeIdentifier:(id)arg4
 - (BOOL)clearTmpWithError:(id *)arg1;
 - (BOOL)ensureLogPathsWithError:(id *)arg1;
 - (BOOL)supportsFeature:(id)arg1;
-@property(readonly, copy, nonatomic) NSString *launchdJobName;
+@property(readonly, nonatomic) NSString *launchdJobName;
 - (void)saveToDisk;
 - (id)saveStateDict;
 - (void)validateAndFixStateUsingInitialDataPath:(id)arg1;
-@property(readonly, retain, nonatomic) SimRuntime *runtime;
-@property(readonly, retain, nonatomic) SimDeviceType *deviceType;
-@property(readonly, copy, nonatomic) NSString *descriptiveName;
+@property(readonly, nonatomic) SimRuntime *runtime;
+@property(readonly, nonatomic) SimDeviceType *deviceType;
+@property(readonly, nonatomic) NSString *descriptiveName;
 - (NSString *)description;
+
+- (BOOL)_onBootstrapQueue_initializeDeviceIO:(id *)arg1;
+- (BOOL)_onBootstrapQueue_bootWithOptions:(id)arg1 deathMonitorPort:(id)arg2 deathTriggerPort:(id)arg3 error:(id *)arg4;
+- (BOOL)_onBootstrapQueue_bootWithOptions:(id)arg1 error:(id *)arg2;
+- (BOOL)_onBootstrapQueue_shutdownIOAndNotifyWithError:(id *)arg1;
+- (BOOL)_onBootstrapQueue_shutdownWithError:(id *)arg1;
+- (BOOL)_onBootstrapQueue_rename:(id)arg1 error:(id *)arg2;
+- (BOOL)_onBootstrapQueue_restoreContentsAndSettingsFromDevice:(id)arg1 error:(id *)arg2;
+- (int)_onBootstrapQueue_spawnWithPath:(id)arg1 options:(id)arg2 terminationQueue:(id)arg3 terminationHandler:(CDUnknownBlockType)arg4 error:(id *)arg5;
+
+
 /*
 - (id)initDevice:(NSString *)name
             UDID:(NSUUID *)udid
@@ -541,6 +553,12 @@ runtimeIdentifier:(id)arg4
  initialDataPath:(id)arg6
        deviceSet:(id)arg7;
 
+- (void)launchApplicationAsyncWithID:(id)arg1 options:(id)arg2 completionHandler:(CDUnknownBlockType)arg3;
+- (int)spawnWithPath:(id)arg1 options:(id)arg2 terminationHandler:(CDUnknownBlockType)arg3 error:(id *)arg4;
+- (void)spawnAsyncWithPath:(id)arg1 options:(id)arg2 terminationHandler:(CDUnknownBlockType)arg3 completionHandler:(CDUnknownBlockType)arg4;
+- (void)restoreContentsAndSettingsAsyncFromDevice:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
+- (void)eraseContentsAndSettingsAsyncWithCompletionHandler:(CDUnknownBlockType)arg1;
+- (void)renameAsync:(id)arg1 completionHandler:(CDUnknownBlockType)arg2;
 - (BOOL)unpairIDSRelayWithDevice:(id)arg1 error:(id *)arg2;
 - (BOOL)setActiveIDSRelayDevice:(id)arg1 error:(id *)arg2;
 - (BOOL)disconnectIDSRelayToDevice:(id)arg1 error:(id *)arg2;
@@ -553,17 +571,10 @@ runtimeIdentifier:(id)arg4
 + (id)throwableWithData:(id)arg1;
 @property(retain, nonatomic) id data;
 - (id)initWithData:(id)arg1;
-- (id)init;
 
 @end
 
 @interface SimDeviceType : NSObject
-
-//+ (NSDictionary *)supportedDeviceTypesByName;  // returns [NSString : SimDeviceType]
-+ (NSDictionary *)supportedDeviceTypesByAlias; // returns [NSString : SimDeviceType]
-+ (NSDictionary *)supportedDeviceTypesByIdentifier;  // returns [NSString : SimDeviceType]
-+ (NSArray *)supportedDeviceTypes;
-+ (NSArray *)supportedDevices;
 
 @property(copy, nonatomic) NSDictionary *supportedFeaturesConditionalOnRuntime;
 @property(copy, nonatomic) NSDictionary *supportedFeatures;
@@ -597,18 +608,16 @@ runtimeIdentifier:(id)arg4
 
 - (id)initWithBundle:(NSBundle *)bundle;
 - (id)initWithPath:(NSString *)path;
-- (id)init;
 
 @end
 
 @interface SimDeviceSet : NSObject <SimDeviceNotifier>
 
-+ (SimDeviceSet *)setForSetPath:(NSString *)path serviceContext:(id)arg2;
-+ (SimDeviceSet *)setForSetPath:(NSString *)path;
-+ (SimDeviceSet *)defaultSet;
 + (NSString *)defaultSetPath;
 
-@property(retain, nonatomic) NSDictionary *defaultCreatedDevices;
+@property(retain, nonatomic) NSString *defaultCreatedLastDeveloperDir;
+@property(retain, nonatomic) NSMutableDictionary *defaultCreatedDevices;
+@property(retain, nonatomic) dispatch_queue_t defaultCreatedDevicesQueue;
 @property(retain, nonatomic) SimDeviceNotificationManager *notificationManager;
 @property(retain, nonatomic) SimServiceContext *serviceContext;
 @property(retain, nonatomic) NSMutableDictionary *devicePairsNotificationRegIDs;
@@ -664,23 +673,24 @@ runtimeIdentifier:(id)arg4
 - (void)removeDeviceAsync:(id)arg1;
 - (void)addDevice:(id)arg1;
 - (void)addDeviceAsync:(id)arg1;
-- (void)updateDefaultDevicePairingsToBundledRuntimes;
-- (void)updateDefaultDevices;
+
+- (void)_onDefaultCreatedDevicesQueue_updateDefaultDevicePairingsForDeveloperDir:(id)arg1;
+- (void)_onDefaultCreatedDevicesQueue_updateDefaultDevicesForDeveloperDir:(id)arg1;
+- (void)updateDefaultDevicesAndPairingsForDeveloperDir:(id)arg1;
 - (id)devicePairsContainingDevice:(id)arg1;
 - (id)devicePairsContainingDeviceUDID:(id)arg1;
-@property(readonly, copy) NSArray *availableDevicePairs;
-@property(readonly, copy) NSArray *devicePairs;
-@property(readonly, copy) NSDictionary *devicePairsByUUID;
-@property(readonly, copy) NSArray *availableDevices;
-@property(readonly, copy) NSArray *devices;
+@property(readonly, nonatomic) NSArray *availableDevicePairs;
+@property(readonly, nonatomic) NSArray *devicePairs;
+@property(readonly, nonatomic) NSDictionary *devicePairsByUUID;
+@property(readonly, nonatomic) NSArray *availableDevices;
+@property(readonly, nonatomic) NSArray *devices;
 - (BOOL)isDeviceInSet:(id)arg1;
-@property(readonly, copy) NSDictionary *devicesByUDID;
+@property(readonly, nonatomic) NSDictionary *devicesByUDID;
 - (NSString *)description;
 - (void)saveToDisk;
 - (void)processDeviceSetPlist;
 
 - (id)initWithSetPath:(id)arg1 serviceContext:(id)arg2;
-- (id)init;
 - (BOOL)subscribeToNotificationsWithError:(id *)arg1;
 
 @end
@@ -727,7 +737,6 @@ runtimeIdentifier:(id)arg4
 - (unsigned long long)registerNotificationHandler:(CDUnknownBlockType)arg1;
 - (void)invalidate;
 - (id)initWithUUID:(id)arg1 gizmo:(id)arg2 companion:(id)arg3 active:(BOOL)arg4 connected:(BOOL)arg5 deviceSet:(id)arg6;
-- (id)init;
 
 @end
 
@@ -767,12 +776,9 @@ runtimeIdentifier:(id)arg4
 
 @interface SimRuntime : NSObject
 
++ (unsigned int)equivalentIOSVersionForVersion:(unsigned int)arg1 profile:(id)arg2 platformIdentifier:(id)arg3;
 + (id)updatedMaxCoreSimulatorVersions;
 + (id)updatedMaxHostVersions;
-
-+ (NSDictionary *)supportedRuntimesByAlias; // returns [NSString : SimRuntime]
-+ (NSDictionary *)supportedRuntimesByIdentifier;  // returns [NSString : SimRuntime]
-+ (NSArray *)supportedRuntimes; // array of SimRuntime*
 
 @property(nonatomic) unsigned int maxCoreSimulatorFrameworkVersion;
 @property(nonatomic) unsigned int minCoreSimulatorFrameworkVersion;
@@ -785,13 +791,14 @@ runtimeIdentifier:(id)arg4
 @property(retain, nonatomic) SimRuntimePairingReuirements *pairingRequirements;
 @property(copy, nonatomic) NSArray *supportedProductFamilyIDs;
 @property(copy, nonatomic) NSString *platformPath;
+@property(copy, nonatomic) NSString *platformName;
 @property(copy, nonatomic) NSDictionary *forwardHostNotificationsWithState;
 @property(copy, nonatomic) NSDictionary *forwardHostNotifications;
 @property(copy, nonatomic) NSDictionary *requiredHostServices;
 @property(copy, nonatomic) NSDictionary *supportedFeaturesConditionalOnDeviceType;
 @property(copy, nonatomic) NSDictionary *supportedFeatures;
+@property(nonatomic) unsigned int equivalentIOSVersion;
 @property(nonatomic) unsigned int version;
-@property(copy, nonatomic) NSString *platformName;
 @property(copy, nonatomic) NSString *platformIdentifier;
 @property(copy, nonatomic) NSString *buildVersionString;
 @property(copy, nonatomic) NSString *versionString;
@@ -824,7 +831,6 @@ runtimeIdentifier:(id)arg4
 
 - (id)initWithBundle:(NSBundle *)bundle;
 - (id)initWithPath:(NSString *)path;
-- (id)init;
 
 @end
 
@@ -848,7 +854,11 @@ runtimeIdentifier:(id)arg4
 @end
 
 @interface NSKeyedUnarchiver (SimPasteboardItem)
++ (id)sim_securelyUnarchiveObjectWithClasses:(id)arg1 data:(id)arg2;
 + (id)sim_securelyUnarchiveObjectWithData:(id)arg1;
++ (void)sim_securelyWhitelistClasses:(id)arg1;
++ (void)sim_securelyWhitelistClass:(Class)arg1;
++ (id)sim_securelyWhitelistClasses;
 @end
 
 @interface NSUserDefaults (SimDefaults)
@@ -865,11 +875,12 @@ runtimeIdentifier:(id)arg4
 @end
 
 @interface NSFileManager (CoreSimulator)
+- (BOOL)sim_copyItemAtPath:(id)arg1 toCreatedPath:(id)arg2 error:(id *)arg3;
 - (BOOL)sim_reentrantSafeCreateDirectoryAtPath:(id)arg1 withIntermediateDirectories:(BOOL)arg2 attributes:(id)arg3 error:(id *)arg4;
 @end
 
 @interface NSError (SimError)
-+ (id)errorFromXPCData:(id)arg1;
+
 + (id)errorWithSimPairingTestResult:(long long)arg1;
 + (id)errorWithLaunchdError:(int)arg1 userInfo:(id)arg2;
 + (id)errorWithLaunchdError:(int)arg1 localizedDescription:(id)arg2;
@@ -877,5 +888,4 @@ runtimeIdentifier:(id)arg4
 + (id)errorWithSimErrno:(int)arg1 localizedDescription:(id)arg2;
 + (id)errorWithSimErrno:(int)arg1 userInfo:(id)arg2;
 + (id)errorWithSimErrno:(int)arg1;
-@property(readonly, nonatomic) NSObject<OS_xpc_object> *xpcData;
 @end

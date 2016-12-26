@@ -29,6 +29,15 @@
 @end
 
 
+@implementation SimServiceContextWrapper
+
++ (SimServiceContext *)sharedServiceContextForDeveloperDir:(NSString *)developerDir simServiceContextClass:(Class)serviceClass error:(NSError **)error;
+{
+    return [serviceClass sharedServiceContextForDeveloperDir:developerDir error:error];
+}
+
+@end
+
 @interface SimDeviceWrapper()
 
 @property (nonatomic) SimDevice* simDevice;
