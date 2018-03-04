@@ -60,7 +60,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
 
     @IBAction func getServerDataButtonPressed(_ sender: AnyObject) {
         if let url = URL(string: "https://" + urlTextField.stringValue) {
-            print("url scheme: \(url.scheme) absolute: \(url.absoluteString)", terminator: "\n")
+            print("url scheme: \(String(describing: url.scheme)) absolute: \(url.absoluteString)", terminator: "\n")
             let request = URLRequest(url: url)
             if let connection = NSURLConnection(request: request, delegate: self, startImmediately: false) {
                 connection.schedule(in: RunLoop.current, forMode: RunLoopMode.commonModes)
@@ -105,7 +105,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
                     if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, index) {
                         
                         let summary = SecCertificateCopySubjectSummary(serverCertificate)
-                        NSLog("  server certificate: \(summary)")
+                        NSLog("  server certificate: \(String(describing: summary))")
                         
                         let cdata = SecCertificateCopyData(serverCertificate)
                         if let cert = SecCertificateCreateWithData(nil, cdata) {
@@ -130,8 +130,9 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
             if certificates != nil {
-                let summary = SecCertificateCopySubjectSummary(certificates![row]) as String
-                result.textField!.stringValue = summary
+                if let summary = SecCertificateCopySubjectSummary(certificates![row]) as String? {
+                    result.textField!.stringValue = summary
+                }
             }
             return result
         }
