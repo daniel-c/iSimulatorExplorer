@@ -99,7 +99,7 @@ class DCSimulatorManager {
             
             if simDeviceSet != nil  {
                 if let deviceList = simDeviceSet!.availableDevices {
-                    for simDevice in deviceList {
+                    for simDevice in deviceList! {
                         let sim = Simulator(device: simDevice as AnyObject)
                         if sim.isValid {
                             simulators.append(sim)
@@ -200,23 +200,23 @@ class DCSimulatorManager {
                             case "device_state":
                                 notificationType = .deviceState
                                 if let state = notificationData["new_state"] as? Int {
-                                    NSLog("SimDevice \(simDevice?.udid) new state: \(state)")
+                                    NSLog("SimDevice \(String(describing: simDevice?.udid)) new state: \(state)")
                                 }
                             
                             case "device_added":
                                 notificationType = .deviceAdded
-                                NSLog("SimDevice \(simDevice?.udid) added: \(simDevice?.stateString())")
+                                NSLog("SimDevice \(String(describing: simDevice?.udid)) added: \(String(describing: simDevice?.stateString()))")
                                 
                             case "device_removed":
                                 notificationType = .deviceRemoved
-                                NSLog("SimDevice \(simDevice?.udid) removed")
+                                NSLog("SimDevice \(String(describing: simDevice?.udid)) removed")
                                 
                             case "device_renamed":
                                 notificationType = .deviceRenamed
                                 //NSLog("SimDevice \(simDevice?.udid) renamed to: \(simDevice?.name)")
                                 
                             default:
-                                NSLog("Notification: \(data)")
+                                NSLog("Notification: \(String(describing: data))")
                         }
                         if notificationType != nil && simDevice != nil {
                             

@@ -60,9 +60,9 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         
-        if tableColumn?.identifier == "NameColumn" {
+        if convertFromNSUserInterfaceItemIdentifier(tableColumn!.identifier) == "NameColumn" {
             return infoItems[row].name
-        } else if tableColumn?.identifier == "ValueColumn" {
+        } else if convertFromNSUserInterfaceItemIdentifier(tableColumn!.identifier) == "ValueColumn" {
             return infoItems[row].value
         }
         return nil
@@ -75,7 +75,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     @IBAction func showInFinderPressed(_ sender: NSButton) {
         if simulator != nil {
-            NSWorkspace.shared().selectFile(simulator!.path!, inFileViewerRootedAtPath: simulator!.path!)
+            NSWorkspace.shared.selectFile(simulator!.path!, inFileViewerRootedAtPath: simulator!.path!)
         }
     }
     
@@ -109,13 +109,18 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     @IBAction func startStopSimulatorPressed(_ sender: NSButton) {
         if (simulator!.state! == .shutDown) {
             simulator?.boot({ (error) in
-                NSLog("boot complete. \(error)")
+                NSLog("boot complete. \(String(describing: error))")
             })
         }
         else {
             simulator?.shutdown({ (error) in
-                NSLog("shudown complete. \(error)")
+                NSLog("shudown complete. \(String(describing: error))")
             })
         }
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSUserInterfaceItemIdentifier(_ input: NSUserInterfaceItemIdentifier) -> String {
+	return input.rawValue
 }

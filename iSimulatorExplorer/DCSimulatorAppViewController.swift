@@ -47,9 +47,9 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if simulatorAppList != nil && simulatorAppList!.count == 0 {
-            return tableView.make(withIdentifier: "NoAppCell", owner: self) as? NSTableCellView
+            return tableView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("NoAppCell"), owner: self) as? NSTableCellView
         }
-        if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? DCAppInfoTableCellView {
+        if let result = tableView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DataCell"), owner: self) as? DCAppInfoTableCellView {
             if let appInfo = simulatorAppList?[row] {
                 //result.textField!.stringValue = appInfo.displayName!
                 result.appInfo = appInfo
@@ -71,7 +71,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     @IBAction func openAppDataInFinderPressed(_ sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
             if let path = appInfoCellView.appInfo?.dataPath {
-                NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
+                NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: path)
             }
         }
     }
@@ -79,7 +79,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     @IBAction func openAppBundleInFinderPressed(_ sender: NSButton) {
         if let appInfoCellView = sender.superview as? DCAppInfoTableCellView {
             if let path = appInfoCellView.appInfo?.path {
-                NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
+                NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: path)
             }
         }
     }
@@ -90,7 +90,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
-        if openPanel.runModal() == NSFileHandlingPanelOKButton {
+        if openPanel.runModal().rawValue == NSFileHandlingPanelOKButton {
             for url in openPanel.urls {
                 isBusy = true
                 enableButtons()
@@ -100,7 +100,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
                     if error != nil {
                         AppDelegate.showModalAlert(
                             NSLocalizedString("Error installing app \(url)", comment: ""),
-                            informativeText: "Error details: \(error)")
+                            informativeText: "Error details: \(error!)")
                         print("Install app \(url) error: \(error!)", terminator:"\n")
                     }
                     else {
@@ -126,7 +126,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
 
                         AppDelegate.showModalAlert(
                             NSLocalizedString("Error uninstalling app \(appId)", comment: ""),
-                            informativeText: "Error details: \(error)")
+                            informativeText: "Error details: \(error!)")
                     }
                     else {
                         print("Uninstall app \(appId) successful", terminator:"\n")
@@ -140,4 +140,9 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
     }
     
 
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
 }

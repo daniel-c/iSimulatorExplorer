@@ -48,7 +48,7 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                     simulatorManager = DCSimulatorManager()
                 }
                 
-                DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.low).async(execute: { () -> Void in
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async(execute: { () -> Void in
                     
                     var simulatorsByVersion = [String : [Simulator]]()
                     for sim in self.simulatorManager!.simulators {
@@ -166,13 +166,13 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
 
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         if let simulatorsForVersion = item as? SimulatorVersion {
-            if let result = outlineView.make(withIdentifier: "HeaderCell", owner: self) as? NSTableCellView {
+            if let result = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("HeaderCell"), owner: self) as? NSTableCellView {
                 result.textField!.stringValue = simulatorsForVersion.version
                 return result
             }
         }
         else if let sim = item as? Simulator {
-            if let result = outlineView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
+            if let result = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DataCell"), owner: self) as? NSTableCellView {
                 result.textField!.stringValue = sim.name!
                 return result
             }
@@ -224,4 +224,9 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         initTabViewItem(tabViewItem)
         return true;
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
 }

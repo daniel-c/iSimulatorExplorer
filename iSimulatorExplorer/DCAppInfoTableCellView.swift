@@ -53,13 +53,13 @@ class DCAppInfoTableCellView: NSTableCellView {
     
     @IBAction func openAppBundleInFinderButtonPressed(_ sender: NSButton) {
         if let path = appInfo?.path {
-            NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: path)
         }
     }
     
     @IBAction func openAppDataInFinderButtonPressed(_ sender: NSButton) {
         if let path = appInfo?.dataPath {
-            NSWorkspace.shared().selectFile(path, inFileViewerRootedAtPath: path)
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: path)
         }
     }
 }

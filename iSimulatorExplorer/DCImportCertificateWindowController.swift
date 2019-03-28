@@ -41,12 +41,12 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     
     
     @IBAction func cancelButtonPressed(_ sender: AnyObject) {
-        NSApplication.shared().stopModal(withCode: 1)
+        NSApplication.shared.stopModal(withCode: convertToNSApplicationModalResponse(1))
         window!.close();
     }
     
-    func windowShouldClose(_ sender: Any) -> Bool {
-        NSApplication.shared().stopModal(withCode: 2)
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        NSApplication.shared.stopModal(withCode: convertToNSApplicationModalResponse(2))
         return true
     }
 
@@ -54,7 +54,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
         if tableView.selectedRow >= 0 {
             certificate = certificates?[tableView.selectedRow]
         }
-        NSApplication.shared().stopModal(withCode: 0)
+        NSApplication.shared.stopModal(withCode: convertToNSApplicationModalResponse(0))
         window!.close();
     }
 
@@ -63,7 +63,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
             print("url scheme: \(String(describing: url.scheme)) absolute: \(url.absoluteString)", terminator: "\n")
             let request = URLRequest(url: url)
             if let connection = NSURLConnection(request: request, delegate: self, startImmediately: false) {
-                connection.schedule(in: RunLoop.current, forMode: RunLoopMode.commonModes)
+                connection.schedule(in: RunLoop.current, forMode: RunLoop.Mode.common)
                 connection.start()
                 print("Connection started", terminator: "\n")
                 infoTextField.stringValue = "Connecting..."
@@ -128,7 +128,7 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
+        if let result = tableView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DataCell"), owner: self) as? NSTableCellView {
             if certificates != nil {
                 if let summary = SecCertificateCopySubjectSummary(certificates![row]) as String? {
                     result.textField!.stringValue = summary
@@ -147,7 +147,17 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
         enableButtons()
     }
 
-    override func controlTextDidChange(_ obj: Notification) {
+    func controlTextDidChange(_ obj: Notification) {
         enableGetServerDataButton()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSApplicationModalResponse(_ input: Int) -> NSApplication.ModalResponse {
+	return NSApplication.ModalResponse(rawValue: input)
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
 }

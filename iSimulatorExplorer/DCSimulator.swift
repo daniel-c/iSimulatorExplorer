@@ -262,7 +262,7 @@ class Simulator {
         {
             simulatorAppName = (simulatorOS == SimulatorOSType.watchOS)  ? "Simulator (Watch)" : "Simulator"
         }
-        let workspace = NSWorkspace.shared()
+        let workspace = NSWorkspace.shared
         var appPath : String?
         if let path = workspace.fullPath(forApplication: simulatorAppName) {
             appPath = path
@@ -286,15 +286,15 @@ class Simulator {
             }
         }
         if appPath != nil {
-            NSLog("Found simulator app at \(appPath)")
+            NSLog("Found simulator app at \(String(describing: appPath))")
             let appUrl = URL(fileURLWithPath: appPath!)
             let launchArg = (UDID != nil) ?
-                [NSWorkspaceLaunchConfigurationArguments : ["-CurrentDeviceUDID", UDID!.uuidString]] : [String : Array<String>]()
+                [convertFromNSWorkspaceLaunchConfigurationKey(NSWorkspace.LaunchConfigurationKey.arguments) : ["-CurrentDeviceUDID", UDID!.uuidString]] : [String : Array<String>]()
             
             NSLog("Launching iOS Simulator with \(launchArg)")
 
             do {
-                let runningApp = try workspace.launchApplication(at: appUrl, options: NSWorkspaceLaunchOptions.default, configuration: launchArg)
+                let runningApp = try workspace.launchApplication(at: appUrl, options: NSWorkspace.LaunchOptions.default, configuration: convertToNSWorkspaceLaunchConfigurationKeyDictionary(launchArg))
                 NSLog("Simulator started. PID=%u", runningApp.processIdentifier)
                 result = true
             }
@@ -446,4 +446,14 @@ class Simulator {
         }
  
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSWorkspaceLaunchConfigurationKey(_ input: NSWorkspace.LaunchConfigurationKey) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSWorkspaceLaunchConfigurationKeyDictionary(_ input: [String: Any]) -> [NSWorkspace.LaunchConfigurationKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSWorkspace.LaunchConfigurationKey(rawValue: key), value)})
 }

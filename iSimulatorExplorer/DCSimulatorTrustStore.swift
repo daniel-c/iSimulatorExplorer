@@ -207,11 +207,11 @@ class DCSimulatorTruststore {
                                 success = true
                             }
                             else {
-                                NSLog("Could not remove the certificate \(item.subjectSummary) from TrustStore.sqlite3")
+                                NSLog("Could not remove the certificate \(String(describing: item.subjectSummary)) from TrustStore.sqlite3")
                             }
                         }
                         else {
-                            NSLog("Error (sqlite3 code:\(result)) removing the certificate \(item.subjectSummary) from TrustStore.sqlite3")
+                            NSLog("Error (sqlite3 code:\(result)) removing the certificate \(String(describing: item.subjectSummary)) from TrustStore.sqlite3")
                         }
                     }
                 }
@@ -248,13 +248,13 @@ class DCSimulatorTruststore {
                             success = true
                         }
                         else {
-                            NSLog("Could not add the certificate \(item.subjectSummary) to TrustStore.sqlite3")
+                            NSLog("Could not add the certificate \(String(describing: item.subjectSummary)) to TrustStore.sqlite3")
                         }
                     }
                     else
                     {
                         //TODO: result == SQLITE_CONSTRAINT (19) -> due to already existing item: show a message box for this
-                        NSLog("Error (sqlite3 code:\(result)) adding the certificate \(item.subjectSummary) to TrustStore.sqlite3")
+                        NSLog("Error (sqlite3 code:\(result)) adding the certificate \(String(describing: item.subjectSummary)) to TrustStore.sqlite3")
                     }
                 }
             }

@@ -69,7 +69,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if let result = tableView.make(withIdentifier: "DataCell", owner: self) as? NSTableCellView {
+        if let result = tableView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DataCell"), owner: self) as? NSTableCellView {
             if truststore != nil {
                 if let text = truststore?.items[row].subjectSummary {
                     result.textField!.stringValue = text
@@ -104,8 +104,8 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     @IBAction func importCertificateFromServerButtonPressed(_ sender: AnyObject) {
         
         let importPanel = DCImportCertificateWindowController(windowNibName: "DCImportCertificateWindowController")
-        let result =  NSApplication.shared().runModal(for: importPanel.window!)
-        if result == 0 {
+        let result =  NSApplication.shared.runModal(for: importPanel.window!)
+        if result.rawValue == 0 {
             if importPanel.certificate != nil {
                 let item = DCSimulatorTruststoreItem(certificate: importPanel.certificate!)
                 if truststore!.addItem(item) {
@@ -125,7 +125,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
-        if openPanel.runModal() == NSFileHandlingPanelOKButton {
+        if openPanel.runModal().rawValue == NSFileHandlingPanelOKButton {
             for url in openPanel.urls {
                 if let data = try? Data(contentsOf: url) {
                     
@@ -173,9 +173,9 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
                 if let text = item.subjectSummary {
                     savePanel.nameFieldStringValue = text
                 }
-                if savePanel.runModal() == NSFileHandlingPanelOKButton {
+                if savePanel.runModal().rawValue == NSFileHandlingPanelOKButton {
                     if let url = savePanel.url {
-                        item.export(url)
+                        _ = item.export(url)
                     }
                 }
             }
@@ -185,4 +185,9 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
     func tableViewSelectionDidChange(_ notification: Notification) {
         enableButtons()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
 }

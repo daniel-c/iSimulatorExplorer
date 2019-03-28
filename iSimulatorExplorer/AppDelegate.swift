@@ -31,7 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             AppDelegate.showModalAlert (
                 NSLocalizedString("Error", comment: ""),
                 informativeText: NSLocalizedString("Xcode 6 or above must be installed for iSimulatorExplorer to run.", comment: ""))
-            NSApplication.shared().terminate(nil)
+            NSApplication.shared.terminate(nil)
         }
     }
 
