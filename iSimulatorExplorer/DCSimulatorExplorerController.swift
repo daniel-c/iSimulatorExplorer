@@ -55,11 +55,11 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
                         let typeAndVersion : String
                         switch sim.simulatorOS {
                         case SimulatorOSType.tvOS:
-                            typeAndVersion = "tvOS Simulator v\(sim.version!)"
+                            typeAndVersion = "tvOS Simulator \(sim.version!)"
                         case SimulatorOSType.watchOS:
-                            typeAndVersion = "watchOS Simulator v\(sim.version!)"
+                            typeAndVersion = "watchOS Simulator \(sim.version!)"
                         default:
-                            typeAndVersion = "Simulator v\(sim.version!)"
+                            typeAndVersion = "Simulator \(sim.version!)"
                             
                         }
                         

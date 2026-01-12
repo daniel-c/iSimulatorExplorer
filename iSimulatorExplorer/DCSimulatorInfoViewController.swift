@@ -28,7 +28,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
             if simulator!.deviceName != nil {
                 infoItems.append(DCInfoViewItem(name: NSLocalizedString("Simulated Model:", comment: ""), value: simulator!.deviceName!))
             }
-            infoItems.append(DCInfoViewItem(name: NSLocalizedString("Version:", comment: ""), value: "\(simulator!.version ?? empty) - \(simulator!.build ?? empty)"))
+            infoItems.append(DCInfoViewItem(name: NSLocalizedString("Version:", comment: ""), value: (simulator!.version ?? empty)))
             if simulator!.UDID != nil {
                 infoItems.append(DCInfoViewItem(name: NSLocalizedString("UDID:", comment: ""), value: simulator!.UDID!.uuidString))
             }
@@ -75,7 +75,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     @IBAction func showInFinderPressed(_ sender: NSButton) {
         if simulator != nil {
-            NSWorkspace.shared.selectFile(simulator!.path!, inFileViewerRootedAtPath: simulator!.path!)
+            NSWorkspace.shared.selectFile(simulator!.path, inFileViewerRootedAtPath: simulator!.path)
         }
     }
     
@@ -87,21 +87,16 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     
     func updateStartStopButton() {
-        if (simulator!.state == nil) {
-            startStopButton.isHidden = true
-        }
-        else {
-            startStopButton.isHidden = false
-            switch simulator!.state {
-            case .booted:
-                startStopButton.isEnabled = true
-                startStopButton.title = "Shutdown"
-            case .shutDown:
-                startStopButton.isEnabled = true
-                startStopButton.title = "Boot"
-            default:
-                startStopButton.isEnabled = false
-            }
+        startStopButton.isHidden = false
+        switch simulator!.state {
+        case .booted:
+            startStopButton.isEnabled = true
+            startStopButton.title = "Shutdown"
+        case .shutDown:
+            startStopButton.isEnabled = true
+            startStopButton.title = "Boot"
+        default:
+            startStopButton.isEnabled = false
         }
     }
     

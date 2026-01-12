@@ -1,22 +1,28 @@
 //
-//  DCSimulatorManager.swift
+//  SimCtl.swift
 //  iSimulatorExplorer
 //
-//  Created by Daniel Cerutti on 25.08.14.
-//  Copyright (c) 2014 Daniel Cerutti. All rights reserved.
-//  Licensed under the MIT license. See LICENSE file in the project root for full license information.
+//  Created by Daniel Cerutti on 12.01.2026.
+//  Copyright © 2026 Daniel Cerutti. All rights reserved.
+//
 
 import Foundation
-import Cocoa
 
-class DCSimulatorManager {
+
+public class SimCtl {
+
+    static func getProcess(arguments : [String] ) -> Process {
+        let task = Process()
+        task.launchPath = "/usr/bin/xcrun"
+        var args = ["simctl"]
+        args.append(contentsOf: arguments)
+        task.arguments = args
+        return task
+    }
     
-    // Get simulators using `simctl` JSON output
-    func getSimulatorsUsingSimctl() -> [Simulator] {
-        // Prepare the process to call: xcrun simctl list -j devices
-        let process = Process()
-        process.launchPath = "/usr/bin/xcrun"
-        process.arguments = ["simctl", "list", "-j", "devices"]
+    
+    static func listSimulators() -> [Simulator] {
+        let process = getProcess(arguments: ["list", "-j", "devices"])
 
         let pipe = Pipe()
         process.standardOutput = pipe
@@ -90,31 +96,43 @@ class DCSimulatorManager {
 
         return simulators
     }
-
-    private var _simulators : [Simulator]?
-
     
-    var simulators : [Simulator] {
-        get {
-            if _simulators == nil {
-                _simulators = getSimulatorsUsingSimctl()
-            }
-            return _simulators!
+    static public func bootDevice(udid : String) -> Bool {
+        
+        let process = getProcess(arguments: ["boot", udid])
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        
+        do {
+            try process.run()
+        } catch {
+            NSLog("Failed to run simctl: \(error)")
+            return false
         }
-    }
 
-    
-    init() {
-    }
-
-    enum NotificationType {
-        case deviceState
-        case deviceAdded
-        case deviceRemoved
-        case deviceRenamed
+        process.waitUntilExit()
+        
+        return process.terminationStatus == 0
     }
     
-    func startNotificationHandler(_ handler : @escaping (NotificationType, UUID, Int) -> Void ) {
+    static public func shutDownDevice(udid : String) -> Bool {
+        
+        let process = getProcess(arguments: ["shutdown", udid])
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        
+        do {
+            try process.run()
+        } catch {
+            NSLog("Failed to run simctl: \(error)")
+            return false
+        }
+
+        process.waitUntilExit()
+        
+        return process.terminationStatus == 0
 
     }
 
