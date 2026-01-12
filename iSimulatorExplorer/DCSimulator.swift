@@ -33,9 +33,12 @@ enum SimulatorOSType {
     case watchOS
 }
 
-enum SimulatorDeviceState {
-    case booted
-    case shutDown
+enum SimulatorDeviceState : Int {
+    case creating = 0
+    case shutDown = 1
+    case booting = 2
+    case booted = 3
+    case shuttingDown = 4
 }
 
 class Simulator {
@@ -96,6 +99,12 @@ class Simulator {
             {
             if let plist = plistobj as? Dictionary<String, AnyObject> {
                 //let deviceType = plist["deviceType"] as? String
+                if let udid = plist["UDID"] as? String {
+                    self.UDID = UUID(uuidString: udid)
+                }
+                if let stateValue = plist["state"] as? Int {
+                    self.state = SimulatorDeviceState(rawValue: stateValue) ?? .shutDown
+                }
                 let name1 = plist["name"] as? String
                 if let runtime = plist["runtime"] as? String {
                     version = runtime.components(separatedBy: ".").last
