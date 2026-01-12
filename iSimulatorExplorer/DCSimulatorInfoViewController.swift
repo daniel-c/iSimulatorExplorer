@@ -92,7 +92,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
         }
         else {
             startStopButton.isHidden = false
-            switch simulator!.state! {
+            switch simulator!.state {
             case .booted:
                 startStopButton.isEnabled = true
                 startStopButton.title = "Shutdown"
@@ -107,7 +107,7 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
     
     
     @IBAction func startStopSimulatorPressed(_ sender: NSButton) {
-        if (simulator!.state! == .shutDown) {
+        if (simulator!.state == .shutDown) {
             simulator?.boot({ (error) in
                 NSLog("boot complete. \(String(describing: error))")
             })

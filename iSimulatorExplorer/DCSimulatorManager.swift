@@ -10,11 +10,7 @@ import Foundation
 import Cocoa
 
 class DCSimulatorManager {
-    private var simulatorFramework : Bundle?
     private var developerDir : String?
-    private var simServiceContextClass : AnyClass?
-    private var simDeviceSetClass : AnyClass?
-    private var simDeviceSet : AnyObject?
     private var getSimulators : () -> [Simulator]
 
     
@@ -78,53 +74,7 @@ class DCSimulatorManager {
     }
     
     func startNotificationHandler(_ handler : @escaping (NotificationType, UUID, Int) -> Void ) {
-        if simDeviceSet != nil {
-            
-            let _ = simDeviceSet!.registerNotificationHandler({ (data : [AnyHashable: Any]?) -> Void in
 
-                if let notificationData = data as? [String : AnyObject] {
-                    if let notificationTypeString = notificationData["notification"] as? String {
-                        
-                        //var state : Int = 0
-                        var notificationType : NotificationType?
-                        //var udid : NSUUID?
-                        //TODO : review if SimDevice cast work
-                        let simDevice : AnyObject? = notificationData["device"] // as? SimDevice
-                        
-                        switch notificationTypeString {
-                            case "device_state":
-                                notificationType = .deviceState
-                                if let state = notificationData["new_state"] as? Int {
-                                    NSLog("SimDevice \(String(describing: simDevice?.udid)) new state: \(state)")
-                                }
-                            
-                            case "device_added":
-                                notificationType = .deviceAdded
-                                NSLog("SimDevice \(String(describing: simDevice?.udid)) added: \(String(describing: simDevice?.stateString()))")
-                                
-                            case "device_removed":
-                                notificationType = .deviceRemoved
-                                NSLog("SimDevice \(String(describing: simDevice?.udid)) removed")
-                                
-                            case "device_renamed":
-                                notificationType = .deviceRenamed
-                                //NSLog("SimDevice \(simDevice?.udid) renamed to: \(simDevice?.name)")
-                                
-                            default:
-                                NSLog("Notification: \(String(describing: data))")
-                        }
-                        if notificationType != nil && simDevice != nil {
-                            
-                            DispatchQueue.main.async(execute: { () -> Void in
-                                handler(notificationType!, simDevice!.udid, 0)
-                            })
-                            
-                        }
-                    }
-                }
-            })
-            NSLog("SimDeviceSet notification started")
-        }
     }
 
 }

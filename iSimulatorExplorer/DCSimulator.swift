@@ -33,6 +33,11 @@ enum SimulatorOSType {
     case watchOS
 }
 
+enum SimulatorDeviceState {
+    case booted
+    case shutDown
+}
+
 class Simulator {
     var _name : String?
     var deviceName : String?
@@ -44,29 +49,22 @@ class Simulator {
     var isValid : Bool
     var simulatorOS : SimulatorOSType
     
-    private var simDevice : SimDeviceWrapper?
     // private var appDataDirMap : [String : String]?
     
     init() {
         isValid = false
         simulatorOS = SimulatorOSType.iOS
+        state = .shutDown
     }
     
     var stateString : String? {
-        return self.simDevice?.stateString()
+        return nil
     }
     
-    var state : SimDeviceState? {
-        return self.simDevice?.state
-    }
+    var state : SimulatorDeviceState
     
     var name : String? {
-        if simDevice != nil {
-            return simDevice!.name
-        }
-        else {
-            return _name
-        }
+        return _name
     }
     
     private func initTrustStorePath() {
@@ -110,20 +108,6 @@ class Simulator {
             }
             
         }
-    }
-    
-    convenience init(device : AnyObject) {
-        self.init()
-        self.simDevice = SimDeviceWrapper(device)
-        self.deviceName = device.deviceType?.name
-        self.path = device.devicePath() as String?
-        self.UDID = device.udid as UUID
-        self.version = device.runtime?.versionString
-        
-        self.build = device.runtime?.buildVersionString
-        initDeviceType(device.runtime?.identifier)
-        initTrustStorePath()
-        isValid = self.simDevice!.available;
     }
     
     func getAppDataDirMap() -> [String : String] {
@@ -220,35 +204,6 @@ class Simulator {
     
     func getAppList() -> [SimulatorApp]?
     {
-        if self.simDevice?.state == SimDeviceState.booted {
-            do {
-                let appDict = try self.simDevice!.installedApps() as? [String : NSDictionary]
-                //let appDict = app as? [String : NSDictionary]
-                NSLog("apps: %@", appDict!)
-                
-                let map = getAppDataDirMap()
-                
-                var appList = [SimulatorApp]()
-                for appItem in appDict! {
-                    let appItemInfo = appItem.1 as? [String : AnyObject]
-                    let appInfo = SimulatorApp(appInfo : appItemInfo!)
-                    if includeAppFilter(appInfo) {
-                        appInfo.dataPath = map[appInfo.identifier!]
-                        appList.append(appInfo)
-                    }
-                }
-                
-                return appList
-            }
-            catch let error as NSError
-            {
-                NSLog("Cannot get app list from coresimulator: %@", error.localizedDescription)
-            }
-            catch
-            {
-                NSLog("Cannot get app list from coresimulator: Unknown error")
-            }
-        }
         return getAppListFromContent()
     }
     
@@ -313,50 +268,12 @@ class Simulator {
     }
     
     func boot(_ completionHandler : ((_ error : Error?) -> Void)?) {
-        
-        if simDevice != nil {
-            var env = [String : String]() // ProcessInfo.processInfo.environment;
-            env["SIMULATOR_IS_HEADLESS"] = "1"
-            let options : [String : AnyObject] = [
-                "env" : env as AnyObject,
-                "persist" : true as AnyObject]
-                // "disabled_jobs" : ["com.apple.backboardd" : true] as AnyObject]
-            
-            simDevice!.bootAsync(options: options, completionHandler: { (error : Error?) -> Void in
-                if error != nil {
-                    NSLog("boot error:\(error!)")
-                }
-                else {
-                    NSLog("boot success")
-                }
-                DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler?(error)
-                })
-            })
-        }
-        else {
-            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot boot device when CoreSimulator is not available"]))
-        }
+        completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot boot device when CoreSimulator is not available"]))
     }
     
     func shutdown(_ completionHandler : ((_ error : Error?) -> Void)?) {
         
-        if simDevice != nil {
-            simDevice!.shutdownAsync { (error : Error?) -> Void in
-                if error != nil {
-                    NSLog("shutdown error:\(error!)")
-                }
-                else {
-                    NSLog("shutdown success")
-                }
-                DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler?(error)
-                })
-            }
-        }
-        else {
-            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot shutdown device when CoreSimulator is not available"]))
-        }
+        completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot shutdown device when CoreSimulator is not available"]))
     }
     
     enum SimulatorActionError : Error {
@@ -368,7 +285,7 @@ class Simulator {
         action: @escaping ((_ arg1 : T, _ completionHandler : ((_ error : Error?) -> Void)?) throws -> Void),
         completionHandler : ((_ error : Error?) -> Void)?) {
             
-            if simDevice!.state != SimDeviceState.booted {
+            if state != .booted {
                 boot({ (error) -> Void in
                     if error != nil {
                         completionHandler?(error)
@@ -400,7 +317,7 @@ class Simulator {
                 let options : [String : AnyObject] = ["CFBundleIdentifier" : bundleId! as AnyObject]
 
                 do {
-                    try self.simDevice!.installApplication(appUrl, withOptions: options)
+                    //try self.simDevice!.installApplication(appUrl, withOptions: options)
                     completionHandler?(nil)
                 }
                 catch let error {
@@ -415,13 +332,13 @@ class Simulator {
             }
         }
         
-        if simDevice != nil {
-            
-            doActionWithBootAndShutdown(appUrl, action: installAppAction, completionHandler: completionHandler)
-        }
-        else {
+//        if simDevice != nil {
+//
+//            doActionWithBootAndShutdown(appUrl, action: installAppAction, completionHandler: completionHandler)
+//        }
+//        else {
             completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot install app when CoreSimulator is not available"]))
-        }
+//        }
  
     }
     
@@ -430,7 +347,7 @@ class Simulator {
         
         let uninstallAppAction = { (appId : String, completionHandler : ((_ error : Error?) -> Void)?) -> Void in
             do {
-                try self.simDevice!.uninstallApplication(appId, withOptions: nil)
+                // try self.simDevice!.uninstallApplication(appId, withOptions: nil)
                 completionHandler?(nil)
             }
             catch let error {
@@ -438,12 +355,12 @@ class Simulator {
             }
         }
         
-        if simDevice != nil {
-            doActionWithBootAndShutdown(appId, action: uninstallAppAction, completionHandler: completionHandler)
-        }
-        else {
+//        if simDevice != nil {
+//            doActionWithBootAndShutdown(appId, action: uninstallAppAction, completionHandler: completionHandler)
+//        }
+//        else {
             completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot uninstall app when CoreSimulator is not available"]))
-        }
+//        }
  
     }
 }
