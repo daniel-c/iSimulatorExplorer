@@ -178,57 +178,32 @@ class Simulator {
     
     func launchSimulatorApp() -> Bool {
         var result = false
-        let simulatorAppName : String
-        if XCodeSupport.getDeveloperToolsVersion()?.compare("7.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
-            simulatorAppName = "iOS Simulator"
-        }
-        else
-        {
-            simulatorAppName = (simulatorOS == SimulatorOSType.watchOS)  ? "Simulator (Watch)" : "Simulator"
-        }
         let workspace = NSWorkspace.shared
-        var appPath : String?
-        if let path = workspace.fullPath(forApplication: simulatorAppName) {
-            appPath = path
-        }
-        else if let devPath = XCodeSupport.getDeveloperToolsPath() {
-            NSLog("Try to find simulator app at \(devPath)")
-            let possibleAppPath : [String]
-            if simulatorOS == SimulatorOSType.watchOS {
-                possibleAppPath = ["Applications/Simulator (Watch).app"]
-            }
-            else {
-                possibleAppPath = ["Applications/iOS Simulator.app", "Applications/Simulator.app", "../Applications/iOS Simulator.app", "../Applications/iPhone Simulator.app"]
-            }
-            let fm = FileManager.default
-            for testPath in possibleAppPath {
-                let path = (devPath as NSString).appendingPathComponent(testPath)
-                if fm.fileExists(atPath: path) {
-                    appPath = path
-                    break
-                }
-            }
-        }
-        if appPath != nil {
-            NSLog("Found simulator app at \(String(describing: appPath))")
-            let appUrl = URL(fileURLWithPath: appPath!)
-            let launchArg = (UDID != nil) ?
-                [convertFromNSWorkspaceLaunchConfigurationKey(NSWorkspace.LaunchConfigurationKey.arguments) : ["-CurrentDeviceUDID", UDID!.uuidString]] : [String : Array<String>]()
-            
-            NSLog("Launching iOS Simulator with \(launchArg)")
+        if let appUrl = workspace.urlForApplication(withBundleIdentifier: "com.apple.iphonesimulator") {
+            NSLog("Found simulator app at \(String(describing: appUrl))")
 
-            do {
-                let runningApp = try workspace.launchApplication(at: appUrl, options: NSWorkspace.LaunchOptions.default, configuration: convertToNSWorkspaceLaunchConfigurationKeyDictionary(launchArg))
-                NSLog("Simulator started. PID=%u", runningApp.processIdentifier)
-                result = true
+            let openConfig = NSWorkspace.OpenConfiguration()
+            if (UDID != nil)
+            {
+                openConfig.arguments = ["-CurrentDeviceUDID", UDID!.uuidString]
             }
-            catch let error as NSError {
-                NSLog("Error launching simulator: %@", error)
+            NSLog("Launching iOS Simulator with \(openConfig.arguments)")
+
+            let semaphore = DispatchSemaphore(value: 0)
+            workspace.openApplication(at: appUrl, configuration: openConfig) { app, error in
+                if let error = error {
+                    NSLog("Error launching simulator: %@", error.localizedDescription)
+                    result = false
+                } else if let app = app {
+                    NSLog("Simulator started. PID=%u", app.processIdentifier)
+                    result = true
+                } else {
+                    NSLog("Simulator launch returned no app and no error")
+                    result = false
+                }
+                semaphore.signal()
             }
-            catch{
-                NSLog("Error launching simulator: Unknown error")
-            }
-            
+            _ = semaphore.wait(timeout: .now() + 30)
         }
         else {
             NSLog("Simulator App not found")
@@ -347,14 +322,4 @@ class Simulator {
 //        }
  
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromNSWorkspaceLaunchConfigurationKey(_ input: NSWorkspace.LaunchConfigurationKey) -> String {
-	return input.rawValue
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToNSWorkspaceLaunchConfigurationKeyDictionary(_ input: [String: Any]) -> [NSWorkspace.LaunchConfigurationKey: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSWorkspace.LaunchConfigurationKey(rawValue: key), value)})
 }

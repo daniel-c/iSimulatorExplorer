@@ -90,7 +90,7 @@ class DCSimulatorAppViewController: DCSimulatorViewController, NSTableViewDataSo
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
-        if openPanel.runModal().rawValue == NSFileHandlingPanelOKButton {
+        if openPanel.runModal() == NSApplication.ModalResponse.OK {
             for url in openPanel.urls {
                 isBusy = true
                 enableButtons()

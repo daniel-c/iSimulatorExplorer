@@ -125,7 +125,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
         
-        if openPanel.runModal().rawValue == NSFileHandlingPanelOKButton {
+        if openPanel.runModal() == NSApplication.ModalResponse.OK {
             for url in openPanel.urls {
                 if let data = try? Data(contentsOf: url) {
                     
@@ -173,7 +173,7 @@ class DCSimulatorTrustStoreViewController: DCSimulatorViewController, NSTableVie
                 if let text = item.subjectSummary {
                     savePanel.nameFieldStringValue = text
                 }
-                if savePanel.runModal().rawValue == NSFileHandlingPanelOKButton {
+                if savePanel.runModal() == NSApplication.ModalResponse.OK {
                     if let url = savePanel.url {
                         _ = item.export(url)
                     }

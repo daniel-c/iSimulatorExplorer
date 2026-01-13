@@ -87,22 +87,19 @@ class DCImportCertificateWindowController: NSWindowController, NSWindowDelegate,
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
             if let serverTrust = challenge.protectionSpace.serverTrust {
                 
-                var evaluateResult : SecTrustResultType = .invalid;
-                let status = SecTrustEvaluate(serverTrust, &evaluateResult);
-                
-                if (status == errSecSuccess)  && (evaluateResult == .proceed  || evaluateResult == .unspecified ) {
+                var evaluateError : CFError?
+                let status = SecTrustEvaluateWithError(serverTrust, &evaluateError);
+                if (status) {
                     NSLog("Certificate is trusted")
                 }
                 else
                 {
                     NSLog("Certificate is not trusted")
                 }
-                certificates = [SecCertificate]()
-                let certCount = SecTrustGetCertificateCount(serverTrust)
-                NSLog("number certificate in serverTrust: \(certCount)");
                 
-                for index in 0 ..< certCount {
-                    if let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, index) {
+                if let certs = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate] {
+                    NSLog("number certificate in serverTrust: \(certs.count)");
+                    for serverCertificate in certs {
                         
                         let summary = SecCertificateCopySubjectSummary(serverCertificate)
                         NSLog("  server certificate: \(String(describing: summary))")

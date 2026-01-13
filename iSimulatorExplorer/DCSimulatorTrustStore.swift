@@ -67,7 +67,7 @@ class DCSimulatorTruststoreItem {
         //if let data = SecCertificateCopyNormalizedSubjectContent(certificate, nil)?.takeRetainedValue() as? NSData {
         
         if certificate != nil {
-            if let cdata = SecCertificateCopyNormalizedSubjectContent(certificate!, nil) {
+            if let cdata = SecCertificateCopyNormalizedSubjectSequence(certificate!) {
                 let data = cdata as Data
                 return data
             }
@@ -88,13 +88,11 @@ class DCSimulatorTruststoreItem {
     }
     
     func hexstringFromData(_ data : Data) -> String {
-        
-        return data.withUnsafeBytes { (bytes : UnsafePointer<UInt8>) -> String in
-            var str : String = ""
-            var dataBytes = bytes
-            for _ in 0 ..< data.count {
-                str += NSString(format: "%02x", dataBytes.pointee) as String
-                dataBytes = dataBytes.successor()
+        return data.withUnsafeBytes { (rawBuffer: UnsafeRawBufferPointer) -> String in
+            guard let baseAddress = rawBuffer.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return "" }
+            var str: String = ""
+            for i in 0..<rawBuffer.count {
+                str += String(format: "%02x", baseAddress[i])
             }
             return str
         }
@@ -268,3 +266,4 @@ class DCSimulatorTruststore {
         return success
     }
 }
+
