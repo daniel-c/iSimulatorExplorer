@@ -33,17 +33,16 @@ enum SimulatorOSType {
     case watchOS
 }
 
-enum SimulatorDeviceState : Int {
-    case creating = 0
-    case shutDown = 1
-    case booting = 2
-    case booted = 3
-    case shuttingDown = 4
+enum SimulatorDeviceState : String {
+    case creating = "Creating"
+    case shutDown = "ShutDown"
+    case booting = "Booting"
+    case booted = "Booted"
+    case shuttingDown = "ShuttingDown"
 }
 
 class Simulator {
     var name : String?
-    let nameAndVersion : String?
     var deviceName : String?
     var version : String?
     var UDID : UUID?
@@ -64,25 +63,25 @@ class Simulator {
         if let runtime = runtime, let name = name {
             version = runtime.components(separatedBy: ".").last
             self.name = name
-            self.nameAndVersion = name + " (" + version! + ")"
             isValid = true
             initDeviceType(runtime)
             initTrustStorePath()
         }
-        else
-        {
-            self.nameAndVersion = nil
-        }
     }
     
-    var stateString : String? {
-        return nil
+    var stateString : String {
+        return state.rawValue
+    }
+    
+    var nameAndVersion : String? {
+        guard let name, let version else { return nil }
+        return name + " (" + version + ")"
     }
     
     var state : SimulatorDeviceState
     
     private func initTrustStorePath() {
-        trustStorePath = (path as NSString?)?.appendingPathComponent("Library/Keychains/keychain-2-debug.db")
+        trustStorePath = (path as NSString?)?.appendingPathComponent("private/var/protected/trustd/private/TrustStore.sqlite3")
     }
     
     private func initDeviceType (_ runtimeIdentifier : String?)

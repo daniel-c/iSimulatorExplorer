@@ -33,9 +33,8 @@ class DCSimulatorInfoViewController: DCSimulatorViewController, NSTableViewDataS
                 infoItems.append(DCInfoViewItem(name: NSLocalizedString("UDID:", comment: ""), value: simulator!.UDID!.uuidString))
             }
             infoItems.append(DCInfoViewItem(name: NSLocalizedString("Path:", comment: ""), value: (simulator!.path as NSString?)?.abbreviatingWithTildeInPath ?? empty))
-            if simulator!.stateString != nil {
-                infoItems.append(DCInfoViewItem(name: NSLocalizedString("State:", comment: ""), value: simulator!.stateString!))
-            }
+            infoItems.append(DCInfoViewItem(name: NSLocalizedString("State:", comment: ""), value: simulator!.stateString))
+
             infoTableView.reloadData()
             updateStartStopButton()
         }

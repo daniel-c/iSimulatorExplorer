@@ -10,86 +10,6 @@ import Foundation
 import Cocoa
 
 class DCSimulatorManager {
-    
-    // Get simulators using `simctl` JSON output
-    func getSimulatorsUsingSimctl() -> [Simulator] {
-        // Prepare the process to call: xcrun simctl list -j devices
-        let process = Process()
-        process.launchPath = "/usr/bin/xcrun"
-        process.arguments = ["simctl", "list", "-j", "devices"]
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = Pipe()
-
-        do {
-            try process.run()
-        } catch {
-            NSLog("Failed to run simctl: \(error)")
-            return []
-        }
-
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        guard !data.isEmpty else { return [] }
-
-        // Parse JSON: { "devices": { "iOS <version>": [ { ... device ... } ], ... } }
-        struct SimctlResponse: Decodable {
-            let devices: [String: [SimctlDevice]]
-        }
-        struct SimctlDevice: Decodable {
-            let state: String?
-            let isAvailable: Bool?
-            let name: String?
-            let udid: String?
-            let availabilityError: String?
-            let deviceTypeIdentifier: String?
-            let lastBootedAt: String?
-            let dataPath: String?
-            let logPath: String?
-        }
-
-        var simulators: [Simulator] = []
-        do {
-            let decoder = JSONDecoder()
-            let response = try decoder.decode(SimctlResponse.self, from: data)
-
-            // Flatten devices across runtimes, filter to iOS only and available
-            for (runtime, devices) in response.devices {
-                // Keep iOS runtimes only
-                let isIOSRuntime = runtime.lowercased().contains("ios") || runtime.lowercased().contains("iphoneos") || runtime.lowercased().contains("com.apple.coreSimulator.simruntime.ios")
-                guard isIOSRuntime else { continue }
-
-                for d in devices {
-                    guard let udid = d.udid, let isAvailable = d.isAvailable, isAvailable else { continue }
-
-                    // If simctl provides a dataPath, use that; otherwise, construct default path
-                    let dataPath: String
-                    if let p = d.dataPath, !p.isEmpty {
-                        dataPath = p
-                    } else {
-                        dataPath = ("~/Library/Developer/CoreSimulator/Devices" as NSString).expandingTildeInPath + "/" + udid + "/data"
-                    }
-
-                    let state = (d.state == "Booted") ? SimulatorDeviceState.booted : .shutDown
-                    let sim = Simulator(udid: udid, path: dataPath, state: state, name: d.name, runtime: runtime)
-                    if sim.isValid {
-                        simulators.append(sim)
-                    }
-                }
-            }
-        } catch {
-            // If JSON parsing fails, log and return empty
-            if let s = String(data: data, encoding: .utf8) {
-                NSLog("Failed to parse simctl JSON. Raw output: \(s)")
-            }
-            NSLog("JSON parse error: \(error)")
-            return []
-        }
-
-        return simulators
-    }
 
     private var _simulators : [Simulator]?
 
@@ -97,7 +17,7 @@ class DCSimulatorManager {
     var simulators : [Simulator] {
         get {
             if _simulators == nil {
-                _simulators = getSimulatorsUsingSimctl()
+                _simulators = SimCtl.listSimulators()
             }
             return _simulators!
         }
@@ -107,6 +27,7 @@ class DCSimulatorManager {
     init() {
     }
 
+    
     enum NotificationType {
         case deviceState
         case deviceAdded
@@ -114,8 +35,94 @@ class DCSimulatorManager {
         case deviceRenamed
     }
     
-    func startNotificationHandler(_ handler : @escaping (NotificationType, UUID, Int) -> Void ) {
+    struct SimulatorNotification {
+        let notificationType : NotificationType
+        let udid : UUID
+    }
+    
+    
+    public func refreshSimulators() {
+        
+        guard _simulators != nil else {
+            return
+        }
+        
+        var notifications : [SimulatorNotification] = []
+        
+        let updatedSimulators = SimCtl.listSimulators()
+        for sim in simulators {
+            if let updatedSim = updatedSimulators.first(where: {$0.UDID == sim.UDID }) {
+                if updatedSim.state != sim.state {
+                    sim.state = updatedSim.state
+
+                    NSLog("SimDevice \(String(describing: updatedSim.UDID)) new state: \(updatedSim.state)")
+
+                    notifications.append(SimulatorNotification(
+                        notificationType: NotificationType.deviceState, udid: sim.UDID!))
+                }
+                if updatedSim.name != sim.name {
+                    sim.name = updatedSim.name
+                    
+                    NSLog("SimDevice \(String(describing: updatedSim.UDID)) renamed: \(String(describing: updatedSim.name))")
+
+                    notifications.append(SimulatorNotification(
+                        notificationType: NotificationType.deviceRenamed, udid: sim.UDID!))
+                }
+            }
+            else {
+                notifications.append(SimulatorNotification(
+                    notificationType: NotificationType.deviceRemoved, udid: sim.UDID!))
+            }
+        }
+        notifications.filter { $0.notificationType == .deviceRemoved }.forEach { notification in
+            NSLog("SimDevice \(String(describing: notification.udid)) removed")
+            _simulators!.removeAll { $0.UDID == notification.udid }
+        }
+        
+        for updatedSim in updatedSimulators {
+            if simulators.first(where: {$0.UDID == updatedSim.UDID }) == nil {
+                _simulators!.append(updatedSim)
+                
+                NSLog("SimDevice \(String(describing: updatedSim.UDID)) added: \(String(describing: updatedSim.name))")
+
+                notifications.append(SimulatorNotification(
+                    notificationType: NotificationType.deviceAdded, udid: updatedSim.UDID!))
+            }
+        }
+        
+        guard notificationHandler != nil, !notifications.isEmpty else {
+            return
+        }
+        
+        DispatchQueue.main.async(execute: { () -> Void in
+            for notification in notifications {
+                self.notificationHandler?(notification.notificationType, notification.udid, 0)
+            }
+        })
 
     }
 
+    private var notificationHandler : ((NotificationType, UUID, Int) -> Void)?
+    
+    private var timer : Timer?
+    
+    
+    func startNotificationHandler(_ handler : @escaping (NotificationType, UUID, Int) -> Void ) {
+        notificationHandler = handler
+
+        guard timer == nil else {
+            return
+        }
+        
+        DispatchQueue.global(qos: .background).async {
+            self.timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { (timer) in
+                self.refreshSimulators()
+            })
+            RunLoop.current.run()
+        }
+
+        NSLog("Simulator device notification started")
+    }
+
 }
+

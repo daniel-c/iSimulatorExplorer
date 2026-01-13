@@ -11,7 +11,7 @@ import Foundation
 
 class DCSimulatorTruststoreItem {
     
-    var sha1: Data?, subject : Data?, data : Data?
+    var sha256: Data?, subject : Data?, data : Data?
     
     var tset : Data?
     
@@ -25,12 +25,12 @@ class DCSimulatorTruststoreItem {
         
     }
     
-    convenience init (sha1: Data?, subject : Data?, /* tset : Data?, */ data : Data?)
+    convenience init (sha256: Data?, subject : Data?, tset : Data?, data : Data?)
     {
         self.init()
-        self.sha1 = sha1
+        self.sha256 = sha256
         self.subject = subject
-        // self.tset = tset
+        self.tset = tset
         self.data = data
     }
     
@@ -38,7 +38,7 @@ class DCSimulatorTruststoreItem {
         self.init()
         let cdata = SecCertificateCopyData(certificate)
         data = cdata as Data
-        sha1 = getThumbprint()
+        sha256 = getThumbprint()
         subject = getNormalizedSubject()
     }
     
@@ -75,16 +75,16 @@ class DCSimulatorTruststoreItem {
         return nil
     }
     
-    func calcSHA1(_ data : Data) -> Data {
+    func calcSHA256(_ data : Data) -> Data {
         
-        let digest = NSMutableData(length: Int(CC_SHA1_DIGEST_LENGTH))
-        CC_SHA1((data as NSData).bytes, CC_LONG(data.count), digest!.mutableBytes.assumingMemoryBound(to: UInt8.self))
+        let digest = NSMutableData(length: Int(CC_SHA256_DIGEST_LENGTH))
+        CC_SHA256((data as NSData).bytes, CC_LONG(data.count), digest!.mutableBytes.assumingMemoryBound(to: UInt8.self))
         return digest! as Data
     }
     
     func getThumbprint() -> Data {
         
-        return calcSHA1(data!)
+        return calcSHA256(data!)
     }
     
     func hexstringFromData(_ data : Data) -> String {
@@ -137,8 +137,7 @@ class DCSimulatorTruststore {
         var result = sqlite3_open(path.cString(using: String.Encoding.utf8)!, &database)
         if result == SQLITE_OK {
             var sqlStatements : OpaquePointer? = nil
-//            result = sqlite3_prepare(database, "SELECT sha1, subj, tset, data FROM cert", -1, &sqlStatements, nil)
-            result = sqlite3_prepare(database, "SELECT sha1, subj, data FROM cert", -1, &sqlStatements, nil)
+            result = sqlite3_prepare(database, "SELECT sha256, subj, tset, data FROM tsettings", -1, &sqlStatements, nil)
             if result == SQLITE_OK {
                 while (sqlite3_step(sqlStatements) == SQLITE_ROW)
                 {
@@ -146,7 +145,7 @@ class DCSimulatorTruststore {
                     if (dataLength > 0)
                     {
                         let blobData = sqlite3_column_blob(sqlStatements, 0)
-                        let sha1 = Data(bytes: blobData!, count: Int(dataLength))
+                        let sha256 = Data(bytes: blobData!, count: Int(dataLength))
                         
                         var subj : Data?;
                         var tset : Data?;
@@ -158,19 +157,19 @@ class DCSimulatorTruststore {
                                 subj = Data(bytes: blobData, count: Int(dataLength))
                             }
                         }
-                        //dataLength = sqlite3_column_bytes(sqlStatements, 2);
-                        //if dataLength > 0 {
-                        //    if let blobData = sqlite3_column_blob(sqlStatements, 2) {
-                        //        tset = Data(bytes: blobData, count: Int(dataLength))
-                        //    }
-                        //}
                         dataLength = sqlite3_column_bytes(sqlStatements, 2);
                         if dataLength > 0 {
                             if let blobData = sqlite3_column_blob(sqlStatements, 2) {
+                                tset = Data(bytes: blobData, count: Int(dataLength))
+                            }
+                        }
+                        dataLength = sqlite3_column_bytes(sqlStatements, 3);
+                        if dataLength > 0 {
+                            if let blobData = sqlite3_column_blob(sqlStatements, 3) {
                                 data = Data(bytes: blobData, count: Int(dataLength))
                             }
 
-                            let item = DCSimulatorTruststoreItem(sha1: sha1, subject: subj, /* tset: tset,*/ data: data)
+                            let item = DCSimulatorTruststoreItem(sha256: sha256, subject: subj, tset: tset, data: data)
                             items.append(item)
                         }
                     }
@@ -196,7 +195,7 @@ class DCSimulatorTruststore {
             var result = sqlite3_open(path.cString(using: String.Encoding.utf8)!, &database)
             if result == SQLITE_OK {
                 var sqlStatements : OpaquePointer? = nil
-                result = sqlite3_prepare_v2(database, "DELETE FROM cert WHERE hex(sha1)=?", -1, &sqlStatements, nil)
+                result = sqlite3_prepare_v2(database, "DELETE FROM tsettings WHERE hex(sha256)=?", -1, &sqlStatements, nil)
                 if result == SQLITE_OK {
                     
                     result = sqlite3_bind_text(sqlStatements, 1, certificateSha1, -1, nil) // SQLITE_TRANSIENT);
@@ -234,10 +233,10 @@ class DCSimulatorTruststore {
         var result = sqlite3_open(path.cString(using: String.Encoding.utf8)!, &database)
         if result == SQLITE_OK {
             var sqlStatements : OpaquePointer? = nil
-            result = sqlite3_prepare_v2(database, "INSERT INTO cert (sha1, subj, tset, data) VALUES (?, ?, ?, ?)", -1, &sqlStatements, nil)
+            result = sqlite3_prepare_v2(database, "INSERT INTO tsettings (sha256, subj, tset, data) VALUES (?, ?, ?, ?)", -1, &sqlStatements, nil)
             
             if result == SQLITE_OK {
-                result = sqlite3_bind_blob(sqlStatements, 1, (item.sha1! as NSData).bytes, Int32(item.sha1!.count), nil) //SQLITE_TRANSIENT);
+                result = sqlite3_bind_blob(sqlStatements, 1, (item.sha256! as NSData).bytes, Int32(item.sha256!.count), nil) //SQLITE_TRANSIENT);
                 result = sqlite3_bind_blob(sqlStatements, 2, (item.subject! as NSData).bytes, Int32(item.subject!.count), nil) // SQLITE_STATIC);
                 result = sqlite3_bind_blob(sqlStatements, 3, (item.tset! as NSData).bytes, Int32(item.tset!.count), nil) // SQLITE_STATIC);
                 result = sqlite3_bind_blob(sqlStatements, 4, (item.data! as NSData).bytes, Int32(item.data!.count), nil) //SQLITE_STATIC);
