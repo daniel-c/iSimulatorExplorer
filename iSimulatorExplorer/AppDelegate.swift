@@ -26,11 +26,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         
         let xcodeVersion = XCodeSupport.getDeveloperToolsVersion()
-        if xcodeVersion == nil || xcodeVersion!.compare("6.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
+        if xcodeVersion == nil || xcodeVersion!.compare("18.0", options: NSString.CompareOptions.numeric) == ComparisonResult.orderedAscending {
             
             AppDelegate.showModalAlert (
                 NSLocalizedString("Error", comment: ""),
-                informativeText: NSLocalizedString("Xcode 6 or above must be installed for iSimulatorExplorer to run.", comment: ""))
+                informativeText: NSLocalizedString("Xcode 18 or above must be installed for iSimulatorExplorer to run.", comment: ""))
             NSApplication.shared.terminate(nil)
         }
     }

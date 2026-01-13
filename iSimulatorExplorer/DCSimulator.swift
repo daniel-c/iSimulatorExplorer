@@ -276,8 +276,19 @@ class Simulator {
                 let options : [String : AnyObject] = ["CFBundleIdentifier" : bundleId! as AnyObject]
 
                 do {
-                    //try self.simDevice!.installApplication(appUrl, withOptions: options)
-                    completionHandler?(nil)
+                    let appPath = appUrl.path(percentEncoded: false)
+                    
+                    if SimCtl.installApp(udid: self.UDID!.uuidString, appPath: appPath)
+                    {
+                        completionHandler?(nil)
+                    }
+                    else
+                    {
+                        completionHandler?(NSError(
+                            domain: "iSimulatorExplorer",
+                            code: 3,
+                            userInfo: [NSLocalizedDescriptionKey : "Error installing app"]))
+                    }
                 }
                 catch let error {
                     completionHandler?(error)
@@ -291,35 +302,21 @@ class Simulator {
             }
         }
         
-//        if simDevice != nil {
-//
-//            doActionWithBootAndShutdown(appUrl, action: installAppAction, completionHandler: completionHandler)
-//        }
-//        else {
-            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot install app when CoreSimulator is not available"]))
-//        }
- 
+        doActionWithBootAndShutdown(appUrl, action: installAppAction, completionHandler: completionHandler)
     }
     
     func uninstallApp (_ appId : String, completionHandler : ((_ error : Error?) -> Void)?) {
         
         
         let uninstallAppAction = { (appId : String, completionHandler : ((_ error : Error?) -> Void)?) -> Void in
-            do {
-                // try self.simDevice!.uninstallApplication(appId, withOptions: nil)
+            if SimCtl.uninstallApp(udid: self.UDID!.uuidString, appBundleIdentifier: appId) {
                 completionHandler?(nil)
             }
-            catch let error {
-                completionHandler?(error)
+            else {
+                completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Error uninstall app"]))
             }
         }
         
-//        if simDevice != nil {
-//            doActionWithBootAndShutdown(appId, action: uninstallAppAction, completionHandler: completionHandler)
-//        }
-//        else {
-            completionHandler?(NSError(domain: "iSimulatorExplorer", code: 1, userInfo: [NSLocalizedDescriptionKey : "Cannot uninstall app when CoreSimulator is not available"]))
-//        }
- 
+        doActionWithBootAndShutdown(appId, action: uninstallAppAction, completionHandler: completionHandler)
     }
 }

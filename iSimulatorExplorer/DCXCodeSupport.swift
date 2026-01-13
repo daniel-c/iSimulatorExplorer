@@ -23,13 +23,6 @@ class XCodeSupport {
         return nil
     }
     
-    class func getSimCtlPath() -> String? {
-        if let developerDir = getDeveloperToolsPath() {
-            return (developerDir as NSString).appendingPathComponent("usr/bin/simctl")
-        }
-        return nil
-    }
-    
     class func getDeveloperToolsVersion() -> String? {
         if let developerDir = getDeveloperToolsPath() {
             let fm = FileManager.default

@@ -11,7 +11,7 @@ import Foundation
 
 public class SimCtl {
 
-    static func getProcess(arguments : [String] ) -> Process {
+    private static func getProcess(arguments : [String] ) -> Process {
         let task = Process()
         task.launchPath = "/usr/bin/xcrun"
         var args = ["simctl"]
@@ -21,10 +21,10 @@ public class SimCtl {
     }
     
     
-    static func listSimulators() -> [Simulator] {
-        let process = getProcess(arguments: ["list", "-j", "devices"])
+    private static func runSimCtl(arguments : [String], output : Pipe?) -> Bool {
+        let process = getProcess(arguments: arguments)
 
-        let pipe = Pipe()
+        let pipe = output ?? Pipe()
         process.standardOutput = pipe
         process.standardError = Pipe()
 
@@ -32,11 +32,19 @@ public class SimCtl {
             try process.run()
         } catch {
             NSLog("Failed to run simctl: \(error)")
-            return []
+            return false
         }
 
         process.waitUntilExit()
 
+        return process.terminationStatus == 0
+    }
+    
+    static func listSimulators() -> [Simulator] {
+        
+        let pipe = Pipe()
+        guard runSimCtl(arguments: ["list", "-j", "devices"], output: pipe) else { return [] }
+        
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         guard !data.isEmpty else { return [] }
 
@@ -98,42 +106,23 @@ public class SimCtl {
     }
     
     static public func bootDevice(udid : String) -> Bool {
-        
-        let process = getProcess(arguments: ["boot", udid])
 
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        
-        do {
-            try process.run()
-        } catch {
-            NSLog("Failed to run simctl: \(error)")
-            return false
-        }
-
-        process.waitUntilExit()
-        
-        return process.terminationStatus == 0
+        return runSimCtl(arguments: ["boot", udid], output: nil)
     }
     
     static public func shutDownDevice(udid : String) -> Bool {
         
-        let process = getProcess(arguments: ["shutdown", udid])
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
+        return runSimCtl(arguments: ["shutdown", udid], output: nil)
+    }
+    
+    static public func installApp(udid: String, appPath: String) -> Bool {
         
-        do {
-            try process.run()
-        } catch {
-            NSLog("Failed to run simctl: \(error)")
-            return false
-        }
-
-        process.waitUntilExit()
+        return runSimCtl(arguments: ["install", udid, appPath], output: nil)
+    }
+    
+    static public func uninstallApp(udid: String, appBundleIdentifier: String) -> Bool {
         
-        return process.terminationStatus == 0
-
+        return runSimCtl(arguments: ["uninstall", udid, appBundleIdentifier], output: nil)
     }
 
 }
