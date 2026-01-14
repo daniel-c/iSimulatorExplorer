@@ -8,6 +8,7 @@
 //
 
 import Cocoa
+import SwiftUI
 
 class SimulatorVersion {
     var version : String
@@ -20,11 +21,22 @@ class SimulatorVersion {
     
 }
 
-// Cannot use protocol because to support downcasting it must be marked as @objc which limits the types we can use.
-//protocol SimulatorController {
-//    var simulator : Simulator? { get set }
-//}
+protocol SimulatorController {
+    var simulator : Simulator? { get set }
+}
     
+class DCSimulatorHostingViewController : NSHostingController<SimulatorInfoView>, SimulatorController {
+    
+    var simulator: Simulator? {
+        set {
+            rootView.simulator = newValue
+        }
+        get {
+            return rootView.simulator
+        }
+    }
+}
+
 class DCSimulatorViewController: NSViewController {
     var simulator : Simulator? // {
 }
@@ -186,6 +198,9 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
         if let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
             NSLog("selected: %@", sim.name!)
             for tabViewItem in tabView.tabViewItems {
+                if var item = tabViewItem.identifier as? SimulatorController {
+                    item.simulator = sim
+                }
                 if let item = tabViewItem.identifier as? DCSimulatorViewController {
                     item.simulator = sim
                 }
@@ -202,7 +217,8 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             var viewController : NSViewController?
             switch identifier {
             case "Info":
-                viewController = DCSimulatorInfoViewController(nibName: "DCSimulatorInfoViewController", bundle: nil)
+                viewController = DCSimulatorHostingViewController(rootView: SimulatorInfoView())
+                // viewController = DCSimulatorInfoViewController(nibName: "DCSimulatorInfoViewController", bundle: nil)
             case "Apps":
                 viewController = DCSimulatorAppViewController(nibName: "DCSimulatorAppViewController", bundle: nil)
             case "Truststore":
@@ -214,6 +230,9 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
                 tabViewItem?.view = viewController!.view;
                 tabViewItem?.identifier = viewController!
                 if outlineView.selectedRow >= 0 {
+                    if var item = viewController as? SimulatorController {
+                        item.simulator = outlineView.item(atRow: outlineView.selectedRow) as? Simulator
+                    }
                     if let item = viewController as? DCSimulatorViewController {
                         item.simulator = outlineView.item(atRow: outlineView.selectedRow) as? Simulator
                     }
