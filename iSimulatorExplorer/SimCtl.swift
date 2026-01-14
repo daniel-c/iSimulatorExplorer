@@ -26,7 +26,8 @@ public class SimCtl {
 
         let pipe = output ?? Pipe()
         process.standardOutput = pipe
-        process.standardError = Pipe()
+        let errorPipe = Pipe()
+        process.standardError = errorPipe
 
         do {
             try process.run()
@@ -37,7 +38,18 @@ public class SimCtl {
 
         process.waitUntilExit()
 
-        return process.terminationStatus == 0
+        if (process.terminationStatus != 0)
+        {
+            do {
+                let errordata = try errorPipe.fileHandleForReading.readToEnd()
+                NSLog("simctl error\(process.terminationStatus): \(errordata != nil ? String(describing: String(data: errordata!, encoding: .utf8)) : String())")
+                
+            } catch {
+                NSLog("Error reading simctl output: \(error)")
+            }
+            return false
+        }
+        return true
     }
     
     static func listSimulators() -> [Simulator] {

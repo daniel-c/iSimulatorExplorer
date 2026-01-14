@@ -3,7 +3,7 @@
 //  iSimulatorExplorer
 //
 //  Created by Daniel Cerutti on 15.08.14.
-//  Copyright (c) 2014 Daniel Cerutti. All rights reserved.
+//  Copyright (c) 2014-2026 Daniel Cerutti. All rights reserved.
 //  Licensed under the MIT license. See LICENSE file in the project root for full license information.
 //
 
@@ -29,7 +29,9 @@ class DCSimulatorViewController: NSViewController {
     var simulator : Simulator? // {
 }
 
-class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDelegate, NSOutlineViewDataSource, NSTabViewDelegate {
+class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource, NSTabViewDelegate {
+
+//class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDelegate, NSOutlineViewDataSource, NSTabViewDelegate {
 
     @IBOutlet weak var outlineView: NSOutlineView!
     @IBOutlet weak var tabView: NSTabView!
@@ -166,13 +168,13 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
 
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         if let simulatorsForVersion = item as? SimulatorVersion {
-            if let result = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("HeaderCell"), owner: self) as? NSTableCellView {
+            if let result = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("HeaderCell"), owner: self) as? NSTableCellView {
                 result.textField!.stringValue = simulatorsForVersion.version
                 return result
             }
         }
         else if let sim = item as? Simulator {
-            if let result = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DataCell"), owner: self) as? NSTableCellView {
+            if let result = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("DataCell"), owner: self) as? NSTableCellView {
                 result.textField!.stringValue = sim.name!
                 return result
             }
@@ -224,9 +226,4 @@ class DCSimulatorExplorerController: NSObject, NSWindowDelegate, NSOutlineViewDe
         initTabViewItem(tabViewItem)
         return true;
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
-	return NSUserInterfaceItemIdentifier(rawValue: input)
 }

@@ -273,25 +273,18 @@ class Simulator {
             }
             
             if bundleId != nil {
-                let options : [String : AnyObject] = ["CFBundleIdentifier" : bundleId! as AnyObject]
-
-                do {
-                    let appPath = appUrl.path(percentEncoded: false)
-                    
-                    if SimCtl.installApp(udid: self.UDID!.uuidString, appPath: appPath)
-                    {
-                        completionHandler?(nil)
-                    }
-                    else
-                    {
-                        completionHandler?(NSError(
-                            domain: "iSimulatorExplorer",
-                            code: 3,
-                            userInfo: [NSLocalizedDescriptionKey : "Error installing app"]))
-                    }
+                let appPath = appUrl.path(percentEncoded: false)
+                
+                if SimCtl.installApp(udid: self.UDID!.uuidString, appPath: appPath)
+                {
+                    completionHandler?(nil)
                 }
-                catch let error {
-                    completionHandler?(error)
+                else
+                {
+                    completionHandler?(NSError(
+                        domain: "iSimulatorExplorer",
+                        code: 3,
+                        userInfo: [NSLocalizedDescriptionKey : "Error installing app"]))
                 }
             }
             else {
