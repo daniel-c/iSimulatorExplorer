@@ -20,13 +20,13 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="46" horizontalPageScroll="10" verticalLineScroll="46" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LuV-FJ-pDf">
-                    <rect key="frame" x="20" y="67" width="545" height="297"/>
+                    <rect key="frame" x="20" y="67" width="545" height="295"/>
                     <clipView key="contentView" id="0Um-xQ-GRN">
-                        <rect key="frame" x="1" y="1" width="543" height="295"/>
+                        <rect key="frame" x="1" y="1" width="543" height="293"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="44" rowSizeStyle="automatic" viewBased="YES" id="15f-8j-QNM">
-                                <rect key="frame" x="0.0" y="0.0" width="543" height="295"/>
+                                <rect key="frame" x="0.0" y="0.0" width="543" height="293"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -48,7 +48,7 @@
                                                 <rect key="frame" x="1" y="1" width="482" height="17"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="SCb-NX-yKc">
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="SCb-NX-yKc">
                                                         <rect key="frame" x="0.0" y="0.0" width="482" height="16"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="No installed App" id="QUi-3u-e6u">
                                                             <font key="font" metaFont="system"/>
@@ -71,7 +71,7 @@
                                                 <rect key="frame" x="1" y="20" width="482" height="44"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="zwR-bF-ibR">
+                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="zwR-bF-ibR">
                                                         <rect key="frame" x="178" y="24" width="303" height="16"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" id="T40-12-sLZ">
                                                             <font key="font" metaFont="system"/>
@@ -102,7 +102,7 @@
                                                             <action selector="openAppBundleInFinderPressed:" target="-2" id="Fq6-6X-eXf"/>
                                                         </connections>
                                                     </button>
-                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="wnL-Om-CBf">
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="wnL-Om-CBf">
                                                         <rect key="frame" x="6" y="24" width="164" height="16"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="160" id="bvS-Rp-i1r"/>

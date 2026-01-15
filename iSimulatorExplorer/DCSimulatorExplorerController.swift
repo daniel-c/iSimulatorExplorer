@@ -22,23 +22,21 @@ class SimulatorVersion {
 }
 
 protocol SimulatorController {
-    var simulator : Simulator? { get set }
+    mutating func updateSimulator(simulator : Simulator)
 }
     
 class DCSimulatorHostingViewController : NSHostingController<SimulatorInfoView>, SimulatorController {
-    
-    var simulator: Simulator? {
-        set {
-            rootView.simulator = newValue
-        }
-        get {
-            return rootView.simulator
-        }
+    func updateSimulator(simulator: Simulator) {
+        rootView.updateSimulator(simulator: simulator)
     }
 }
 
-class DCSimulatorViewController: NSViewController {
-    var simulator : Simulator? // {
+class DCSimulatorViewController: NSViewController, SimulatorController {
+    func updateSimulator(simulator: Simulator) {
+        self.simulator = simulator
+    }
+    
+    var simulator : Simulator?
 }
 
 class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource, NSTabViewDelegate {
@@ -130,8 +128,8 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             if let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
                 if sim.UDID == deviceUDID {
                     for tabViewItem in tabView.tabViewItems {
-                        if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                            item.simulator = sim
+                        if var item = tabViewItem.identifier as? SimulatorController {
+                            item.updateSimulator(simulator: sim)
                         }
                     }
                 }
@@ -199,10 +197,7 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             NSLog("selected: %@", sim.name!)
             for tabViewItem in tabView.tabViewItems {
                 if var item = tabViewItem.identifier as? SimulatorController {
-                    item.simulator = sim
-                }
-                if let item = tabViewItem.identifier as? DCSimulatorViewController {
-                    item.simulator = sim
+                    item.updateSimulator(simulator: sim)
                 }
             }
         }
@@ -230,11 +225,9 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
                 tabViewItem?.view = viewController!.view;
                 tabViewItem?.identifier = viewController!
                 if outlineView.selectedRow >= 0 {
-                    if var item = viewController as? SimulatorController {
-                        item.simulator = outlineView.item(atRow: outlineView.selectedRow) as? Simulator
-                    }
-                    if let item = viewController as? DCSimulatorViewController {
-                        item.simulator = outlineView.item(atRow: outlineView.selectedRow) as? Simulator
+                    if var item = viewController as? SimulatorController,
+                       let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
+                        item.updateSimulator(simulator: sim)
                     }
                 }
             }
