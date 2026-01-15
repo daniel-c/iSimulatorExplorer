@@ -171,7 +171,7 @@ class Simulator {
     }
     
     
-    func getAppList() -> [SimulatorApp]?
+    func getAppList() -> [SimulatorApp]
     {
         return getAppListFromContent()
     }

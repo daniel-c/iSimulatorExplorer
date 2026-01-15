@@ -13,13 +13,12 @@ struct InfoItem : Identifiable {
     let value: String
 }
 
+@Observable class SimulatorInfoViewModel {
+    var simulator: Simulator?
+    var infoItems: [InfoItem] = []
+    var startStopButtonText: String = "Boot"
 
-struct SimulatorInfoView: View, SimulatorController {
-    private var simulator: Simulator?
-    private var infoItems: [InfoItem] = []
-    private var startStopButtonText: String = "Boot"
-
-    mutating func updateSimulator(simulator: Simulator) {
+    func updateSimulator(simulator: Simulator) {
         self.simulator = simulator
         infoItems.removeAll()
         
@@ -35,41 +34,46 @@ struct SimulatorInfoView: View, SimulatorController {
         infoItems.append(InfoItem(name: NSLocalizedString("Path:", comment: ""), value: (simulator.path as NSString?)?.abbreviatingWithTildeInPath ?? empty))
         infoItems.append(InfoItem(name: NSLocalizedString("State:", comment: ""), value: simulator.stateString))
 
-        // self.infoItems = infoItems
-        
         startStopButtonText = simulator.state == .shutDown ? "Boot" : "Shutdown"
     }
-    
-    
+}
+
+
+struct SimulatorInfoView: View, SimulatorController {
+    @State private var viewModel: SimulatorInfoViewModel = SimulatorInfoViewModel()
+
+    func updateSimulator(simulator: Simulator) {
+        viewModel.updateSimulator(simulator: simulator)
+    }
     
     var body: some View {
-        Table(infoItems) {
+        Table(viewModel.infoItems) {
             TableColumn("Name", value: \.name).width(min: 50, ideal: 80, max: 100)
             TableColumn("Value", value: \.value)
         }
         HStack {
             Button("Show in Finder") {
-                if simulator != nil {
-                    NSWorkspace.shared.selectFile(simulator!.path, inFileViewerRootedAtPath: simulator!.path)
+                if let simulator = viewModel.simulator {
+                    NSWorkspace.shared.selectFile(simulator.path, inFileViewerRootedAtPath: simulator.path)
                 }
             }
             .frame(width:130)
             Spacer()
             Button("Open Simulator") {
-                if simulator != nil {
-                    let _ = simulator?.launchSimulatorApp()
+                if let simulator = viewModel.simulator {
+                    let _ = simulator.launchSimulatorApp()
                 }
             }
             .frame(width:130)
             Spacer()
-            Button(startStopButtonText) {
-                if (simulator!.state == .shutDown) {
-                    simulator?.boot({ (error) in
+            Button(viewModel.startStopButtonText) {
+                if (viewModel.simulator?.state == .shutDown) {
+                    viewModel.simulator!.boot({ (error) in
                         NSLog("boot complete. \(String(describing: error))")
                     })
                 }
                 else {
-                    simulator?.shutdown({ (error) in
+                    viewModel.simulator?.shutdown({ (error) in
                         NSLog("shudown complete. \(String(describing: error))")
                     })
                 }

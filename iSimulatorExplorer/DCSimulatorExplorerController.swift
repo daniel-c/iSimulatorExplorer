@@ -22,10 +22,12 @@ class SimulatorVersion {
 }
 
 protocol SimulatorController {
-    mutating func updateSimulator(simulator : Simulator)
+    func updateSimulator(simulator : Simulator)
 }
     
-class DCSimulatorHostingViewController : NSHostingController<SimulatorInfoView>, SimulatorController {
+class SimulatorHostingViewController<SimulatorView : View> : NSHostingController<SimulatorView>, SimulatorController
+    where SimulatorView: SimulatorController
+{
     func updateSimulator(simulator: Simulator) {
         rootView.updateSimulator(simulator: simulator)
     }
@@ -128,7 +130,7 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             if let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
                 if sim.UDID == deviceUDID {
                     for tabViewItem in tabView.tabViewItems {
-                        if var item = tabViewItem.identifier as? SimulatorController {
+                        if let item = tabViewItem.identifier as? SimulatorController {
                             item.updateSimulator(simulator: sim)
                         }
                     }
@@ -196,7 +198,7 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
         if let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
             NSLog("selected: %@", sim.name!)
             for tabViewItem in tabView.tabViewItems {
-                if var item = tabViewItem.identifier as? SimulatorController {
+                if let item = tabViewItem.identifier as? SimulatorController {
                     item.updateSimulator(simulator: sim)
                 }
             }
@@ -212,10 +214,11 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             var viewController : NSViewController?
             switch identifier {
             case "Info":
-                viewController = DCSimulatorHostingViewController(rootView: SimulatorInfoView())
+                viewController = SimulatorHostingViewController(rootView: SimulatorInfoView())
                 // viewController = DCSimulatorInfoViewController(nibName: "DCSimulatorInfoViewController", bundle: nil)
             case "Apps":
-                viewController = DCSimulatorAppViewController(nibName: "DCSimulatorAppViewController", bundle: nil)
+                viewController = SimulatorHostingViewController(rootView: SimulatorAppView())
+                // viewController = DCSimulatorAppViewController(nibName: "DCSimulatorAppViewController", bundle: nil)
             case "Truststore":
                 viewController = DCSimulatorTrustStoreViewController(nibName: "DCSimulatorTrustStoreViewController", bundle: nil)
             default:
@@ -225,7 +228,7 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
                 tabViewItem?.view = viewController!.view;
                 tabViewItem?.identifier = viewController!
                 if outlineView.selectedRow >= 0 {
-                    if var item = viewController as? SimulatorController,
+                    if let item = viewController as? SimulatorController,
                        let sim = outlineView.item(atRow: outlineView.selectedRow) as? Simulator {
                         item.updateSimulator(simulator: sim)
                     }

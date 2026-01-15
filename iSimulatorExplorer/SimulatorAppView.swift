@@ -8,11 +8,35 @@
 import SwiftUI
 
 struct SimulatorApp1 : Identifiable {
-    var id : String = UUID().uuidString
-    var bundleName : String
-    var displayName : String
-    var path : String
-    var dataPath : String
+    var id : String
+    var bundleName : String?
+    var displayName : String?
+    var path : String?
+    var dataPath : String?
+}
+
+ 
+@Observable class SimulatorAppViewModel {
+    var simulator: Simulator?
+    var simulatorAppList : [SimulatorApp1] = []
+
+    init() {
+        
+    }
+    
+    func updateSimulator(simulator: Simulator) {
+        self.simulator = simulator
+        let appList = simulator.getAppList()
+        simulatorAppList.removeAll()
+        for app in appList
+        {
+            simulatorAppList.append(SimulatorApp1(id: app.identifier!,
+                                                  bundleName: app.bundleName,
+                                                  displayName: app.displayName,
+                                                  path: app.path,
+                                                  dataPath: app.dataPath))
+        }
+    }
 }
 
 struct AppRowView : View {
@@ -21,49 +45,100 @@ struct AppRowView : View {
     var body: some View {
         Grid {
             GridRow {
-                Text(app.displayName)
-                Image(systemName: "globe")
+                Text(app.displayName ?? "").gridColumnAlignment(HorizontalAlignment.leading)
+                Text(app.bundleName ?? "").gridColumnAlignment(HorizontalAlignment.leading)
             }
             GridRow {
-                Image(systemName: "globe")
-                Text(app.bundleName)
+                Button("Open App Bundle in finder") {
+                    if let path = app.path {
+                        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: path)
+                    }
+                }.buttonStyle(.link)
+                Button("Open App Data in finder") {
+                    if let path = app.dataPath {
+                        NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: path)
+                    }
+                }.buttonStyle(.link)
             }
         }
     }
 }
 
-struct SimulatorAppView: View {
-    struct Ocean: Identifiable {
-        let name: String
-        let id = UUID()
-    }
-    
-    var simulatorAppList = [
-        SimulatorApp1(bundleName: "ch.ceruttisoftware.test1",
-                      displayName: "SimulatorApp1",
-                      path: "/Users/daniel/Development/CSD/iSimulatorExplorer",
-                      dataPath: "/Users/daniel/Development/CSD/iSimulatorExplorer"),
-        SimulatorApp1(bundleName: "ch.ceruttisoftware.test2",
-                      displayName: "SimulatorApp2",
-                      path: "/Users/daniel/Development/CSD/iSimulatorExplorer",
-                      dataPath: "/Users/daniel/Development/CSD/iSimulatorExplorer")
-    ]
-    
-    private var oceans = [
-        Ocean(name: "Pacific"),
-        Ocean(name: "Atlantic"),
-        Ocean(name: "Indian"),
-        Ocean(name: "Southern"),
-        Ocean(name: "Arctic")
-    ]
+struct SimulatorAppView: View, SimulatorController {
+    @State private var viewModel : SimulatorAppViewModel = SimulatorAppViewModel()
+    @State private var selectedAppId : String?
+    @State private var disableButtons: Bool = false
 
-    
+    func updateSimulator(simulator: Simulator) {
+        viewModel.updateSimulator(simulator: simulator)
+    }
+
     var body: some View {
-        List(simulatorAppList) {
+        List(viewModel.simulatorAppList, selection: $selectedAppId) {
             AppRowView(app: $0)
-            //Text($0.displayName)
+        }
+        HStack {
+            Spacer()
+            Button("Install App") {
+                installApp()
+            }
+            .disabled(disableButtons)
+            .frame(width:130)
+            Spacer()
+            Button("Uninstall App") {
+                uninstallApp(appId: selectedAppId!)
+            }
+            .disabled(disableButtons || selectedAppId == nil)
+            .frame(width:130)
         }
     }
+    
+    private func installApp()
+    {
+        let openPanel = NSOpenPanel()
+        openPanel.canChooseFiles = true
+        openPanel.canChooseDirectories = false
+        openPanel.allowsMultipleSelection = false
+        
+        if openPanel.runModal() == NSApplication.ModalResponse.OK {
+            for url in openPanel.urls {
+                disableButtons = true
+                //isBusy = true
+                viewModel.simulator!.installApp(url, completionHandler: { (error) -> Void in
+                    // isBusy = false
+                    disableButtons = false
+                    if error != nil {
+                        AppDelegate.showModalAlert(
+                            NSLocalizedString("Error installing app \(url)", comment: ""),
+                            informativeText: "Error details: \(error!)")
+                        print("Install app \(url) error: \(error!)", terminator:"\n")
+                    }
+                    else {
+                        print("Install app \(url) successful", terminator:"\n")
+                        viewModel.updateSimulator(simulator: viewModel.simulator!)
+                    }
+                })
+            }
+        }
+    }
+    
+    private func uninstallApp(appId : String) {
+        disableButtons = true
+        viewModel.simulator!.uninstallApp(appId, completionHandler: { (error) -> Void in
+            disableButtons = false
+            if error != nil {
+
+                AppDelegate.showModalAlert(
+                    NSLocalizedString("Error uninstalling app \(appId)", comment: ""),
+                    informativeText: "Error details: \(error!)")
+            }
+            else {
+                print("Uninstall app \(appId) successful", terminator:"\n")
+                viewModel.updateSimulator(simulator: viewModel.simulator!)
+            }
+        })
+    }
+
 }
 
 #Preview {
