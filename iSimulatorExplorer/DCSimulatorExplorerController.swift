@@ -220,7 +220,8 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
                 viewController = SimulatorHostingViewController(rootView: SimulatorAppView())
                 // viewController = DCSimulatorAppViewController(nibName: "DCSimulatorAppViewController", bundle: nil)
             case "Truststore":
-                viewController = DCSimulatorTrustStoreViewController(nibName: "DCSimulatorTrustStoreViewController", bundle: nil)
+                viewController = SimulatorHostingViewController(rootView: SimulatorTrustStoreView())
+                //viewController = DCSimulatorTrustStoreViewController(nibName: "DCSimulatorTrustStoreViewController", bundle: nil)
             default:
                 viewController = nil
             }
