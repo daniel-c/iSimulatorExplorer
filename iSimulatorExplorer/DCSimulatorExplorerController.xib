@@ -20,17 +20,17 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <splitView dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vvj-B3-oHm">
-                    <rect key="frame" x="0.0" y="0.0" width="787" height="463"/>
+                    <rect key="frame" x="0.0" y="0.0" width="787" height="461"/>
                     <subviews>
                         <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="PsJ-dD-NX4">
-                            <rect key="frame" x="0.0" y="0.0" width="235" height="463"/>
+                            <rect key="frame" x="0.0" y="0.0" width="235" height="461"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <clipView key="contentView" drawsBackground="NO" id="LMY-rp-oKF">
-                                <rect key="frame" x="1" y="1" width="233" height="461"/>
+                                <rect key="frame" x="1" y="1" width="233" height="459"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <outlineView appearanceType="vibrantLight" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" outlineTableColumn="Sfp-Tw-cWk" id="yIo-1O-4pl">
-                                        <rect key="frame" x="0.0" y="0.0" width="233" height="461"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="233" height="459"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <size key="intercellSpacing" width="3" height="0.0"/>
                                         <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -120,16 +120,16 @@
                             </scroller>
                         </scrollView>
                         <customView misplaced="YES" id="bot-7o-v06">
-                            <rect key="frame" x="236" y="0.0" width="551" height="463"/>
+                            <rect key="frame" x="236" y="0.0" width="551" height="461"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <tabView translatesAutoresizingMaskIntoConstraints="NO" id="OPC-PX-BQe">
-                                    <rect key="frame" x="13" y="9" width="525" height="439"/>
+                                    <rect key="frame" x="13" y="9" width="525" height="437"/>
                                     <font key="font" metaFont="system"/>
                                     <tabViewItems>
                                         <tabViewItem label="Info" identifier="Info" id="sdH-hd-3sF">
                                             <view key="view" id="Lsp-Yl-RyP">
-                                                <rect key="frame" x="10" y="33" width="505" height="393"/>
+                                                <rect key="frame" x="10" y="33" width="505" height="391"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             </view>
                                         </tabViewItem>

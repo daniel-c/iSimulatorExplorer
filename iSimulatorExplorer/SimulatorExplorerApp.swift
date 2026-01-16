@@ -13,7 +13,7 @@ struct SimulatorExplorerApp: App {
     var body: some Scene {
         Window("Simulator Explorer", id: "main") {
             SimulatorExplorerMainView()
-            // ContentView()
+            //SimulatorExplorerView()
         }
     }
 }

@@ -38,40 +38,12 @@ class SimulatorGroup /*: Identifiable */{
     }
 }
 
-
-struct ContentView: View {
+@Observable class SimulatorExplorerViewModel {
     let simulatorManager : DCSimulatorManager = DCSimulatorManager()
-    
-    @State private var simulatorGroups: [SimulatorGroup] = []
-    @State private var simulators: [Simulator] = []
-    @State private var simulatorIds: Set<UUID> = []
-    @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
-    
-    var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            Text("")
-                .toolbar(removing: .sidebarToggle)
-        } content: {
-            List(simulatorGroups, id: \.id, children: \.simulators, selection: $simulatorIds, ) { simulator in
-                Text(simulator.name)
-            }
-        } detail: {
-            VStack {
-                if simulatorIds.count == 1 {
-                    Text(simulatorIds.first!.uuidString)
-                }
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundStyle(.tint)
-                Text("Details")
-            }
-            .task {
-                initSimulatorList()
-            }
-            .padding()
-        }
-    }
-    
+    var simulatorGroups: [SimulatorGroup] = []
+    var simulators: [Simulator] = []
+    var selectedId : UUID? = nil
+
     func initSimulatorList() {
         simulators = simulatorManager.simulators
         var simulatorsByVersion = [String : [Simulator]]()
@@ -105,9 +77,67 @@ struct ContentView: View {
             
         }
     }
+    
+    func getSelectedSimulator() -> Simulator?
+    {
+        if let id = selectedId {
+            return simulatorGroups.flatMap(\.simulators!).first(where: { $0.id == id })?.simulator
+        }
+        return nil
+    }
+}
+
+
+struct SimulatorExplorerView: View {
+    let simulatorManager : DCSimulatorManager = DCSimulatorManager()
+    
+    @State private var viewModel : SimulatorExplorerViewModel = SimulatorExplorerViewModel()
+    @State private var simulatorId: UUID? = nil
+    @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
+    
+    
+    var body: some View {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            Text("")
+                .toolbar(removing: .sidebarToggle)
+        } content: {
+            List(viewModel.simulatorGroups, id: \.id, children: \.simulators, selection: $viewModel.selectedId, ) { simulator in
+                Text(simulator.name)
+            }
+        } detail: {
+            TabView {
+                Tab("Info", systemImage: "tray.and.arrow.down.fill") {
+                    SimulatorInfoView(mainViewModel: viewModel)
+                }
+                // .badge(2)
+                Tab("Apps", systemImage: "tray.and.arrow.up.fill") {
+                    SimulatorAppView()
+                }
+                Tab("Trusted Certificates", systemImage: "person.crop.circle.fill") {
+                    SimulatorTrustStoreView()
+                }
+                //.badge("!")
+            }
+            /*
+            VStack {
+                if let id = simulatorId {
+                    Text(id.uuidString)
+                }
+                Image(systemName: "globe")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+                Text("Details")
+            }
+             */
+            .task {
+                viewModel.initSimulatorList()
+            }
+            .padding()
+        }
+    }
 }
 
 #Preview {
-    ContentView()
+    SimulatorExplorerView()
 }
 

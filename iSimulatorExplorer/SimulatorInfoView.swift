@@ -14,13 +14,32 @@ struct InfoItem : Identifiable {
 }
 
 @Observable class SimulatorInfoViewModel {
+    var mainViewModel: SimulatorExplorerViewModel?
     var simulator: Simulator?
     var infoItems: [InfoItem] = []
     var startStopButtonText: String = "Boot"
+    
+    init(mainViewModel: SimulatorExplorerViewModel? = nil) {
+        self.mainViewModel = mainViewModel
+        if let mainViewModel = mainViewModel {
+            updateSimulator(simulator: mainViewModel.getSelectedSimulator())
+            withObservationTracking {
+                _ = mainViewModel.selectedId
+            } onChange: {
+                DispatchQueue.main.async {
+                    self.updateSimulator(simulator: self.mainViewModel!.getSelectedSimulator())
+                }
+            }
+        }
+    }
 
-    func updateSimulator(simulator: Simulator) {
+    func updateSimulator(simulator: Simulator?) {
         self.simulator = simulator
         infoItems.removeAll()
+        
+        guard let simulator = simulator else {
+            return
+        }
         
         let empty = ""
         infoItems.append(InfoItem(name: NSLocalizedString("Name:", comment: ""), value: simulator.name ?? empty))
@@ -40,7 +59,11 @@ struct InfoItem : Identifiable {
 
 
 struct SimulatorInfoView: View, SimulatorController {
-    @State private var viewModel: SimulatorInfoViewModel = SimulatorInfoViewModel()
+    @State private var viewModel: SimulatorInfoViewModel = SimulatorInfoViewModel(mainViewModel: nil)
+    
+    init(mainViewModel: SimulatorExplorerViewModel?) {
+        self.viewModel = SimulatorInfoViewModel(mainViewModel: mainViewModel)
+    }
 
     func updateSimulator(simulator: Simulator) {
         viewModel.updateSimulator(simulator: simulator)
@@ -85,5 +108,5 @@ struct SimulatorInfoView: View, SimulatorController {
 }
 
 #Preview {
-    SimulatorInfoView()
+    SimulatorInfoView(mainViewModel: nil)
 }
