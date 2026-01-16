@@ -33,13 +33,6 @@ class SimulatorHostingViewController<SimulatorView : View> : NSHostingController
     }
 }
 
-class DCSimulatorViewController: NSViewController, SimulatorController {
-    func updateSimulator(simulator: Simulator) {
-        self.simulator = simulator
-    }
-    
-    var simulator : Simulator?
-}
 
 class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NSOutlineViewDataSource, NSTabViewDelegate {
 
@@ -215,13 +208,10 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             switch identifier {
             case "Info":
                 viewController = SimulatorHostingViewController(rootView: SimulatorInfoView())
-                // viewController = DCSimulatorInfoViewController(nibName: "DCSimulatorInfoViewController", bundle: nil)
             case "Apps":
                 viewController = SimulatorHostingViewController(rootView: SimulatorAppView())
-                // viewController = DCSimulatorAppViewController(nibName: "DCSimulatorAppViewController", bundle: nil)
             case "Truststore":
                 viewController = SimulatorHostingViewController(rootView: SimulatorTrustStoreView())
-                //viewController = DCSimulatorTrustStoreViewController(nibName: "DCSimulatorTrustStoreViewController", bundle: nil)
             default:
                 viewController = nil
             }

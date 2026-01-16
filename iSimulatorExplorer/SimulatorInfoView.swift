@@ -80,6 +80,7 @@ struct SimulatorInfoView: View, SimulatorController {
             }
             .frame(width:130)
         }
+        .padding(10)
     }
 }
 

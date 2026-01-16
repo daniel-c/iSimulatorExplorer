@@ -78,7 +78,6 @@ struct SimulatorAppView: View, SimulatorController {
             AppRowView(app: $0)
         }
         HStack {
-            Spacer()
             Button("Install App") {
                 installApp()
             }
@@ -91,6 +90,7 @@ struct SimulatorAppView: View, SimulatorController {
             .disabled(disableButtons || selectedAppId == nil)
             .frame(width:130)
         }
+        .padding(10)
     }
     
     private func installApp()
