@@ -38,11 +38,12 @@ class SimulatorGroup /*: Identifiable */{
     }
 }
 
-@Observable class SimulatorExplorerViewModel {
+@Observable class SimulatorViewModel {
     let simulatorManager : DCSimulatorManager = DCSimulatorManager()
     var simulatorGroups: [SimulatorGroup] = []
     var simulators: [Simulator] = []
     var selectedId : UUID? = nil
+    var simulator: Simulator? = nil
 
     func initSimulatorList() {
         simulators = simulatorManager.simulators
@@ -76,40 +77,58 @@ class SimulatorGroup /*: Identifiable */{
             simulatorGroups.append(SimulatorGroup(version: key, simulators: sims))
             
         }
+        simulatorManager.startNotificationHandler(simDeviceChanged)
     }
     
-    func getSelectedSimulator(id : UUID?) -> Simulator?
-    {
-        if let id = id {
-            return simulatorGroups.flatMap(\.simulators!).first(where: { $0.id == id })?.simulator
+    func simDeviceChanged (_ notificationType :  DCSimulatorManager.NotificationType, deviceUDID : UUID, newState : Int) -> Void {
+        
+        guard let simulator else { return }
+/*
+        switch notificationType {
+        case .deviceState, .deviceRenamed:
+            if simulator.UDID == deviceUDID {
+                self.state = self.simulator?.state
+            }
+        case .deviceAdded, .deviceRemoved:
+           break
         }
-        return nil
+*/
+    }
+
+    
+    func setSelectedSimulator()
+    {
+        if let id = selectedId {
+            simulator =  simulatorGroups.flatMap(\.simulators!).first(where: { $0.id == id })?.simulator
+            //state = simulator?.state
+            return
+        }
+        simulator = nil
     }
 }
-
 
 struct SimulatorExplorerView: View {
     let simulatorManager : DCSimulatorManager = DCSimulatorManager()
     
-    @State private var viewModel : SimulatorExplorerViewModel = SimulatorExplorerViewModel()
-    @State private var simulatorId: UUID? = nil
+    // @State private var simulatorId: UUID? = nil
     @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
-    
+    @State private var simulatorViewModel = SimulatorViewModel()
+
     
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             Text("")
                 .toolbar(removing: .sidebarToggle)
         } content: {
-            List(viewModel.simulatorGroups, id: \.id, children: \.simulators, selection: $viewModel.selectedId, ) { simulator in
+            List(simulatorViewModel.simulatorGroups, id: \.id, children: \.simulators, selection: $simulatorViewModel.selectedId, ) { simulator in
                 Text(simulator.name)
+            }.onChange(of: simulatorViewModel.selectedId) {
+                simulatorViewModel.setSelectedSimulator()
             }
         } detail: {
             TabView {
-                let simulator = viewModel.getSelectedSimulator(id: viewModel.selectedId)
-                    
                 Tab("Info", systemImage: "tray.and.arrow.down.fill") {
-                    SimulatorInfoView(simulator: simulator)
+                    SimulatorInfoView()
                 }
                 // .badge(2)
                 Tab("Apps", systemImage: "tray.and.arrow.up.fill") {
@@ -120,19 +139,9 @@ struct SimulatorExplorerView: View {
                 }
                 //.badge("!")
             }
-            /*
-            VStack {
-                if let id = simulatorId {
-                    Text(id.uuidString)
-                }
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundStyle(.tint)
-                Text("Details")
-            }
-             */
+            .environment(simulatorViewModel)
             .task {
-                viewModel.initSimulatorList()
+                simulatorViewModel.initSimulatorList()
             }
             .padding()
         }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+internal import Combine
 
 struct InfoItem : Identifiable {
     var id: String { name }
@@ -15,54 +16,60 @@ struct InfoItem : Identifiable {
 
 @Observable class SimulatorInfoViewModel {
     var simulator: Simulator?
-    var infoItems: [InfoItem] = []
-    var startStopButtonText: String = "Boot"
     
-    init(simulator: Simulator? = nil) {
-        updateSimulator(simulator: simulator)
-    }
-
     func updateSimulator(simulator: Simulator?) {
         self.simulator = simulator
-        infoItems.removeAll()
-        
-        guard let simulator = simulator else {
-            return
+    }
+    
+    func launchSimulatorApp() {
+        if let simulator {
+            let _ = simulator.launchSimulatorApp()
         }
-        
-        let empty = ""
-        infoItems.append(InfoItem(name: NSLocalizedString("Name:", comment: ""), value: simulator.name ?? empty))
-        if simulator.deviceName != nil {
-            infoItems.append(InfoItem(name: NSLocalizedString("Simulated Model:", comment: ""), value: simulator.deviceName!))
+    }
+    
+    
+    func startStopSimulator() {
+        if (simulator?.state == .shutDown) {
+            simulator!.boot({ (error) in
+                NSLog("boot complete. \(String(describing: error))")
+            })
         }
-        infoItems.append(InfoItem(name: NSLocalizedString("Version:", comment: ""), value: (simulator.version ?? empty)))
-        if simulator.UDID != nil {
-            infoItems.append(InfoItem(name: NSLocalizedString("UDID:", comment: ""), value: simulator.UDID!.uuidString))
+        else {
+            simulator?.shutdown({ (error) in
+                NSLog("shudown complete. \(String(describing: error))")
+            })
         }
-        infoItems.append(InfoItem(name: NSLocalizedString("Path:", comment: ""), value: (simulator.path as NSString?)?.abbreviatingWithTildeInPath ?? empty))
-        infoItems.append(InfoItem(name: NSLocalizedString("State:", comment: ""), value: simulator.stateString))
-
-        startStopButtonText = simulator.state == .shutDown ? "Boot" : "Shutdown"
     }
 }
 
 
 struct SimulatorInfoView: View, SimulatorController {
-    @State private var viewModel: SimulatorInfoViewModel = SimulatorInfoViewModel(simulator: nil)
-    
-    init(simulator: Simulator?) {
-        viewModel = SimulatorInfoViewModel(simulator: simulator)
-    }
+    @State private var viewModel = SimulatorInfoViewModel()
+    @Environment(SimulatorViewModel.self) var simulatorViewModel : SimulatorViewModel
 
     func updateSimulator(simulator: Simulator) {
+        // Update via the view model; safe once view is installed
         viewModel.updateSimulator(simulator: simulator)
     }
-    
+
     var body: some View {
-        Table(viewModel.infoItems) {
-            TableColumn("Name", value: \.name).width(min: 50, ideal: 80, max: 100)
-            TableColumn("Value", value: \.value)
+        if let sim = simulatorViewModel.simulator {
+            Table(of: InfoItem.self) {
+                TableColumn("Name", value: \.name).width(min: 50, ideal: 80, max: 100)
+                TableColumn("Value", value: \.value)
+            } rows: {
+                TableRow(InfoItem(name: "Name:", value: sim.name ?? ""))
+                TableRow(InfoItem(name: "Version:", value: sim.version ?? ""))
+                if (sim.deviceName != nil)
+                {
+                    TableRow(InfoItem(name: "Simulated Model:", value: sim.deviceName!))
+                }
+                TableRow(InfoItem(name: "UDID:", value: sim.UDID?.uuidString ?? ""))
+                TableRow(InfoItem(name: "Path:", value: (sim.path as NSString?)?.abbreviatingWithTildeInPath ?? ""))
+                TableRow(InfoItem(name: "State:", value: sim.stateString))
+            }
         }
+        Spacer()
         HStack {
             Button("Show in Finder") {
                 if let simulator = viewModel.simulator {
@@ -72,30 +79,26 @@ struct SimulatorInfoView: View, SimulatorController {
             .frame(width:130)
             Spacer()
             Button("Open Simulator") {
-                if let simulator = viewModel.simulator {
-                    let _ = simulator.launchSimulatorApp()
-                }
+                viewModel.launchSimulatorApp()
             }
             .frame(width:130)
             Spacer()
-            Button(viewModel.startStopButtonText) {
-                if (viewModel.simulator?.state == .shutDown) {
-                    viewModel.simulator!.boot({ (error) in
-                        NSLog("boot complete. \(String(describing: error))")
-                    })
-                }
-                else {
-                    viewModel.simulator?.shutdown({ (error) in
-                        NSLog("shudown complete. \(String(describing: error))")
-                    })
-                }
+            //Button(viewModel.startStopButtonText) {
+            Button(simulatorViewModel.simulator?.state  == .shutDown ? "Boot" : "Shutdown") {
+                viewModel.startStopSimulator()
             }
             .frame(width:130)
         }
         .padding(10)
+        .onAppear {
+            viewModel.updateSimulator(simulator: simulatorViewModel.simulator)
+        }
+        .onChange(of: simulatorViewModel.simulator) { _, newValue in
+            viewModel.updateSimulator(simulator: newValue)
+        }
     }
 }
 
 #Preview {
-    SimulatorInfoView(simulator: nil)
+    SimulatorInfoView()
 }

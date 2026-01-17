@@ -128,7 +128,7 @@ struct TrustStoreRowView : View {
 
 
 struct SimulatorTrustStoreView: View, SimulatorController {
-    
+    @Environment(SimulatorViewModel.self) var simulatorViewModel : SimulatorViewModel
     @State private var viewModel : SimulatorTrustStoreViewModel = SimulatorTrustStoreViewModel()
     @State private var selectedCertificateId : String?
     @State private var isDialogShown = false
@@ -186,9 +186,21 @@ struct SimulatorTrustStoreView: View, SimulatorController {
 
                 }
             }.padding(10)
+            .onAppear {
+                viewModel.updateSimulator(simulator: simulatorViewModel.simulator)
+            }
+            .onChange(of: simulatorViewModel.simulator) { _, newValue in
+                viewModel.updateSimulator(simulator: newValue)
+            }
         }
         else {
             Text("The trusted certificate list is not available until the simulator for the selected device has been started once.").foregroundStyle(.red)
+            .onAppear {
+                viewModel.updateSimulator(simulator: simulatorViewModel.simulator)
+            }
+            .onChange(of: simulatorViewModel.simulator) { _, newValue in
+                viewModel.updateSimulator(simulator: newValue)
+            }
         }
     }
 }

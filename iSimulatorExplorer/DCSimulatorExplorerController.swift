@@ -207,7 +207,7 @@ class DCSimulatorExplorerController: NSViewController, NSOutlineViewDelegate, NS
             var viewController : NSViewController?
             switch identifier {
             case "Info":
-                viewController = SimulatorHostingViewController(rootView: SimulatorInfoView(simulator: nil))
+                viewController = SimulatorHostingViewController(rootView: SimulatorInfoView())
             case "Apps":
                 viewController = SimulatorHostingViewController(rootView: SimulatorAppView())
             case "Truststore":

@@ -41,16 +41,18 @@ enum SimulatorDeviceState : String {
     case shuttingDown = "ShuttingDown"
 }
 
-class Simulator {
+@Observable
+class Simulator: Equatable {
     var name : String?
     var deviceName : String?
     var version : String?
     var UDID : UUID?
     var path : String
     var trustStorePath : String?
-    var isValid : Bool
     var simulatorOS : SimulatorOSType
-    
+    var isValid : Bool
+    var state : SimulatorDeviceState
+
     // private var appDataDirMap : [String : String]?
     
     init(udid: String?, path : String, state : SimulatorDeviceState, name : String?, runtime : String?) {
@@ -68,6 +70,19 @@ class Simulator {
             initTrustStorePath()
         }
     }
+
+    static func == (lhs: Simulator, rhs: Simulator) -> Bool {
+        return
+            lhs.name == rhs.name &&
+            lhs.deviceName == rhs.deviceName &&
+            lhs.version == rhs.version &&
+            lhs.UDID == rhs.UDID &&
+            lhs.path == rhs.path &&
+            lhs.trustStorePath == rhs.trustStorePath &&
+            lhs.simulatorOS == rhs.simulatorOS &&
+            lhs.isValid == rhs.isValid &&
+            lhs.state == rhs.state
+    }
     
     var stateString : String {
         return state.rawValue
@@ -78,7 +93,6 @@ class Simulator {
         return name + " (" + version + ")"
     }
     
-    var state : SimulatorDeviceState
     
     private func initTrustStorePath() {
         trustStorePath = (path as NSString?)?.appendingPathComponent("private/var/protected/trustd/private/TrustStore.sqlite3")
@@ -313,3 +327,4 @@ class Simulator {
         doActionWithBootAndShutdown(appId, action: uninstallAppAction, completionHandler: completionHandler)
     }
 }
+

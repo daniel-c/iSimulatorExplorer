@@ -24,10 +24,11 @@ struct SimulatorApp1 : Identifiable {
         
     }
     
-    func updateSimulator(simulator: Simulator) {
+    func updateSimulator(simulator: Simulator?) {
         self.simulator = simulator
-        let appList = simulator.getAppList()
         simulatorAppList.removeAll()
+        guard let simulator else { return }
+        let appList = simulator.getAppList()
         for app in appList
         {
             simulatorAppList.append(SimulatorApp1(id: app.identifier!,
@@ -65,6 +66,7 @@ struct AppRowView : View {
 }
 
 struct SimulatorAppView: View, SimulatorController {
+    @Environment(SimulatorViewModel.self) var simulatorViewModel : SimulatorViewModel
     @State private var viewModel : SimulatorAppViewModel = SimulatorAppViewModel()
     @State private var selectedAppId : String?
     @State private var disableButtons: Bool = false
@@ -91,6 +93,12 @@ struct SimulatorAppView: View, SimulatorController {
             .frame(width:130)
         }
         .padding(10)
+        .onAppear {
+            viewModel.updateSimulator(simulator: simulatorViewModel.simulator)
+        }
+        .onChange(of: simulatorViewModel.simulator) { _, newValue in
+            viewModel.updateSimulator(simulator: newValue)
+        }
     }
     
     private func installApp()
