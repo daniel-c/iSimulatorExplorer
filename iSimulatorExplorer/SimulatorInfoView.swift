@@ -14,23 +14,12 @@ struct InfoItem : Identifiable {
 }
 
 @Observable class SimulatorInfoViewModel {
-    var mainViewModel: SimulatorExplorerViewModel?
     var simulator: Simulator?
     var infoItems: [InfoItem] = []
     var startStopButtonText: String = "Boot"
     
-    init(mainViewModel: SimulatorExplorerViewModel? = nil) {
-        self.mainViewModel = mainViewModel
-        if let mainViewModel = mainViewModel {
-            updateSimulator(simulator: mainViewModel.getSelectedSimulator())
-            withObservationTracking {
-                _ = mainViewModel.selectedId
-            } onChange: {
-                DispatchQueue.main.async {
-                    self.updateSimulator(simulator: self.mainViewModel!.getSelectedSimulator())
-                }
-            }
-        }
+    init(simulator: Simulator? = nil) {
+        updateSimulator(simulator: simulator)
     }
 
     func updateSimulator(simulator: Simulator?) {
@@ -59,10 +48,10 @@ struct InfoItem : Identifiable {
 
 
 struct SimulatorInfoView: View, SimulatorController {
-    @State private var viewModel: SimulatorInfoViewModel = SimulatorInfoViewModel(mainViewModel: nil)
+    @State private var viewModel: SimulatorInfoViewModel = SimulatorInfoViewModel(simulator: nil)
     
-    init(mainViewModel: SimulatorExplorerViewModel?) {
-        self.viewModel = SimulatorInfoViewModel(mainViewModel: mainViewModel)
+    init(simulator: Simulator?) {
+        viewModel = SimulatorInfoViewModel(simulator: simulator)
     }
 
     func updateSimulator(simulator: Simulator) {
@@ -108,5 +97,5 @@ struct SimulatorInfoView: View, SimulatorController {
 }
 
 #Preview {
-    SimulatorInfoView(mainViewModel: nil)
+    SimulatorInfoView(simulator: nil)
 }

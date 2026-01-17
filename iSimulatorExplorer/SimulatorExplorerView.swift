@@ -78,9 +78,9 @@ class SimulatorGroup /*: Identifiable */{
         }
     }
     
-    func getSelectedSimulator() -> Simulator?
+    func getSelectedSimulator(id : UUID?) -> Simulator?
     {
-        if let id = selectedId {
+        if let id = id {
             return simulatorGroups.flatMap(\.simulators!).first(where: { $0.id == id })?.simulator
         }
         return nil
@@ -106,8 +106,10 @@ struct SimulatorExplorerView: View {
             }
         } detail: {
             TabView {
+                let simulator = viewModel.getSelectedSimulator(id: viewModel.selectedId)
+                    
                 Tab("Info", systemImage: "tray.and.arrow.down.fill") {
-                    SimulatorInfoView(mainViewModel: viewModel)
+                    SimulatorInfoView(simulator: simulator)
                 }
                 // .badge(2)
                 Tab("Apps", systemImage: "tray.and.arrow.up.fill") {
