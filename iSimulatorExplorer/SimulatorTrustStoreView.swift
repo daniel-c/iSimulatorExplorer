@@ -127,15 +127,12 @@ struct TrustStoreRowView : View {
 }
 
 
-struct SimulatorTrustStoreView: View, SimulatorController {
+struct SimulatorTrustStoreView: View {
     @Environment(SimulatorViewModel.self) var simulatorViewModel : SimulatorViewModel
     @State private var viewModel : SimulatorTrustStoreViewModel = SimulatorTrustStoreViewModel()
     @State private var selectedCertificateId : String?
     @State private var isDialogShown = false
 
-    func updateSimulator(simulator: Simulator) {
-        viewModel.updateSimulator(simulator: simulator)
-    }
     
     var body: some View {
         if (viewModel.truststore != nil) {

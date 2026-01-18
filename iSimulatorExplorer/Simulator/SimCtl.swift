@@ -84,7 +84,7 @@ public class SimCtl {
             // Flatten devices across runtimes, filter to iOS only and available
             for (runtime, devices) in response.devices {
                 // Keep iOS runtimes only
-                let isIOSRuntime = runtime.lowercased().contains("ios") || runtime.lowercased().contains("iphoneos") || runtime.lowercased().contains("com.apple.coreSimulator.simruntime.ios")
+                let isIOSRuntime = runtime.lowercased().contains("ios") || runtime.lowercased().contains("watchos") // || runtime.lowercased().contains("com.apple.coreSimulator.simruntime.ios")
                 guard isIOSRuntime else { continue }
 
                 for d in devices {

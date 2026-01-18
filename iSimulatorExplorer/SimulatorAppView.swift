@@ -65,15 +65,11 @@ struct AppRowView : View {
     }
 }
 
-struct SimulatorAppView: View, SimulatorController {
+struct SimulatorAppView: View {
     @Environment(SimulatorViewModel.self) var simulatorViewModel : SimulatorViewModel
     @State private var viewModel : SimulatorAppViewModel = SimulatorAppViewModel()
     @State private var selectedAppId : String?
     @State private var disableButtons: Bool = false
-
-    func updateSimulator(simulator: Simulator) {
-        viewModel.updateSimulator(simulator: simulator)
-    }
 
     var body: some View {
         List(viewModel.simulatorAppList, selection: $selectedAppId) {

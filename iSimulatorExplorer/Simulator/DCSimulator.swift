@@ -42,7 +42,7 @@ enum SimulatorDeviceState : String {
 }
 
 @Observable
-class Simulator: Equatable {
+class Simulator: Equatable, Hashable {
     var name : String?
     var deviceName : String?
     var version : String?
@@ -63,7 +63,14 @@ class Simulator: Equatable {
         simulatorOS = SimulatorOSType.iOS
             self.state = state
         if let runtime = runtime, let name = name {
-            version = runtime.components(separatedBy: ".").last
+            let osAndversionPart = runtime.components(separatedBy: ".").last
+            let versionParts = osAndversionPart?.components(separatedBy: "-")
+            if versionParts?.count == 3 {
+                version = "\(versionParts![1]).\(versionParts![2])"
+            }
+            else {
+                version = osAndversionPart
+            }
             self.name = name
             isValid = true
             initDeviceType(runtime)
@@ -82,6 +89,12 @@ class Simulator: Equatable {
             lhs.simulatorOS == rhs.simulatorOS &&
             lhs.isValid == rhs.isValid &&
             lhs.state == rhs.state
+    }
+    
+    func hash(into hasher: inout Hasher) {
+            hasher.combine(UDID)
+            hasher.combine(name)
+            hasher.combine(version)
     }
     
     var stateString : String {

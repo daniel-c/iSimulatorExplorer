@@ -7,46 +7,40 @@
 
 import SwiftUI
 
-class SimulatorGroup /*: Identifiable */{
+
+struct SimulatorItem : Identifiable, Hashable {
     let id: UUID
-    
-    var name : String
-    
-    var simulators : [SimulatorGroup]?
-    
-    var simulator : Simulator?
-    
-    var UDID : UUID? {
-        return simulator?.UDID
-    }
 
-    init(simulator : Simulator) {
-        name = simulator.name!
-        simulators = nil
-        self.simulator = simulator
-        id = simulator.UDID!
-    }
+    let name: String
+}
 
+struct SimulatorGroup: Identifiable {
+    let id = UUID()
+    
+    let name: String
+    
+    var simulators: [SimulatorItem]
+    
     init(version : String, simulators : [Simulator]) {
         self.name = version
         self.simulators = []
         for simulator in simulators {
-            let group = SimulatorGroup(simulator: simulator)
-            self.simulators?.append(group)
+            let group = SimulatorItem(id: simulator.UDID!, name: simulator.name ?? "")
+            self.simulators.append(group)
         }
-        id = UUID()
     }
 }
 
 @Observable class SimulatorViewModel {
     let simulatorManager : DCSimulatorManager = DCSimulatorManager()
-    var simulatorGroups: [SimulatorGroup] = []
+    var simulatorGroups : [SimulatorGroup] = []
     var simulators: [Simulator] = []
     var selectedId : UUID? = nil
     var simulator: Simulator? = nil
 
     func initSimulatorList() {
         simulators = simulatorManager.simulators
+        simulatorGroups.removeAll()
         var simulatorsByVersion = [String : [Simulator]]()
         for sim in simulators {
             let typeAndVersion : String
@@ -56,7 +50,7 @@ class SimulatorGroup /*: Identifiable */{
             case SimulatorOSType.watchOS:
                 typeAndVersion = "watchOS Simulator \(sim.version!)"
             default:
-                typeAndVersion = "Simulator \(sim.version!)"
+                typeAndVersion = "iOS Simulator \(sim.version!)"
                 
             }
             
@@ -75,32 +69,29 @@ class SimulatorGroup /*: Identifiable */{
         for key in sortedKeys {
             let sims = simulatorsByVersion[key]!
             simulatorGroups.append(SimulatorGroup(version: key, simulators: sims))
-            
         }
         simulatorManager.startNotificationHandler(simDeviceChanged)
     }
     
     func simDeviceChanged (_ notificationType :  DCSimulatorManager.NotificationType, deviceUDID : UUID, newState : Int) -> Void {
-        
-        guard let simulator else { return }
-/*
+
+        //guard let simulator else { return }
+
         switch notificationType {
-        case .deviceState, .deviceRenamed:
-            if simulator.UDID == deviceUDID {
-                self.state = self.simulator?.state
-            }
-        case .deviceAdded, .deviceRemoved:
-           break
+        case .deviceState:
+            break
+        case .deviceAdded, .deviceRemoved, .deviceRenamed:
+            initSimulatorList()
+            break
         }
-*/
+
     }
 
     
     func setSelectedSimulator()
     {
         if let id = selectedId {
-            simulator =  simulatorGroups.flatMap(\.simulators!).first(where: { $0.id == id })?.simulator
-            //state = simulator?.state
+            simulator =  simulators.first(where: { $0.UDID == id })
             return
         }
         simulator = nil
@@ -108,9 +99,6 @@ class SimulatorGroup /*: Identifiable */{
 }
 
 struct SimulatorExplorerView: View {
-    let simulatorManager : DCSimulatorManager = DCSimulatorManager()
-    
-    // @State private var simulatorId: UUID? = nil
     @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
     @State private var simulatorViewModel = SimulatorViewModel()
 
@@ -120,21 +108,31 @@ struct SimulatorExplorerView: View {
             Text("")
                 .toolbar(removing: .sidebarToggle)
         } content: {
-            List(simulatorViewModel.simulatorGroups, id: \.id, children: \.simulators, selection: $simulatorViewModel.selectedId, ) { simulator in
-                Text(simulator.name)
-            }.onChange(of: simulatorViewModel.selectedId) {
+            List(selection: $simulatorViewModel.selectedId) {
+                ForEach(simulatorViewModel.simulatorGroups) { group in
+                    Section(header: Text(group.name)) {
+                        ForEach(group.simulators) { simulatorItem in
+                            HStack {
+                                Image("Simulator")
+                                Text(simulatorItem.name)
+                            }
+                        }
+                    }
+                }
+            } .onChange(of: simulatorViewModel.selectedId) {
                 simulatorViewModel.setSelectedSimulator()
             }
+
         } detail: {
             TabView {
-                Tab("Info", systemImage: "tray.and.arrow.down.fill") {
+                Tab("Info", systemImage: "info.circle") {
                     SimulatorInfoView()
                 }
                 // .badge(2)
-                Tab("Apps", systemImage: "tray.and.arrow.up.fill") {
+                Tab("Apps", systemImage: "apps.iphone") {
                     SimulatorAppView()
                 }
-                Tab("Trusted Certificates", systemImage: "person.crop.circle.fill") {
+                Tab("Trusted Certificates", systemImage: "key.2.on.ring") {
                     SimulatorTrustStoreView()
                 }
                 //.badge("!")

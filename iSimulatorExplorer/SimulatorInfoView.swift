@@ -43,14 +43,9 @@ struct InfoItem : Identifiable {
 }
 
 
-struct SimulatorInfoView: View, SimulatorController {
+struct SimulatorInfoView: View {
     @State private var viewModel = SimulatorInfoViewModel()
     @Environment(SimulatorViewModel.self) var simulatorViewModel : SimulatorViewModel
-
-    func updateSimulator(simulator: Simulator) {
-        // Update via the view model; safe once view is installed
-        viewModel.updateSimulator(simulator: simulator)
-    }
 
     var body: some View {
         if let sim = simulatorViewModel.simulator {

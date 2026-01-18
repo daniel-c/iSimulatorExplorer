@@ -12,7 +12,6 @@ struct SimulatorExplorerApp: App {
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
     var body: some Scene {
         Window("Simulator Explorer", id: "main") {
-            //SimulatorExplorerMainView()
             SimulatorExplorerView()
         }
     }
